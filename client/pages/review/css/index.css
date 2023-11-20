@@ -1,0 +1,38 @@
+body {
+    background-color: var(--primary-color);
+}
+
+@media (min-width: 1000px) and (min-height: 800px) {
+    #review-container {
+        display: grid;
+    
+        grid-template-columns: 68vw 28vw;
+        grid-template-rows: 90vh;
+    }
+
+    #review-panel {
+        grid-template-rows: 90% 10%;
+        
+        margin: 20px;
+    }
+
+    #review-button {
+        margin: 10px;
+    }
+}
+
+@media (max-width: 999px), (max-height: 799px) {
+    #review-container {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    #review-button {
+        margin: 10px 10px 30px 10px;
+    }
+
+    #review-panel {
+        grid-template-rows: 80% 20%;
+    }
+}

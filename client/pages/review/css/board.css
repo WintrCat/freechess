@@ -1,0 +1,14 @@
+#board-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#board {
+    grid-column: 1 / 2;
+
+    max-width: 100%;
+
+    border: 2px solid var(--border-color);
+    border-radius: 10px;
+}

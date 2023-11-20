@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Game Report</title>
+
+    <link rel="stylesheet" href="/static/global.css">
+
+    <link rel="stylesheet" href="/static/pages/review/css/index.css">
+    <link rel="stylesheet" href="/static/pages/review/css/board.css">
+    <link rel="stylesheet" href="/static/pages/review/css/reviewpanel.css">
+
+    <link rel="icon" href="/static/media/favicon.ico">
+</head>
+<body>
+
+    <div class="center">
+        <div id="review-container">
+            <div id="board-container">
+                <canvas id="board" width="720" height="720"></canvas>
+            </div>
+    
+            <div id="review-panel">
+                <div id="review-panel-main">
+                    <h1 id="review-panel-title">📑 Game Report</h1>
+
+                    <textarea id="pgn" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
+
+                    <button id="review-button" class="std-btn success-btn">
+                        <img src="/static/media/analysis_icon.png" height="25">
+                        <b>Analyse</b>
+                    </button>
+                </div>
+
+                <div id="review-panel-toolbar" class="center">
+                    <img src="/static/media/flip.png" alt="Flip Board" title="Flip board">
+                    <img src="/static/media/back_to_start.png" alt="Back to start" title="Back to start">
+                    <img src="/static/media/back.png" alt="Back" title="Back">
+                    <img src="/static/media/next.png" alt="Next" title="Next">
+                    <img src="/static/media/go_to_end.png" alt="Go to end" title="Go to end">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="/static/pages/review/js/board.js"></script>
+    <script src="/static/pages/review/js/evaluate.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+:root {
+    --border-color: rgb(83, 83, 83);
+
+    --primary-color: rgb(20, 20, 20);
+    --secondary-color: rgb(26, 26, 26);
+
+    --success-color: rgb(101, 255, 84);
+    --success-color-accent: rgb(91, 229, 75);
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+* {
+    font-family: system-ui;
+}
+
+.std-btn {
+    border: none;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.std-btn:active {
+    box-shadow: 0px 2px var(--success-color-accent);
+    transform: translateY(2px);
+}
+
+.success-btn {
+    background-color: var(--success-color);
+    box-shadow: 0px 4px var(--success-color-accent);
+}
