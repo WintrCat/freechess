@@ -1,20 +1,30 @@
 const wasmSupported = typeof WebAssembly == "object";
 
-let stockfish = new Worker("/static/scripts/stockfish" + (wasmSupported ? ".wasm.js" : ".js"));
+function runStockfishWorker() {
 
-stockfish.addEventListener("message", event => {
+    let stockfish = new Worker("/static/scripts/stockfish" + (wasmSupported ? ".wasm.js" : ".js"));
 
-    let message = event.data;
+    stockfish.addEventListener("message", event => {
 
-    console.log(message);
+        let message = event.data;
 
-    if (message.startsWith("info depth 18")) {
-        console.log("Time elapsed: " + ((Date.now() - startTime) / 1000) + "s");
-    }
+        console.log(message);
 
-});
+        if (message.startsWith("info depth 18")) {
+            console.log("Time elapsed: " + ((Date.now() - startTime) / 1000) + "s");
+        }
 
-stockfish.postMessage("uci");
+    });
 
-let startTime = Date.now();
-stockfish.postMessage("go depth 18");
+    stockfish.postMessage("uci");
+
+    stockfish.postMessage("setoption name Threads value 4");
+
+    let startTime = Date.now();
+    stockfish.postMessage("go depth 18");
+
+}
+
+for (let i = 0; i < 16; i++) {
+    runStockfishWorker();
+}
