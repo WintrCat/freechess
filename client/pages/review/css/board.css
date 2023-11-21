@@ -1,5 +1,11 @@
+.profile {
+    color: white;
+    font-size: 20px;
+}
+
 #board-container {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
 }

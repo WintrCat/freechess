@@ -16,7 +16,11 @@
     <div class="center">
         <div id="review-container">
             <div id="board-container">
+                <div id="black-player-profile" class="profile">Black Player</div>
+
                 <canvas id="board" width="720" height="720"></canvas>
+                
+                <div id="white-player-profile" class="profile">White Player</div>
             </div>
     
             <div id="review-panel">
@@ -25,12 +29,18 @@
 
                     <textarea id="pgn" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
 
+                    <div class="g-recaptcha"></div>
+
                     <button id="review-button" class="std-btn success-btn">
                         <img src="/static/media/analysis_icon.png" height="25">
                         <b>Analyse</b>
                     </button>
 
-                    <b id="error-message">None</b>
+                    <b id="error-message"></b>
+                    <b id="performance-message">
+                        Processing a full-length game may take around a minute,
+                        depending on how powerful your computer is.
+                    </b>
                 </div>
 
                 <div id="review-panel-toolbar" class="center">
@@ -47,7 +57,6 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script src="/static/pages/review/js/board.js"></script>
-    <script src="/static/pages/review/js/evaluate.js"></script>
     <script src="/static/pages/review/js/analysis.js"></script>
 
 </body>

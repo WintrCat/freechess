@@ -28,11 +28,16 @@ body {
         gap: 20px;
     }
 
-    #error-message {
+    #performance-message {
         margin: 10px 10px 30px 10px;
     }
 
     #review-panel {
-        grid-template-rows: 80% 20%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    #review-panel-toolbar {
+        padding: 10px;
     }
 }

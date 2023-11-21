@@ -79,7 +79,18 @@
     ANALYSIS ERROR MESSAGE
 */
 #error-message {
+    text-align: center;
     color: rgb(255, 53, 53);
+}
+
+/*
+    ANALYSIS PERFORMANCE MESSAGE
+*/
+#performance-message {
+    display: none;
+    text-align: center;
+    font-size: 14px;
+    color: white;
 }
 
 /*

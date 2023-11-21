@@ -3,10 +3,10 @@ const path = require("path");
 
 const app = express();
 
+app.use(express.json());
+
 app.use("/static", express.static("client"));
 app.use("/api", require("./api"));
-
-app.use(express.json());
 
 app.get("/", async (req, res) => {
 
