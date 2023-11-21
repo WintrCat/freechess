@@ -2,6 +2,8 @@ const { Router } = require("express");
 const pgnParser = require("pgn-parser");
 const { Chess } = require("chess.js");
 
+const analyse = require("./analysis");
+
 /**
  * @type {Router}
  */
@@ -38,6 +40,10 @@ router.post("/report", async (req, res) => {
     if (positions == null) {
         return res.sendStatus(400);
     }
+
+    analyse(positions);
+
+    res.json({});
 
 });
 

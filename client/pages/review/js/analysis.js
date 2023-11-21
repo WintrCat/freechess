@@ -31,7 +31,7 @@ async function evaluatePosition(position) {
                 positionBatchDepths.set(stockfish, depth);
             }
 
-            if (/^info depth (18|0)/.test(message)) {
+            if (/^info depth (3|0)/.test(message)) {
                 position.evaluation = {
                     type: message.match(/ cp /g) ? "cp" : "mate",
                     value: message.match(/(?<=[cp|mate] )[\d-]+/g)[0]
@@ -90,6 +90,7 @@ async function analyse() {
 
     for (var i = 0; i < positions.length; i += 8) {
         positionBatchDepths.clear();
+
         if (!progressMonitor) {
             progressMonitor = setInterval(() => {
                 let batchProgress = 0;
