@@ -16,8 +16,8 @@ body {
         margin: 20px;
     }
 
-    #review-button {
-        margin: 10px;
+    #error-message {
+        margin: 0px;
     }
 }
 
@@ -28,7 +28,7 @@ body {
         gap: 20px;
     }
 
-    #review-button {
+    #error-message {
         margin: 10px 10px 30px 10px;
     }
 

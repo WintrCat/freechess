@@ -1,30 +1,16 @@
 const wasmSupported = typeof WebAssembly == "object";
 
-function runStockfishWorker() {
+/**
+ * @param {(message: string) => void} onMessage
+ * @description Creates and returns a Stockfish web worker with a custom message listener
+ */
+function createStockfishWorker(onMessage) {
 
     let stockfish = new Worker("/static/scripts/stockfish" + (wasmSupported ? ".wasm.js" : ".js"));
 
-    stockfish.addEventListener("message", event => {
-
-        let message = event.data;
-
-        console.log(message);
-
-        if (message.startsWith("info depth 18")) {
-            console.log("Time elapsed: " + ((Date.now() - startTime) / 1000) + "s");
-        }
-
-    });
-
+    stockfish.addEventListener("message", event => onMessage(event.data));
     stockfish.postMessage("uci");
+    
+    return stockfish;
 
-    stockfish.postMessage("setoption name Threads value 4");
-
-    let startTime = Date.now();
-    stockfish.postMessage("go depth 18");
-
-}
-
-for (let i = 0; i < 16; i++) {
-    runStockfishWorker();
 }
