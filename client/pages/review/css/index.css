@@ -28,10 +28,6 @@ body {
         gap: 20px;
     }
 
-    #performance-message {
-        margin: 10px 10px 30px 10px;
-    }
-
     #review-panel {
         display: flex;
         flex-direction: column;

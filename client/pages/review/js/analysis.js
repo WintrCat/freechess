@@ -1,5 +1,3 @@
-const wasmSupported = typeof WebAssembly == "object";
-
 let positionBatchDepths = new Map();
 
 async function post(url, body) {
@@ -14,36 +12,6 @@ async function post(url, body) {
     return await response.json();
 }
 
-async function evaluatePosition(position) {
-    return new Promise((res, rej) => {
-        let stockfish = new Worker("/static/scripts/stockfish" + (wasmSupported ? ".wasm.js" : ".js"));
-
-        stockfish.postMessage("uci");
-        stockfish.postMessage("position fen " + position.fen);
-        stockfish.postMessage("go depth 18");
-
-        stockfish.addEventListener("message", event => {
-
-            let message = event.data;
-
-            if (message.startsWith("info depth")) {
-                let depth = parseInt(message.match(/(?<=info depth )\d+/)[0]);
-                positionBatchDepths.set(stockfish, depth);
-            }
-
-            if (/^info depth (3|0)/.test(message)) {
-                position.evaluation = {
-                    type: message.match(/ cp /g) ? "cp" : "mate",
-                    value: message.match(/(?<=[cp|mate] )[\d-]+/g)[0]
-                };
-                stockfish.terminate();
-                res(true);
-            }
-
-        });
-    });
-}
-
 function logAnalysisInfo(message) {
     $("#error-message").css("color", "white");
     $("#error-message").html(message);
@@ -55,66 +23,87 @@ function logAnalysisError(message) {
     $("#error-message").html(message);
 }
 
-async function analyse() {
+async function evaluate() {
 
     let pgn = $("#pgn").val();
+    let depth = 18;
 
-    // validate PGN input
+    // Content validate PGN input
     if (pgn.length == 0) {
         return logAnalysisError("Enter a PGN to analyse.");
     }
 
-    // post PGN contents to fetch fens of position after each move
-    logAnalysisInfo("Parsing PGN...");
-
-    try {
-        var fens = await post("/api/fens", { pgn });
-    } catch (err) {
-        return logAnalysisError("Failed to parse PGN file.");
-    }
-
-    // update player profile cards and performance message
+    // Update profile cards and display performance note
     $("#white-player-profile").html(pgn.match(/(?<=\[White ").+(?="\])/)[0]);
     $("#black-player-profile").html(pgn.match(/(?<=\[Black ").+(?="\])/)[0]);
     $("#performance-message").css("display", "inline");
 
-    // evaluate all fens in batches of 16
-    let positions = fens.map(fen => {
-        return {
-            fen: fen,
-            evaluation: null
-        };
-    });
+    // Post PGN to server to have it parsed
+    logAnalysisInfo("Parsing PGN...");
 
-    let progressMonitor;
-
-    for (var i = 0; i < positions.length; i += 8) {
-        positionBatchDepths.clear();
-
-        if (!progressMonitor) {
-            progressMonitor = setInterval(() => {
-                let batchProgress = 0;
-                for (let batchDepth of positionBatchDepths.values()) {
-                    batchProgress += batchDepth;
-                }
-
-                let progress = ((i / positions.length) + (batchProgress / (18 * 8)) * (8 / positions.length)) * 100;
-
-                logAnalysisInfo(`Evaluating moves... (${progress.toFixed(1)}%)`);
-            }, 10);
-        }
-
-        let workers = [];
-        for (let position of positions.slice(i, i + 8)) {
-            workers.push(evaluatePosition(position));
-        }
-
-        await Promise.all(workers);
+    try {
+        // JSON list with keys fen and move. move = SAN
+        var positions = await post("/api/parse", { pgn });
+    } catch (err) {
+        return logAnalysisError("Failed to parse PGN file.");
     }
 
-    clearInterval(progressMonitor);
+    // Display progress bar
+    $("#evaluation-progress-bar").css("display", "inline");
 
-    // post evaluations and get report results
+    // Initialise positions for processing
+    for (let position of positions) {
+        position.evaluation = null;
+        position.worker = null;
+    }
+    let workerCount = 0;
+
+    // Evaluate all positions
+    let stockfishManager = setInterval(() => {
+        // If all evaluations have been generated, move on
+        if (!positions.some(pos => pos.evaluation == null)) {
+            clearInterval(stockfishManager);
+            report(positions);
+            return;
+        }
+
+        // Find next position with no worker and add new one
+        for (let position of positions) {
+            if (position.worker != null || workerCount >= 8) continue;
+
+            position.worker = new Stockfish();
+            position.worker.evaluate(position.fen, depth).then(evaluation => {
+                position.evaluation = evaluation;
+                workerCount--;
+            });
+
+            workerCount++;
+        }
+
+        // Update progress monitor
+        let workerDepths = 0;
+        for (let position of positions) {
+            if (position.evaluation == null) {
+                workerDepths += position.worker == null ? 0 : position.worker.depth;
+            } else {
+                workerDepths += depth;
+            }
+        }
+
+        let progress = workerDepths / (positions.length * depth) * 100;
+
+        $("#evaluation-progress-bar").attr("value", progress);
+        logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
+    }, 10);
+
+}
+
+async function report(positions) {
+
+    console.log("ALL POSITIONS EVALUATED SUCCESSFULLY");
+    console.log(positions);
+
+    // Post evaluations and get report results
     logAnalysisInfo("Classifying moves...");
 
     try {
@@ -128,4 +117,4 @@ async function analyse() {
 
 }
 
-$("#review-button").click(analyse);
+$("#review-button").click(evaluate);

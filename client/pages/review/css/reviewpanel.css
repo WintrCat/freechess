@@ -76,6 +76,13 @@
 }
 
 /*
+    ANALYSIS PROGRESS BAR
+*/
+#evaluation-progress-bar {
+    display: none;
+}
+
+/*
     ANALYSIS ERROR MESSAGE
 */
 #error-message {

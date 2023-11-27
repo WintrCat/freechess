@@ -29,12 +29,15 @@
 
                     <textarea id="pgn" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
 
+                    <!-- IMPLEMENT RECAPTCHA LATER -->
                     <div class="g-recaptcha"></div>
 
                     <button id="review-button" class="std-btn success-btn">
                         <img src="/static/media/analysis_icon.png" height="25">
                         <b>Analyse</b>
                     </button>
+
+                    <progress id="evaluation-progress-bar" max="100"></progress>
 
                     <b id="error-message"></b>
                     <b id="performance-message">
@@ -57,6 +60,8 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script src="/static/pages/review/js/board.js"></script>
+
+    <script src="/static/pages/review/js/engine.js"></script>
     <script src="/static/pages/review/js/analysis.js"></script>
 
 </body>
