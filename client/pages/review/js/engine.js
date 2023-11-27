@@ -25,7 +25,7 @@ class Stockfish {
                 if (!message.startsWith("info depth")) return;
                 this.depth = parseInt(message.match(/(?<=info depth )\d+/)[0]);
 
-                let evaluationType = / cp /g.test(message) ? "cp" : "mate";
+                let evaluationType = message.includes(" cp ") ? "cp" : "mate";
                 let evaluationScore = parseInt(message.match(/(?<=[cp|mate] )[\d-]+/g)[0]);
 
                 if (fen.includes(" b ") && evaluationScore != 0) {
