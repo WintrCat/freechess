@@ -1,17 +1,5 @@
 let positionBatchDepths = new Map();
 
-async function post(url, body) {
-    let response = await fetch(url, {
-        "method": "POST",
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": JSON.stringify(body)
-    });
-
-    return await response.json();
-}
-
 function logAnalysisInfo(message) {
     $("#error-message").css("color", "white");
     $("#error-message").html(message);
@@ -43,7 +31,7 @@ async function evaluate() {
 
     try {
         // JSON list with keys fen and move. move = SAN
-        var positions = await post("/api/parse", { pgn });
+        var positions = await REST.post("/api/parse", { pgn });
     } catch (err) {
         return logAnalysisError("Failed to parse PGN file.");
     }
@@ -51,14 +39,31 @@ async function evaluate() {
     // Display progress bar
     $("#evaluation-progress-bar").css("display", "inline");
 
-    // Initialise positions for processing
+    // Initialise positions for processing and fetch cloud evaluations where possible
     for (let position of positions) {
         position.evaluation = null;
         position.worker = null;
     }
     let workerCount = 0;
 
-    // Evaluate all positions
+    // Fetch cloud evaluations where possible
+    for (let position of positions) {
+        let queryFen = position.fen.replace(/\s/g, "%20");
+        
+        let cloudEvaluation = await REST.get("https://lichess.org/api/cloud-eval?fen=" + queryFen);
+        if (typeof cloudEvaluation == "object") {
+            position.evaluation = cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate;
+            position.worker = { depth };
+        } else {
+            break;
+        }
+
+        let progress = (positions.indexOf(position) + 1) / positions.length * 100;
+        $("#evaluation-progress-bar").attr("value", progress);
+        logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
+    }
+
+    // Evaluate remaining positions
     let stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
         if (!positions.some(pos => pos.evaluation == null)) {
@@ -107,7 +112,7 @@ async function report(positions) {
     logAnalysisInfo("Classifying moves...");
 
     try {
-        await post("/api/report", {
+        await REST.post("/api/report", {
             positions: positions,
             captchaToken: ""
         });

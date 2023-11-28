@@ -33,6 +33,10 @@ body {
         flex-direction: column;
     }
 
+    #performance-message {
+        width: 60%;
+    }
+
     #review-panel-toolbar {
         padding: 10px;
     }
