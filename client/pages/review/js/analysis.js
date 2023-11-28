@@ -26,7 +26,7 @@ function logAnalysisError(message) {
 async function evaluate() {
 
     let pgn = $("#pgn").val();
-    let depth = 18;
+    let depth = parseInt($("#depth-slider").val());
 
     // Content validate PGN input
     if (pgn.length == 0) {
@@ -118,3 +118,15 @@ async function report(positions) {
 }
 
 $("#review-button").click(evaluate);
+
+$("#depth-slider").on("input", () => {
+    let depth = parseInt($("#depth-slider").val());
+
+    if (depth <= 15) {
+        $("#depth-counter").html(depth + " ⚡");
+    } else if (depth <= 18) {
+        $("#depth-counter").html(depth + " 🪶");
+    } else {
+        $("#depth-counter").html(depth + " 🐢");
+    }
+});

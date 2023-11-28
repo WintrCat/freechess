@@ -15,7 +15,7 @@
 
     <div class="center">
         <div id="review-container">
-            <div id="board-container">
+            <div id="board-container" class="center">
                 <div id="black-player-profile" class="profile">Black Player</div>
 
                 <canvas id="board" width="720" height="720"></canvas>
@@ -25,22 +25,29 @@
     
             <div id="review-panel">
                 <div id="review-panel-main">
-                    <h1 id="review-panel-title">📑 Game Report</h1>
+                    <h1 id="review-panel-title" class="white">📑 Game Report</h1>
 
-                    <textarea id="pgn" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
+                    <textarea id="pgn" class="white" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
 
                     <!-- IMPLEMENT RECAPTCHA LATER -->
                     <div class="g-recaptcha"></div>
 
-                    <button id="review-button" class="std-btn success-btn">
+                    <button id="review-button" class="std-btn success-btn white">
                         <img src="/static/media/analysis_icon.png" height="25">
                         <b>Analyse</b>
                     </button>
 
+                    <b class="white">⚙️ Search depth</b>
+                    <div id="depth-slider-container">
+                        <input id="depth-slider" type="range" min="14" max="22" value="18">
+                        <span id="depth-counter" class="white">18 🪶</span>
+                    </div>
+                    <h6 id="depth-message" class="white">Lower depths recommended for mobile devices.</h6>
+
                     <progress id="evaluation-progress-bar" max="100"></progress>
 
                     <b id="error-message"></b>
-                    <b id="performance-message">
+                    <b id="performance-message" class="white">
                         Processing a full-length game may take around a minute,
                         depending on how powerful your computer is.
                     </b>

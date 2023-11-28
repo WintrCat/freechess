@@ -30,8 +30,6 @@
 #review-panel-title {
     margin: 0px 0px 10px 0px;
     text-align: center;
-
-    color: white;
 }
 
 @media (max-width: 1126px) {
@@ -47,7 +45,6 @@
     width: 90%;
 
     background-color: var(--border-color);
-    color: white;
 
     border-radius: 10px;
 
@@ -66,13 +63,30 @@
     padding: 10px 50px;
 
     font-size: 20px;
-    color: white;
 
     text-shadow: 0px 1px 2px black;
 }
 
 #review-button img {
     filter: drop-shadow(0px 1px 1px black);
+}
+
+/*
+    SEARCH DEPTH SLIDER
+*/
+#depth-slider-container {
+    display: flex;
+    justify-content: center;
+    width: 80%;
+}
+
+#depth-slider {
+    width: 70%;
+}
+
+#depth-message {
+    margin: 0px;
+    text-align: center;
 }
 
 /*
@@ -97,7 +111,6 @@
     display: none;
     text-align: center;
     font-size: 14px;
-    color: white;
 }
 
 /*

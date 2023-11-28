@@ -8,6 +8,7 @@ class Stockfish {
 
     constructor() {
         this._worker.postMessage("uci");
+        this._worker.postMessage("setoption name Threads value 4");
     }
 
     /**
