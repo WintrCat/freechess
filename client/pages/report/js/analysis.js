@@ -156,7 +156,7 @@ $("#depth-slider").on("input", () => {
     if (depth <= 15) {
         $("#depth-counter").html(depth + " ⚡");
     } else if (depth <= 18) {
-        $("#depth-counter").html(depth + " 🪶");
+        $("#depth-counter").html(depth + " 🐇");
     } else {
         $("#depth-counter").html(depth + " 🐢");
     }

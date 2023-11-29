@@ -11,7 +11,7 @@ app.use("/api", require("./api"));
 
 app.get("/", async (req, res) => {
 
-    res.sendFile(path.resolve("client/pages/review/index.html"));
+    res.sendFile(path.resolve("client/pages/report/index.html"));
 
 });
 
