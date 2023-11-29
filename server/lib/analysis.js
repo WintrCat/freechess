@@ -3,9 +3,9 @@ const Position = require("./position");
 /**
  * @param {Position[]} positions 
  */
-function analyse(positions) {
+async function analyse(positions) {
     
-
+    // stuff to come
 
 }
 

@@ -72,9 +72,16 @@ router.post("/report", async (req, res) => {
         }
     }
 
+    try {
+        var results = await analyse(positions);
+    } catch (err) {
+        res.status(400).send("Failed to generate report.");
+    }
+
     console.log("RECEIVED REPORT REQUEST!");
     console.log(positions);
 
+    // change to results variable when something is returned by analyse function
     res.json({poopenchest: 73});
 
 });

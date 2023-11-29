@@ -1,5 +1,6 @@
 class Position {
     fen = "";
+    move = "";
     evaluation = {
         type: "",
         value: 0
