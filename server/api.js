@@ -1,8 +1,9 @@
 const { Router } = require("express");
-const pgnParser = require("pgn-parser");
+const fetch = require("node-fetch");
 const { Chess } = require("chess.js");
+const pgnParser = require("pgn-parser");
 
-const analyse = require("./analysis");
+const analyse = require("./lib/analysis");
 
 /**
  * @type {Router}
@@ -51,13 +52,29 @@ router.post("/report", async (req, res) => {
 
     let { positions = null, captchaToken = "" } = req.body;
 
-    if (positions == null) {
-        return res.sendStatus(400);
+    try {
+        let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            "body": `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
+        });
+
+        var captchaResult = await captchaResponse.json();
+    } catch (err) {
+        res.status(400);
+        res.send("Failed to verify CAPTCHA.");
+        return;
     }
 
-    analyse(positions);
+    if (!captchaResult.success) {
+        res.status(400);
+        res.send("You must complete the CAPTCHA.");
+        return;
+    }
 
-    res.json({});
+    res.json({poopenchest: 73});
 
 });
 

@@ -1,17 +1,21 @@
-let positionBatchDepths = new Map();
+let ongoingEvaluation = false;
+let evaluatedPositions = [];
 
 function logAnalysisInfo(message) {
-    $("#error-message").css("color", "white");
-    $("#error-message").html(message);
+    $("#status-message").css("color", "white");
+    $("#status-message").html(message);
 }
 
 function logAnalysisError(message) {
-    $("#performance-message").css("display", "none");
-    $("#error-message").css("color", "rgb(255, 53, 53)");
-    $("#error-message").html(message);
+    $("#secondary-message").css("display", "none");
+    $("#status-message").css("color", "rgb(255, 53, 53)");
+    $("#status-message").html(message);
 }
 
 async function evaluate() {
+
+    if (ongoingEvaluation) return;
+    ongoingEvaluation = true;
 
     let pgn = $("#pgn").val();
     let depth = parseInt($("#depth-slider").val());
@@ -21,10 +25,14 @@ async function evaluate() {
         return logAnalysisError("Enter a PGN to analyse.");
     }
 
-    // Update profile cards and display performance note
+    // Update profile cards and display secondary message
     $("#white-player-profile").html(pgn.match(/(?<=\[White ").+(?="\])/)[0]);
     $("#black-player-profile").html(pgn.match(/(?<=\[Black ").+(?="\])/)[0]);
-    $("#performance-message").css("display", "inline");
+    $("#secondary-message").html("It can take around a minute to process a full game.")
+    $("#secondary-message").css("display", "inline");
+
+    $(".g-recaptcha").css("display", "none");
+    grecaptcha.reset();
 
     // Post PGN to server to have it parsed
     logAnalysisInfo("Parsing PGN...");
@@ -52,7 +60,11 @@ async function evaluate() {
         
         let cloudEvaluation = await REST.get("https://lichess.org/api/cloud-eval?fen=" + queryFen);
         if (typeof cloudEvaluation == "object") {
-            position.evaluation = cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate;
+            position.evaluation = {
+                type: cloudEvaluation.pvs[0].cp ? "cp" : "mate",
+                value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
+            };
+
             position.worker = { depth };
         } else {
             break;
@@ -68,7 +80,13 @@ async function evaluate() {
         // If all evaluations have been generated, move on
         if (!positions.some(pos => pos.evaluation == null)) {
             clearInterval(stockfishManager);
-            report(positions);
+
+            logAnalysisInfo("Evaluation complete.");
+            $(".g-recaptcha").css("display", "inline");
+            $("#secondary-message").html("Please complete the CAPTCHA to continue.");
+
+            evaluatedPositions = positions;
+            ongoingEvaluation = false;
             return;
         }
 
@@ -103,22 +121,30 @@ async function evaluate() {
 
 }
 
-async function report(positions) {
+async function report() {
 
     console.log("ALL POSITIONS EVALUATED SUCCESSFULLY");
-    console.log(positions);
+    console.log(evaluatedPositions);
 
     // Post evaluations and get report results
-    logAnalysisInfo("Classifying moves...");
-
     try {
-        await REST.post("/api/report", {
-            positions: positions,
-            captchaToken: ""
+        var results = await REST.post("/api/report", {
+            positions: evaluatedPositions.map(pos => {
+                pos.worker = undefined;
+                return pos;
+            }),
+            captchaToken: grecaptcha.getResponse()
         });
+
+        if (typeof results == "string") {
+            return logAnalysisError(results);
+        }
     } catch (err) {
-        return logAnalysisError("Failed to evaluate positions.");
+        console.log(err);
+        return logAnalysisError("Failed to generate report.");
     }
+
+    console.log(results);
 
 }
 

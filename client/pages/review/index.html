@@ -29,9 +29,6 @@
 
                     <textarea id="pgn" class="white" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
 
-                    <!-- IMPLEMENT RECAPTCHA LATER -->
-                    <div class="g-recaptcha"></div>
-
                     <button id="review-button" class="std-btn success-btn white">
                         <img src="/static/media/analysis_icon.png" height="25">
                         <b>Analyse</b>
@@ -46,11 +43,11 @@
 
                     <progress id="evaluation-progress-bar" max="100"></progress>
 
-                    <b id="error-message"></b>
-                    <b id="performance-message" class="white">
-                        Processing a full-length game may take around a minute,
-                        depending on how powerful your computer is.
-                    </b>
+                    <b id="status-message"></b>
+
+                    <div class="g-recaptcha" data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA" data-theme="dark" data-callback="report"></div>
+
+                    <b id="secondary-message" class="white"></b>
                 </div>
 
                 <div id="review-panel-toolbar" class="center">
@@ -65,6 +62,7 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://www.google.com/recaptcha/api.js"></script>
 
     <script src="/static/scripts/rest.js"></script>
     <script src="/static/pages/review/js/board.js"></script>

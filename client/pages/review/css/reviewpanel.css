@@ -95,20 +95,49 @@
 #evaluation-progress-bar {
     display: none;
     margin-top: 10px;
+    width: 80%;
 }
 
 /*
-    ANALYSIS ERROR MESSAGE
+    ANALYSIS STATUS MESSAGE (INFO/ERROR)
 */
-#error-message {
+#status-message {
     text-align: center;
     color: rgb(255, 53, 53);
 }
 
 /*
-    ANALYSIS PERFORMANCE MESSAGE
+    RECAPTCHA COMPONENT
 */
-#performance-message {
+.g-recaptcha {
+    display: none;
+    margin-top: 10px;
+    transform: scale(0.9);
+    transition-duration: 0.3s;
+}
+
+@media (max-width: 1300px) {
+    .g-recaptcha {
+        transform: scale(0.85);
+    }
+}
+
+@media (max-width: 1200px) {
+    .g-recaptcha {
+        transform: scale(0.75);
+    }
+}
+
+@media (max-width: 999px) {
+    .g-recaptcha {
+        transform: scale(0.9);
+    }
+}
+
+/*
+    ANALYSIS SECONDARY MESSAGE
+*/
+#secondary-message {
     display: none;
     text-align: center;
     font-size: 14px;

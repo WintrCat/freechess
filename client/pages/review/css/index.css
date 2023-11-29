@@ -33,7 +33,7 @@ body {
         flex-direction: column;
     }
 
-    #performance-message {
+    #secondary-message {
         width: 60%;
     }
 

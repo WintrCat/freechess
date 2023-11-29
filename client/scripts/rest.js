@@ -7,7 +7,7 @@ const REST = {
         if (response.ok) {
             return await response.json();
         } else {
-            return response.status;
+            return await response.text();
         }
     },
     
@@ -20,6 +20,10 @@ const REST = {
             "body": JSON.stringify(body)
         });
     
-        return await response.json();
+        if (response.ok) {
+            return await response.json();
+        } else {
+            return await response.text();
+        }
     }
 };
