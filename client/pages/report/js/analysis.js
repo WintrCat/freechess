@@ -10,13 +10,21 @@ function logAnalysisError(message) {
     $("#secondary-message").css("display", "none");
     $("#status-message").css("color", "rgb(255, 53, 53)");
     $("#status-message").html(message);
+
+    ongoingEvaluation = false;
 }
 
 async function evaluate() {
 
+    // Disallow evaluation if another evaluation is ongoing
     if (ongoingEvaluation) return;
     ongoingEvaluation = true;
 
+    // Remove and reset CAPTCHA in case it is verified from last evaluation
+    $(".g-recaptcha").css("display", "none");
+    grecaptcha.reset();
+
+    // Extract input PGN and target depth from DOM
     let pgn = $("#pgn").val();
     let depth = parseInt($("#depth-slider").val());
 
@@ -25,29 +33,31 @@ async function evaluate() {
         return logAnalysisError("Enter a PGN to analyse.");
     }
 
-    // Update profile cards and display secondary message
-    $("#white-player-profile").html(pgn.match(/(?<=\[White ").+(?="\])/)[0]);
-    $("#black-player-profile").html(pgn.match(/(?<=\[Black ").+(?="\])/)[0]);
-    $("#secondary-message").html("It can take around a minute to process a full game.")
-    $("#secondary-message").css("display", "inline");
-
-    $(".g-recaptcha").css("display", "none");
-    grecaptcha.reset();
-
     // Post PGN to server to have it parsed
     logAnalysisInfo("Parsing PGN...");
 
     try {
         // JSON list with keys fen and move. move = SAN
         var positions = await REST.post("/api/parse", { pgn });
+
+        if (typeof positions == "string") {
+            throw new Error();
+        }
     } catch (err) {
         return logAnalysisError("Failed to parse PGN file.");
     }
 
-    // Display progress bar
-    $("#evaluation-progress-bar").css("display", "inline");
+    // Update board player usernames
+    $("#white-player-profile").html(pgn.match(/(?<=\[White ").+(?="\])/)[0]);
+    $("#black-player-profile").html(pgn.match(/(?<=\[Black ").+(?="\])/)[0]);
 
-    // Initialise positions for processing and fetch cloud evaluations where possible
+    // Display progress bar and secondary message
+    $("#evaluation-progress-bar").css("display", "inline");
+    
+    $("#secondary-message").html("It can take around a minute to process a full game.")
+    $("#secondary-message").css("display", "inline");
+
+    // Initialise positions object list
     for (let position of positions) {
         position.evaluation = null;
         position.worker = null;

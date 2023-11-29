@@ -52,27 +52,28 @@ router.post("/report", async (req, res) => {
 
     let { positions = null, captchaToken = "" } = req.body;
 
-    try {
-        let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-            "method": "POST",
-            "headers": {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            "body": `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
-        });
-
-        var captchaResult = await captchaResponse.json();
-    } catch (err) {
-        res.status(400);
-        res.send("Failed to verify CAPTCHA.");
-        return;
+    if (!process.env.DEV) {
+        try {
+            let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+                "method": "POST",
+                "headers": {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                "body": `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
+            });
+    
+            var captchaResult = await captchaResponse.json();
+        } catch (err) {
+            return res.status(400).send("Failed to verify CAPTCHA.");
+        }
+    
+        if (!captchaResult.success) {
+            return res.status(400).send("You must complete the CAPTCHA.");
+        }
     }
 
-    if (!captchaResult.success) {
-        res.status(400);
-        res.send("You must complete the CAPTCHA.");
-        return;
-    }
+    console.log("RECEIVED REPORT REQUEST!");
+    console.log(positions);
 
     res.json({poopenchest: 73});
 
