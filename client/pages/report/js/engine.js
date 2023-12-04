@@ -19,7 +19,7 @@ class Stockfish {
         this._worker.postMessage("position fen " + fen);
         this._worker.postMessage("go depth " + targetDepth);
 
-        return new Promise((res, rej) => {
+        return new Promise(res => {
             this._worker.addEventListener("message", event => {
                 let message = event.data;
 

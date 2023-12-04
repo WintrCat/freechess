@@ -3,7 +3,10 @@
  */
 const ctx = document.querySelector("#board").getContext("2d");
 
-function drawBoard() {
+let currentMoveIndex = 0;
+
+function drawBoard(fen) {
+    // Draw surface of board
     let colours = ["#f6dfc0", "#b88767"];
 
     for (let y = 0; y < 8; y++) {
@@ -13,10 +16,46 @@ function drawBoard() {
             ctx.fillRect(x * 90, y * 90, 90, 90);
         }
     }
-}
-
-function drawPieces(fen) {
     
+    // Draw pieces
+    // rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR
+    let fenBoard = fen.split(" ")[0];
+    let x = 0, y = 0;
+
+    for (let character of fenBoard) {
+        if (character == "/") {
+            x = 0;
+            y++;
+        } else if (/\d/g.test(character)) {
+            x += parseInt(character);
+        } else {
+            ctx.drawImage(pieceImages[character], x * 90, y * 90, 90, 90);
+            x++;
+        }
+    }
 }
 
-drawBoard();
+function traverseMoves(moveCount) {
+    currentMoveIndex = Math.max(
+        Math.min(currentMoveIndex + moveCount, evaluatedPositions.length - 1),
+        0
+    );
+
+    drawBoard(evaluatedPositions[currentMoveIndex].fen);
+}
+
+$("#next-move-button").click(() => {
+    traverseMoves(1);
+});
+
+$("#back-move-button").click(() => {
+    traverseMoves(-1);
+});
+
+$("#go-end-move-button").click(() => {
+    traverseMoves(Infinity);
+});
+
+$("#back-start-move-button").click(() => {
+    traverseMoves(-Infinity);
+});

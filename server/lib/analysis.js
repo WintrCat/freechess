@@ -5,7 +5,7 @@ const Position = require("./position");
  */
 async function analyse(positions) {
     
-    // stuff to come
+    return positions;
 
 }
 

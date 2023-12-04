@@ -24,7 +24,7 @@ async function evaluate() {
     $(".g-recaptcha").css("display", "none");
     grecaptcha.reset();
 
-    // Extract input PGN and target depth from DOM
+    // Extract input PGN and target depth
     let pgn = $("#pgn").val();
     let depth = parseInt($("#depth-slider").val());
 
@@ -55,7 +55,6 @@ async function evaluate() {
     $("#evaluation-progress-bar").css("display", "inline");
     
     $("#secondary-message").html("It can take around a minute to process a full game.")
-    $("#secondary-message").css("display", "inline");
 
     // Initialise positions object list
     for (let position of positions) {
@@ -133,8 +132,11 @@ async function evaluate() {
 
 async function report() {
 
-    console.log("ALL POSITIONS EVALUATED SUCCESSFULLY");
-    console.log(evaluatedPositions);
+    // Remove CAPTCHA and update progress bar
+    $(".g-recaptcha").css("display", "none");
+    $("#evaluation-progress-bar").attr("value", null);
+    $("#secondary-message").html("");
+    logAnalysisInfo("Generating report...");
 
     // Post evaluations and get report results
     try {

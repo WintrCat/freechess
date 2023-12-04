@@ -15,13 +15,12 @@ router.post("/parse", async (req, res) => {
     let { pgn = "" } = req.body;
 
     try {
-        // parse PGN
-        var [ game ] = pgnParser.parse(pgn);
+        var [ parsedPGN ] = pgnParser.parse(pgn);
 
-        // If no PGN found to parse, status 400
-        if (!game) return res.sendStatus(400);
+        if (!parsedPGN) {
+            return res.sendStatus(400);
+        }
     } catch (err) {
-        // If invalid PGN throws error, status 400
         return res.sendStatus(400);
     }
 
@@ -29,17 +28,27 @@ router.post("/parse", async (req, res) => {
     let board = new Chess();
     let positions = [
         {
-            fen: board.fen()
+            fen: board.fen(),
+            move: {
+                san: null,
+                uci: null
+            }
         }
     ];
 
     // Add each move to the board; log FEN and SAN
-    for (let move of game.moves) {
-        board.move(move.move);
+    for (let pgnMove of parsedPGN.moves) {
+        let moveSAN = pgnMove.move;
+
+        let virtualBoardMove = board.move(moveSAN);
+        let moveUCI = virtualBoardMove.from + virtualBoardMove.to;
 
         positions.push({
             fen: board.fen(),
-            move: move.move
+            move: {
+                san: moveSAN,
+                uci: moveUCI
+            }
         });
     }
 
@@ -52,6 +61,8 @@ router.post("/report", async (req, res) => {
 
     let { positions = null, captchaToken = "" } = req.body;
 
+    console.log("RECEIVED REPORT REQUEST!");
+
     if (!process.env.DEV) {
         try {
             let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
@@ -62,13 +73,12 @@ router.post("/report", async (req, res) => {
                 "body": `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
             });
     
-            var captchaResult = await captchaResponse.json();
+            let captchaResult = await captchaResponse.json();
+            if (!captchaResult.success) {
+                return res.status(400).send("You must complete the CAPTCHA.");
+            }
         } catch (err) {
             return res.status(400).send("Failed to verify CAPTCHA.");
-        }
-    
-        if (!captchaResult.success) {
-            return res.status(400).send("You must complete the CAPTCHA.");
         }
     }
 
@@ -78,11 +88,8 @@ router.post("/report", async (req, res) => {
         res.status(400).send("Failed to generate report.");
     }
 
-    console.log("RECEIVED REPORT REQUEST!");
-    console.log(positions);
-
     // change to results variable when something is returned by analyse function
-    res.json({poopenchest: 73});
+    res.json(results);
 
 });
 
