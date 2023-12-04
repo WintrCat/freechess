@@ -1,29 +1,37 @@
 const REST = {
     async get(url) {
-        let response = await fetch(url, {
-            "method": "GET"
-        });
+        try {
+            let response = await fetch(url, {
+                method: "GET",
+            });
 
-        if (response.ok) {
-            return await response.json();
-        } else {
-            return await response.text();
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return await response.statusText;
+            }
+        } catch (err) {
+            return "Failed for unknown reason.";
         }
     },
-    
+
     async post(url, body) {
-        let response = await fetch(url, {
-            "method": "POST",
-            "headers": {
-                "Content-Type": "application/json"
-            },
-            "body": JSON.stringify(body)
-        });
-    
-        if (response.ok) {
-            return await response.json();
-        } else {
-            return await response.text();
+        try {
+            let response = await fetch(url, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(body),
+            });
+
+            if (response.ok) {
+                return await response.json();
+            } else {
+                return await response.statusText;
+            }
+        } catch (err) {
+            return "Failed for unknown reason.";
         }
-    }
+    },
 };
