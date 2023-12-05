@@ -6,8 +6,14 @@ const ctx = document.querySelector("#board").getContext("2d");
 let currentMoveIndex = 0;
 let boardFlipped = false;
 
-let whitePlayer = "White Player";
-let blackPlayer = "Black Player";
+let whitePlayer = {
+    username: "White Player",
+    rating: "?"
+};
+let blackPlayer = {
+    username: "Black Player",
+    rating: "?"
+};
 
 function drawBoard(fen) {
     // Draw surface of board
@@ -39,8 +45,11 @@ function drawBoard(fen) {
 }
 
 function updateBoardPlayers() {
-    $("#black-player-profile").html(boardFlipped ? whitePlayer : blackPlayer);
-    $("#white-player-profile").html(boardFlipped ? blackPlayer : whitePlayer);
+    let whitePlayerProfile = boardFlipped ? blackPlayer : whitePlayer;
+    let blackPlayerProfile = boardFlipped ? whitePlayer : blackPlayer;
+
+    $("#black-player-profile").html(`${blackPlayerProfile.username} (${blackPlayerProfile.rating})`);
+    $("#white-player-profile").html(`${whitePlayerProfile.username} (${whitePlayerProfile.rating})`);
 }
 
 function traverseMoves(moveCount) {

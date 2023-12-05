@@ -66,8 +66,10 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    whitePlayer = pgn.match(/(?<=\[White ").+(?="\])/)[0];
-    blackPlayer = pgn.match(/(?<=\[Black ").+(?="\])/)[0];
+    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)[0] ?? "White Player";
+    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)[0] ?? "?";
+    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)[0] ?? "Black Player";
+    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)[0] ?? "?";
     updateBoardPlayers();
 
     // Display progress bar and secondary message
