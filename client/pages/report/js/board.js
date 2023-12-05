@@ -20,8 +20,7 @@ function drawBoard(fen, flipped) {
 
     // Draw pieces
     let fenBoard = fen.split(" ")[0];
-    let x = flipped ? 7 : 0; 
-    let y = flipped ? 7 : 0;
+    let x = flipped ? 7 : 0, y = x;
     
     for (let character of fenBoard) {
         if (character == "/") {
@@ -37,6 +36,8 @@ function drawBoard(fen, flipped) {
 }
 
 function traverseMoves(moveCount) {
+    let alreadyAtEndPosition = currentMoveIndex == evaluatedPositions.length - 1;
+
     currentMoveIndex = Math.max(
         Math.min(currentMoveIndex + moveCount, evaluatedPositions.length - 1),
         0,
@@ -44,8 +45,8 @@ function traverseMoves(moveCount) {
 
     drawBoard(evaluatedPositions[currentMoveIndex].fen, boardFlipped); 
 
-    // Do not play board audio if in starting position
-    if (currentMoveIndex == 0) return;
+    // Do not play board audio if at start or end
+    if (currentMoveIndex == 0 || (alreadyAtEndPosition && moveCount > 0)) return;
 
     // Stop all playing board audio
     document.querySelectorAll(".sound-fx-board").forEach(boardSound => {
@@ -54,7 +55,8 @@ function traverseMoves(moveCount) {
     });
 
     // Play new audio based on move type
-    let moveSan = evaluatedPositions[currentMoveIndex].move.san;
+    let moveSan = evaluatedPositions[currentMoveIndex + (moveCount == -1)].move.san;
+
     if (moveSan.endsWith("#")) {
         $("#sound-fx-check").get(0).play();
         $("#sound-fx-game-end").get(0).play();
