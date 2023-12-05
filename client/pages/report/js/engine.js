@@ -8,7 +8,6 @@ class Stockfish {
 
     constructor() {
         this._worker.postMessage("uci");
-        this._worker.postMessage("setoption name Threads value 4");
     }
 
     /**
@@ -35,9 +34,11 @@ class Stockfish {
 
                 if (this.depth == targetDepth || (evaluationType == "mate" && evaluationScore == 0)) {
                     this._worker.terminate();
+                    console.log(message);
                     res({
                         type: evaluationType,
-                        value: evaluationScore
+                        value: evaluationScore,
+                        top: null
                     });
                 }      
             });

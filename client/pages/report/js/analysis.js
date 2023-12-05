@@ -10,7 +10,8 @@ let ongoingEvaluation = false;
  *  evaluation: {
  *      type: string,
  *      value: number
- *  }
+ *  },
+ *  classification: string | undefined
  * }[]}
  */
 let evaluatedPositions = [
@@ -161,7 +162,7 @@ async function report() {
 
     // Post evaluations and get report results
     try {
-        var results = await REST.post("/api/report", {
+        let results = await REST.post("/api/report", {
             positions: evaluatedPositions.map(pos => {
                 pos.worker = undefined;
                 return pos;
@@ -172,12 +173,12 @@ async function report() {
         if (typeof results == "string") {
             return logAnalysisError(results);
         }
+
+        evaluatedPositions = results;
     } catch (err) {
         console.log(err);
         return logAnalysisError("Failed to generate report.");
     }
-
-    console.log(results);
 
 }
 

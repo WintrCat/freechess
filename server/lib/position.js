@@ -1,6 +1,9 @@
 class Position {
     fen = "";
-    move = "";
+    move = {
+        san: "",
+        uci: ""
+    };
     evaluation = {
         type: "",
         value: 0

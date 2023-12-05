@@ -53,17 +53,22 @@ function drawBoard(fen) {
         }
     }
 
+    // Extract last move information
+    let lastMove = {};
+
+    if (currentMoveIndex > 0) {
+        let lastMoveUCI = evaluatedPositions[currentMoveIndex].move.uci;
+
+        lastMove.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
+        lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2));
+    }
+
     // Draw last move highlight
     if (currentMoveIndex > 0) {
-        let lastMove = evaluatedPositions[currentMoveIndex].move.uci;
-
-        let lastMoveFrom = getBoardCoordinates(lastMove.slice(0, 2));
-        let lastMoveTo = getBoardCoordinates(lastMove.slice(2));
-
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = "#a88764";
-        ctx.fillRect(lastMoveFrom.x * 90, lastMoveFrom.y * 90, 90, 90);
-        ctx.fillRect(lastMoveTo.x * 90, lastMoveTo.y * 90, 90, 90);
+        ctx.fillStyle = classificationColours[evaluatedPositions[currentMoveIndex].classification];
+        ctx.fillRect(lastMove.from.x * 90, lastMove.from.y * 90, 90, 90);
+        ctx.fillRect(lastMove.to.x * 90, lastMove.to.y * 90, 90, 90);
         ctx.globalAlpha = 1;
     }
 
@@ -81,6 +86,17 @@ function drawBoard(fen) {
             ctx.drawImage(pieceImages[character], x * 90, y * 90, 90, 90);
             x += boardFlipped ? -1 : 1;
         }
+    }
+
+    // Draw last move classification
+    if (currentMoveIndex > 0) {
+        let classification = evaluatedPositions[currentMoveIndex].classification;
+        ctx.drawImage(
+            classificationIcons[classification], 
+            lastMove.to.x * 90 + 68, 
+            lastMove.to.y * 90 - 10, 
+            32, 32
+        );
     }
 }
 

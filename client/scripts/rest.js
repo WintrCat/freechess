@@ -8,7 +8,7 @@ const REST = {
             if (response.ok) {
                 return await response.json();
             } else {
-                return await response.statusText;
+                return response.statusText;
             }
         } catch (err) {
             return "Failed for unknown reason.";
@@ -28,7 +28,7 @@ const REST = {
             if (response.ok) {
                 return await response.json();
             } else {
-                return await response.statusText;
+                return response.statusText;
             }
         } catch (err) {
             return "Failed for unknown reason.";
