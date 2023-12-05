@@ -13,7 +13,11 @@ let ongoingEvaluation = false;
  *  }
  * }[]}
  */
-let evaluatedPositions = [];
+let evaluatedPositions = [
+    {
+        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+    }
+];
 
 function logAnalysisInfo(message) {
     $("#status-message").css("color", "white");
@@ -21,7 +25,7 @@ function logAnalysisInfo(message) {
 }
 
 function logAnalysisError(message) {
-    $("#secondary-message").css("display", "none");
+    $("#secondary-message").html("");
     $("#status-message").css("color", "rgb(255, 53, 53)");
     $("#status-message").html(message);
 
@@ -62,8 +66,9 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    $("#white-player-profile").html(pgn.match(/(?<=\[White ").+(?="\])/)[0]);
-    $("#black-player-profile").html(pgn.match(/(?<=\[Black ").+(?="\])/)[0]);
+    whitePlayer = pgn.match(/(?<=\[White ").+(?="\])/)[0];
+    blackPlayer = pgn.match(/(?<=\[Black ").+(?="\])/)[0];
+    updateBoardPlayers();
 
     // Display progress bar and secondary message
     $("#evaluation-progress-bar").css("display", "inline");

@@ -6,7 +6,10 @@ const ctx = document.querySelector("#board").getContext("2d");
 let currentMoveIndex = 0;
 let boardFlipped = false;
 
-function drawBoard(fen, flipped) {
+let whitePlayer = "White Player";
+let blackPlayer = "Black Player";
+
+function drawBoard(fen) {
     // Draw surface of board
     let colours = ["#f6dfc0", "#b88767"];
 
@@ -20,19 +23,24 @@ function drawBoard(fen, flipped) {
 
     // Draw pieces
     let fenBoard = fen.split(" ")[0];
-    let x = flipped ? 7 : 0, y = x;
+    let x = boardFlipped ? 7 : 0, y = x;
     
     for (let character of fenBoard) {
         if (character == "/") {
-            x = flipped ? 7 : 0;
-            y += flipped ? -1 : 1;
+            x = boardFlipped ? 7 : 0;
+            y += boardFlipped ? -1 : 1;
         } else if (/\d/g.test(character)) {
-            x += parseInt(character) * (flipped ? -1 : 1);
+            x += parseInt(character) * (boardFlipped ? -1 : 1);
         } else {
             ctx.drawImage(pieceImages[character], x * 90, y * 90, 90, 90);
-            x += flipped ? -1 : 1;
+            x += boardFlipped ? -1 : 1;
         }
     }
+}
+
+function updateBoardPlayers() {
+    $("#black-player-profile").html(boardFlipped ? whitePlayer : blackPlayer);
+    $("#white-player-profile").html(boardFlipped ? blackPlayer : whitePlayer);
 }
 
 function traverseMoves(moveCount) {
@@ -43,7 +51,7 @@ function traverseMoves(moveCount) {
         0,
     );
 
-    drawBoard(evaluatedPositions[currentMoveIndex].fen, boardFlipped); 
+    drawBoard(evaluatedPositions[currentMoveIndex].fen);
 
     // Do not play board audio if at start or end
     if (currentMoveIndex == 0 || (alreadyAtEndPosition && moveCount > 0)) return;
@@ -110,5 +118,7 @@ $(window).on("keydown", (event) => {
 
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
-    drawBoard(evaluatedPositions[currentMoveIndex].fen, boardFlipped);
+
+    drawBoard(evaluatedPositions[currentMoveIndex].fen);
+    updateBoardPlayers();
 });
