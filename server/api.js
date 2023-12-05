@@ -88,7 +88,6 @@ router.post("/report", async (req, res) => {
         res.status(400).send("Failed to generate report.");
     }
 
-    // change to results variable when something is returned by analyse function
     res.json(results);
 
 });

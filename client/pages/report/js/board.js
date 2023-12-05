@@ -3,9 +3,21 @@
  */
 const ctx = document.querySelector("#board").getContext("2d");
 
+const classificationColours = {
+    "brilliant": "#1baaa6",
+    "great": "#5b8baf",
+    "best": "#98bc49",
+    "excellent": "#98bc49",
+    "good": "#97af8b",
+    "inaccuracy": "#f4bf44",
+    "mistake": "#e28c28",
+    "blunder": "#c93230",
+    "forced": "#97af8b",
+    "book": "#a88764"
+};
+
 let currentMoveIndex = 0;
 let boardFlipped = false;
-
 let whitePlayer = {
     username: "White Player",
     rating: "?"
@@ -14,6 +26,20 @@ let blackPlayer = {
     username: "Black Player",
     rating: "?"
 };
+
+function getBoardCoordinates(square) {
+    if (boardFlipped) {
+        return {
+            x: 7 - "abcdefgh".split("").indexOf(square.slice(0, 1)),
+            y: parseInt(square.slice(1)) - 1
+        }
+    } else {
+        return {
+            x: "abcdefgh".split("").indexOf(square.slice(0, 1)),
+            y: 8 - parseInt(square.slice(1))
+        }
+    }
+}
 
 function drawBoard(fen) {
     // Draw surface of board
@@ -25,6 +51,20 @@ function drawBoard(fen) {
 
             ctx.fillRect(x * 90, y * 90, 90, 90);
         }
+    }
+
+    // Draw last move highlight
+    if (currentMoveIndex > 0) {
+        let lastMove = evaluatedPositions[currentMoveIndex].move.uci;
+
+        let lastMoveFrom = getBoardCoordinates(lastMove.slice(0, 2));
+        let lastMoveTo = getBoardCoordinates(lastMove.slice(2));
+
+        ctx.globalAlpha = 0.7;
+        ctx.fillStyle = "#a88764";
+        ctx.fillRect(lastMoveFrom.x * 90, lastMoveFrom.y * 90, 90, 90);
+        ctx.fillRect(lastMoveTo.x * 90, lastMoveTo.y * 90, 90, 90);
+        ctx.globalAlpha = 1;
     }
 
     // Draw pieces
