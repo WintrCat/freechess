@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <title>Game Report</title>
 
     <link rel="stylesheet" href="/static/global.css">
@@ -11,7 +12,15 @@
 
     <link rel="icon" href="/static/media/favicon.ico">
 
+    <audio id="sound-fx-move" class="sound-fx-board" src="/static/media/move.mp3"></audio>
+    <audio id="sound-fx-capture" class="sound-fx-board" src="/static/media/capture.mp3"></audio>
+    <audio id="sound-fx-check" class="sound-fx-board" src="/static/media/check.mp3"></audio>
+    <audio id="sound-fx-castle" class="sound-fx-board" src="/static/media/castle.mp3"></audio>
+    <audio id="sound-fx-promote" class="sound-fx-board" src="/static/media/promote.mp3"></audio>
+    <audio id="sound-fx-game-end" class="sound-fx-board" src="/static/media/game_end.mp3"></audio>
+
     <script src="https://www.google.com/recaptcha/api.js"></script>
+
 </head>
 <body>
 
@@ -53,7 +62,7 @@
                 </div>
 
                 <div id="review-panel-toolbar" class="center">
-                    <img src="/static/media/flip.png" alt="Flip Board" title="Flip board">
+                    <img id="flip-board-button" src="/static/media/flip.png" alt="Flip Board" title="Flip board">
                     <img id="back-start-move-button" src="/static/media/back_to_start.png" alt="Back to start" title="Back to start">
                     <img id="back-move-button" src="/static/media/back.png" alt="Back" title="Back">
                     <img id="next-move-button" src="/static/media/next.png" alt="Next" title="Next">

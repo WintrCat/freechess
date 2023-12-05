@@ -1,4 +1,18 @@
 let ongoingEvaluation = false;
+
+/**
+ * @type {{
+ *  fen: string,
+ *  move: {
+ *      san: string,
+ *      uci: string
+ *  },
+ *  evaluation: {
+ *      type: string,
+ *      value: number
+ *  }
+ * }[]}
+ */
 let evaluatedPositions = [];
 
 function logAnalysisInfo(message) {
@@ -16,13 +30,13 @@ function logAnalysisError(message) {
 
 async function evaluate() {
 
-    // Disallow evaluation if another evaluation is ongoing
-    if (ongoingEvaluation) return;
-    ongoingEvaluation = true;
-
     // Remove and reset CAPTCHA in case it is verified from last evaluation
     $(".g-recaptcha").css("display", "none");
     grecaptcha.reset();
+
+    // Disallow evaluation if another evaluation is ongoing
+    if (ongoingEvaluation) return;
+    ongoingEvaluation = true;
 
     // Extract input PGN and target depth
     let pgn = $("#pgn").val();
@@ -160,7 +174,7 @@ async function report() {
 
 }
 
-$("#review-button").click(evaluate);
+$("#review-button").on("click", evaluate);
 
 $("#depth-slider").on("input", () => {
     let depth = parseInt($("#depth-slider").val());
