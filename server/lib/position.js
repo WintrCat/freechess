@@ -6,8 +6,10 @@ class Position {
     };
     evaluation = {
         type: "",
-        value: 0
+        value: 0,
+        top: ""
     };
+    classification = "";
 }
 
 module.exports = Position;

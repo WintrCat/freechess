@@ -9,7 +9,8 @@ let ongoingEvaluation = false;
  *  },
  *  evaluation: {
  *      type: string,
- *      value: number
+ *      value: number,
+ *      top: string
  *  },
  *  classification: string | undefined
  * }[]}
@@ -56,7 +57,7 @@ async function evaluate() {
     logAnalysisInfo("Parsing PGN...");
 
     try {
-        // JSON list with keys fen and move. move = SAN
+        // JSON list, keys fen, move: { san, uci }
         var positions = await REST.post("/api/parse", { pgn });
 
         if (typeof positions == "string") {
@@ -67,10 +68,18 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)[0] ?? "White Player";
-    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)[0] ?? "?";
-    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)[0] ?? "Black Player";
-    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)[0] ?? "?";
+    let whitePlayerUsername = pgn.match(/(?<=\[White ").+(?="\])/);
+    whitePlayer.username = whitePlayerUsername ? whitePlayerUsername[0] : "White Player";
+
+    let whitePlayerRating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/);
+    whitePlayer.rating = whitePlayerRating ? whitePlayerRating[0] : "?";
+
+    let blackPlayerUsername = pgn.match(/(?<=\[Black ").+(?="\])/);
+    blackPlayer.username = blackPlayerUsername ? blackPlayerUsername[0] : "Black Player";
+
+    let blackPlayerRating = pgn.match(/(?<=\[BlackElo ").+(?="\])/);
+    blackPlayer.rating = blackPlayerRating ? blackPlayerRating[0] : "?";
+
     updateBoardPlayers();
 
     // Display progress bar and secondary message
@@ -78,11 +87,6 @@ async function evaluate() {
     
     $("#secondary-message").html("It can take around a minute to process a full game.")
 
-    // Initialise positions object list
-    for (let position of positions) {
-        position.evaluation = null;
-        position.worker = null;
-    }
     let workerCount = 0;
 
     // Fetch cloud evaluations where possible
@@ -109,7 +113,7 @@ async function evaluate() {
     // Evaluate remaining positions
     let stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
-        if (!positions.some(pos => pos.evaluation == null)) {
+        if (!positions.some(pos => !pos.evaluation)) {
             clearInterval(stockfishManager);
 
             logAnalysisInfo("Evaluation complete.");
@@ -123,7 +127,7 @@ async function evaluate() {
 
         // Find next position with no worker and add new one
         for (let position of positions) {
-            if (position.worker != null || workerCount >= 8) continue;
+            if (position.worker || workerCount >= 8) continue;
 
             position.worker = new Stockfish();
             position.worker.evaluate(position.fen, depth).then(evaluation => {
@@ -137,8 +141,8 @@ async function evaluate() {
         // Update progress monitor
         let workerDepths = 0;
         for (let position of positions) {
-            if (position.evaluation == null) {
-                workerDepths += position.worker == null ? 0 : position.worker.depth;
+            if (!position.evaluation) {
+                workerDepths += position.worker ? position.worker.depth : 0;
             } else {
                 workerDepths += depth;
             }

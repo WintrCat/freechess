@@ -38,7 +38,7 @@ class Stockfish {
                     res({
                         type: evaluationType,
                         value: evaluationScore,
-                        top: null
+                        top: message.match(/(?<= pv ).+?(?= |$)/)[0]
                     });
                 }      
             });

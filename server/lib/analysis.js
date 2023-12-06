@@ -16,7 +16,7 @@ async function analyse(positions) {
         if (lastPosition.fen.includes(" b ")) evalLoss *= -1;
 
         // Pick classification from eval loss
-        if (evalLoss < 10) {
+        if (evalLoss < 10 || position.move.uci == lastPosition.evaluation.top) {
             position.classification = "best";
         } else if (evalLoss < 50) {
             position.classification = "excellent";
