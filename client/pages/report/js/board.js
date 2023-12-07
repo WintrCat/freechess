@@ -18,6 +18,7 @@ const classificationColours = {
 
 let currentMoveIndex = 0;
 let boardFlipped = false;
+
 let whitePlayer = {
     username: "White Player",
     rating: "?"
@@ -109,6 +110,8 @@ function updateBoardPlayers() {
 }
 
 function traverseMoves(moveCount) {
+    if (ongoingEvaluation) return;
+
     let alreadyAtEndPosition = currentMoveIndex == evaluatedPositions.length - 1;
 
     currentMoveIndex = Math.max(
