@@ -1,7 +1,12 @@
 /**
  * @type {CanvasRenderingContext2D}
  */
-const ctx = document.querySelector("#board").getContext("2d");
+const ctx = $("#board").get(0).getContext("2d");
+
+/**
+ * @type {CanvasRenderingContext2D}
+ */
+const evaluationBarCtx = $("#evaluation-bar").get(0).getContext("2d");
 
 const classificationColours = {
     "brilliant": "#1baaa6",
@@ -40,6 +45,15 @@ function getBoardCoordinates(square) {
             y: 8 - parseInt(square.slice(1))
         }
     }
+}
+
+/**
+ * @param {{type: "cp" | "mate", value: number}} evaluation
+ */
+function drawEvaluationBar(evaluation) {
+    evaluationBarCtx.clearRect(0, 0, 30, 720);
+
+    
 }
 
 function drawBoard(fen) {

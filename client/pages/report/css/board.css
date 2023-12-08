@@ -3,8 +3,18 @@
     font-size: 20px;
 }
 
-#board-container {
+#board-outer-container {
+    justify-content: end;
+    gap: 30px;
+}
+
+#board-inner-container {
     flex-direction: column;
+}
+
+#evaluation-bar {
+    background-color: white;
+    border: 2px solid var(--border-color);
 }
 
 #board {
