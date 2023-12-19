@@ -32,6 +32,8 @@ router.post("/parse", async (req, res) => {
     let board = new Chess();
     let positions: Position[] = [];
 
+    positions.push({ fen: board.fen() });
+
     // Add each move to the board; log FEN and SAN
     for (let pgnMove of parsedPGN.moves) {
         let moveSAN = pgnMove.move;

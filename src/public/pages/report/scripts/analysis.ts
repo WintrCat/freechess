@@ -55,10 +55,6 @@ async function evaluate() {
         }
 
         var positions = parsedPGN.positions!;
-
-        positions.unshift({
-            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-        });
     } catch (err) {
         return logAnalysisError("Failed to parse PGN file.");
     }
