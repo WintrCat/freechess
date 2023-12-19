@@ -10,23 +10,20 @@ class Stockfish {
         this._worker.postMessage("uci");
     }
 
-    /**
-     * @param {string} fen FEN position to evaluate
-     * @param {number} depth Search depth
-     */
-    async evaluate(fen, targetDepth) {
+    async evaluate(fen: string, targetDepth: number): Promise<Evaluation> {
         this._worker.postMessage("position fen " + fen);
         this._worker.postMessage("go depth " + targetDepth);
 
         return new Promise(res => {
             this._worker.addEventListener("message", event => {
-                let message = event.data;
+                let message: string = event.data;
 
                 if (!message.startsWith("info depth")) return;
-                this.depth = parseInt(message.match(/(?<=info depth )\d+/)[0]);
 
-                let evaluationType = message.includes(" cp ") ? "cp" : "mate";
-                let evaluationScore = parseInt(message.match(/(?<=[cp|mate] )[\d-]+/g)[0]);
+                this.depth = parseInt(message.match(/(?<=info depth )\d+/)?.[0]?.toString()!);
+
+                const evaluationType = message.includes(" cp ") ? "cp" : "mate";
+                let evaluationScore = parseInt(message.match(/(?<=[cp|mate] )[\d-]+/g)?.[0]?.toString()!);
 
                 if (fen.includes(" b ") && evaluationScore != 0) {
                     evaluationScore *= -1;
@@ -34,11 +31,9 @@ class Stockfish {
 
                 if (this.depth == targetDepth || (evaluationType == "mate" && evaluationScore == 0)) {
                     this._worker.terminate();
-                    console.log(message);
                     res({
                         type: evaluationType,
                         value: evaluationScore,
-                        top: message.match(/(?<= pv ).+?(?= |$)/)[0]
                     });
                 }      
             });

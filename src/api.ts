@@ -1,40 +1,36 @@
-const { Router } = require("express");
-const fetch = require("node-fetch");
-const { Chess } = require("chess.js");
-const pgnParser = require("pgn-parser");
+import { Router } from "express";
+import fetch from "node-fetch";
+import { Chess } from "chess.js";
+import pgnParser from "pgn-parser";
 
-const analyse = require("./lib/analysis");
+import analyse from "./lib/analysis";
+import Position from "./lib/types/Position";
+import { ParseRequestBody, ReportRequestBody } from "./lib/types/RequestBody";
 
-/**
- * @type {Router}
- */
-const router = new Router();
+export const router = Router();
 
 router.post("/parse", async (req, res) => {
 
-    let { pgn = "" } = req.body;
+    let { pgn }: ParseRequestBody = req.body;
+    
+    if (!pgn) {
+        return res.json({ success: false });
+    }
 
+    // Parse PGN into object
     try {
         var [ parsedPGN ] = pgnParser.parse(pgn);
 
         if (!parsedPGN) {
-            return res.sendStatus(400);
+            return res.json({ success: false });
         }
     } catch (err) {
-        return res.sendStatus(400);
+        return res.json({ success: false });
     }
 
     // Create a virtual board
     let board = new Chess();
-    let positions = [
-        {
-            fen: board.fen(),
-            move: {
-                san: null,
-                uci: null
-            }
-        }
-    ];
+    let positions: Position[] = [];
 
     // Add each move to the board; log FEN and SAN
     for (let pgnMove of parsedPGN.moves) {
@@ -52,17 +48,24 @@ router.post("/parse", async (req, res) => {
         });
     }
 
-    // Respond with positions object
-    res.json(positions);
+    res.json({
+        success: true,
+        positions: positions
+    });
 
 });
 
 router.post("/report", async (req, res) => {
 
-    let { positions = null, captchaToken = "" } = req.body;
+    let { positions, captchaToken }: ReportRequestBody = req.body;
+
+    if (!positions || !captchaToken) {
+        return res.json({ success: false });
+    }
 
     console.log("RECEIVED REPORT REQUEST!");
 
+    // Verify CAPTCHA response token
     if (!process.env.DEV) {
         try {
             let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
@@ -75,21 +78,22 @@ router.post("/report", async (req, res) => {
     
             let captchaResult = await captchaResponse.json();
             if (!captchaResult.success) {
-                return res.status(400).send("You must complete the CAPTCHA.");
+                return res.json({ success: false, message: "You must complete the CAPTCHA." });
             }
         } catch (err) {
-            return res.status(400).send("Failed to verify CAPTCHA.");
+            return res.json({ success: false, message: "Failed to verify CAPTCHA." });
         }
     }
 
+    // Analyse positions to produce results
     try {
         var results = await analyse(positions);
     } catch (err) {
-        res.status(400).send("Failed to generate report.");
+        return res.json({ success: false, message: "Failed to generate report." });
     }
 
-    res.json(results);
+    res.json({ success: true, results: results });
 
 });
 
-module.exports = router;
+export default router;

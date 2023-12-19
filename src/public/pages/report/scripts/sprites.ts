@@ -1,4 +1,4 @@
-async function loadSprite(filename) {
+async function loadSprite(filename: string): Promise<HTMLImageElement> {
     return new Promise(res => {
         let image = new Image();
         image.src = "/static/media/" + filename;
@@ -25,10 +25,10 @@ const pieceIds = {
     "black_king": "k"
 };
 
-let pieceImages = {};
-let pieceLoaders = [];
+let pieceImages: {[key: string]: HTMLImageElement} = {};
+let pieceLoaders: Promise<HTMLImageElement>[] = [];
 
-for (let [pieceId, pieceFenCharacter] of Object.entries(pieceIds)) {
+for (let [ pieceId, pieceFenCharacter ] of Object.entries(pieceIds)) {
     let pieceLoader = loadSprite(pieceId + ".svg");
 
     pieceLoader.then(image => {
@@ -38,12 +38,8 @@ for (let [pieceId, pieceFenCharacter] of Object.entries(pieceIds)) {
     pieceLoaders.push(pieceLoader);
 }
 
-Promise.all(pieceLoaders).then(() => {
-    drawBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-});
-
 // Load classification icon assets
-const classificationIcons = {
+const classificationIcons: {[key: string]: HTMLImageElement | null} = {
     "brilliant": null,
     "great": null,
     "best": null,

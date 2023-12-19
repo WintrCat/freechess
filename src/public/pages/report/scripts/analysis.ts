@@ -1,32 +1,15 @@
 let ongoingEvaluation = false;
 
-/**
- * @type {{
- *  fen: string,
- *  move: {
- *      san: string,
- *      uci: string
- *  },
- *  evaluation: {
- *      type: string,
- *      value: number,
- *      top: string
- *  },
- *  classification: string | undefined
- * }[]}
- */
-let evaluatedPositions = [
-    {
-        fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
-    }
-];
+let evaluatedPositions: Position[] = [];
 
-function logAnalysisInfo(message) {
+let reportResults: Position[] = [];
+
+function logAnalysisInfo(message: string) {
     $("#status-message").css("color", "white");
     $("#status-message").html(message);
 }
 
-function logAnalysisError(message) {
+function logAnalysisError(message: string) {
     $("#secondary-message").html("");
     $("#status-message").css("color", "rgb(255, 53, 53)");
     $("#status-message").html(message);
@@ -45,8 +28,8 @@ async function evaluate() {
     ongoingEvaluation = true;
 
     // Extract input PGN and target depth
-    let pgn = $("#pgn").val();
-    let depth = parseInt($("#depth-slider").val());
+    let pgn = $("#pgn").val()!.toString();
+    let depth = parseInt($("#depth-slider").val()!.toString());
 
     // Content validate PGN input
     if (pgn.length == 0) {
@@ -57,28 +40,35 @@ async function evaluate() {
     logAnalysisInfo("Parsing PGN...");
 
     try {
-        // JSON list, keys fen, move: { san, uci }
-        var positions = await REST.post("/api/parse", { pgn });
+        let parseResponse = await fetch("/api/parse", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ pgn })
+        });
 
-        if (typeof positions == "string") {
+        let parsedPGN: ParseResponse = await parseResponse.json();
+
+        if (!parsedPGN.success) {
             throw new Error();
         }
+
+        var positions = parsedPGN.positions!;
+
+        positions.unshift({
+            fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+        });
     } catch (err) {
         return logAnalysisError("Failed to parse PGN file.");
     }
 
     // Update board player usernames
-    let whitePlayerUsername = pgn.match(/(?<=\[White ").+(?="\])/);
-    whitePlayer.username = whitePlayerUsername ? whitePlayerUsername[0] : "White Player";
+    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)?.[0] || "White Player";
+    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)?.[0] || "?";
 
-    let whitePlayerRating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/);
-    whitePlayer.rating = whitePlayerRating ? whitePlayerRating[0] : "?";
-
-    let blackPlayerUsername = pgn.match(/(?<=\[Black ").+(?="\])/);
-    blackPlayer.username = blackPlayerUsername ? blackPlayerUsername[0] : "Black Player";
-
-    let blackPlayerRating = pgn.match(/(?<=\[BlackElo ").+(?="\])/);
-    blackPlayer.rating = blackPlayerRating ? blackPlayerRating[0] : "?";
+    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)?.[0] || "Black Player";
+    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)?.[0] || "?";
 
     updateBoardPlayers();
 
@@ -92,18 +82,20 @@ async function evaluate() {
     // Fetch cloud evaluations where possible
     for (let position of positions) {
         let queryFen = position.fen.replace(/\s/g, "%20");
-        
-        let cloudEvaluation = await REST.get("https://lichess.org/api/cloud-eval?fen=" + queryFen);
-        if (typeof cloudEvaluation == "object") {
-            position.evaluation = {
-                type: cloudEvaluation.pvs[0].cp ? "cp" : "mate",
-                value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
-            };
 
-            position.worker = { depth };
-        } else {
-            break;
-        }
+        let cloudEvaluationResponse = await fetch("https://lichess.org/api/cloud-eval?fen=" + queryFen, {
+            method: "GET"
+        });
+
+        if (!cloudEvaluationResponse.ok) break;
+
+        let cloudEvaluation = await cloudEvaluationResponse.json();
+
+        position.evaluation = {
+            type: cloudEvaluation.pvs[0].cp ? "cp" : "mate",
+            value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
+        };
+        position.worker = { depth };
 
         let progress = (positions.indexOf(position) + 1) / positions.length * 100;
         $("#evaluation-progress-bar").attr("value", progress);
@@ -111,7 +103,7 @@ async function evaluate() {
     }
 
     // Evaluate remaining positions
-    let stockfishManager = setInterval(() => {
+    const stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
         if (!positions.some(pos => !pos.evaluation)) {
             clearInterval(stockfishManager);
@@ -129,11 +121,12 @@ async function evaluate() {
         for (let position of positions) {
             if (position.worker || workerCount >= 8) continue;
 
-            position.worker = new Stockfish();
-            position.worker.evaluate(position.fen, depth).then(evaluation => {
+            let worker = new Stockfish();
+            worker.evaluate(position.fen, depth).then(evaluation => {
                 position.evaluation = evaluation;
                 workerCount--;
             });
+            position.worker = worker;
 
             workerCount++;
         }
@@ -166,21 +159,28 @@ async function report() {
 
     // Post evaluations and get report results
     try {
-        let results = await REST.post("/api/report", {
-            positions: evaluatedPositions.map(pos => {
-                pos.worker = undefined;
-                return pos;
-            }),
-            captchaToken: grecaptcha.getResponse()
+        let reportResponse = await fetch("/api/report", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                positions: evaluatedPositions.map(pos => {
+                    pos.worker = undefined;
+                    return pos;
+                }),
+                captchaToken: grecaptcha.getResponse()
+            })
         });
 
-        if (typeof results == "string") {
-            return logAnalysisError(results);
+        let report: ReportResponse = await reportResponse.json();
+
+        if (!report.success) {
+            return logAnalysisError(report.message!);
         }
 
-        evaluatedPositions = results;
+        reportResults = report.results!;
     } catch (err) {
-        console.log(err);
         return logAnalysisError("Failed to generate report.");
     }
 
@@ -189,7 +189,7 @@ async function report() {
 $("#review-button").on("click", evaluate);
 
 $("#depth-slider").on("input", () => {
-    let depth = parseInt($("#depth-slider").val());
+    let depth = parseInt($("#depth-slider").val()?.toString()!);
 
     if (depth <= 15) {
         $("#depth-counter").html(depth + " ⚡");

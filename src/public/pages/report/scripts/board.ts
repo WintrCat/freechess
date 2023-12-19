@@ -1,14 +1,7 @@
-/**
- * @type {CanvasRenderingContext2D}
- */
-const ctx = $("#board").get(0).getContext("2d");
+const ctx = ($("#board").get(0)! as HTMLCanvasElement).getContext("2d")!;
+const evaluationBarCtx = ($("#evaluation-bar").get(0)! as HTMLCanvasElement).getContext("2d")!;
 
-/**
- * @type {CanvasRenderingContext2D}
- */
-const evaluationBarCtx = $("#evaluation-bar").get(0).getContext("2d");
-
-const classificationColours = {
+const classificationColours: {[key: string]: string} = {
     "brilliant": "#1baaa6",
     "great": "#5b8baf",
     "best": "#98bc49",
@@ -24,16 +17,16 @@ const classificationColours = {
 let currentMoveIndex = 0;
 let boardFlipped = false;
 
-let whitePlayer = {
+let whitePlayer: Profile = {
     username: "White Player",
     rating: "?"
 };
-let blackPlayer = {
+let blackPlayer: Profile = {
     username: "Black Player",
     rating: "?"
 };
 
-function getBoardCoordinates(square) {
+function getBoardCoordinates(square: string): Coordinate {
     if (boardFlipped) {
         return {
             x: 7 - "abcdefgh".split("").indexOf(square.slice(0, 1)),
@@ -47,16 +40,13 @@ function getBoardCoordinates(square) {
     }
 }
 
-/**
- * @param {{type: "cp" | "mate", value: number}} evaluation
- */
-function drawEvaluationBar(evaluation) {
+function drawEvaluationBar(evaluation: Evaluation) {
     evaluationBarCtx.clearRect(0, 0, 30, 720);
 
     
 }
 
-function drawBoard(fen) {
+function drawBoard(fen: string) {
     // Draw surface of board
     let colours = ["#f6dfc0", "#b88767"];
 
@@ -68,20 +58,17 @@ function drawBoard(fen) {
         }
     }
 
-    // Extract last move information
-    let lastMove = {};
+    // Draw last move highlight
+    let lastMove: UCIMove = {};
 
     if (currentMoveIndex > 0) {
-        let lastMoveUCI = evaluatedPositions[currentMoveIndex].move.uci;
+        let lastMoveUCI = reportResults[currentMoveIndex].move!.uci;
 
         lastMove.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
         lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2));
-    }
 
-    // Draw last move highlight
-    if (currentMoveIndex > 0) {
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = classificationColours[evaluatedPositions[currentMoveIndex].classification];
+        ctx.fillStyle = classificationColours[reportResults[currentMoveIndex]!.classification || "book"];
         ctx.fillRect(lastMove.from.x * 90, lastMove.from.y * 90, 90, 90);
         ctx.fillRect(lastMove.to.x * 90, lastMove.to.y * 90, 90, 90);
         ctx.globalAlpha = 1;
@@ -105,11 +92,11 @@ function drawBoard(fen) {
 
     // Draw last move classification
     if (currentMoveIndex > 0) {
-        let classification = evaluatedPositions[currentMoveIndex].classification;
+        let classification = reportResults[currentMoveIndex].classification;
         ctx.drawImage(
-            classificationIcons[classification], 
-            lastMove.to.x * 90 + 68, 
-            lastMove.to.y * 90 - 10, 
+            classificationIcons[classification!]!, 
+            lastMove.to!.x * 90 + 68, 
+            lastMove.to!.y * 90 - 10, 
             32, 32
         );
     }
@@ -123,7 +110,7 @@ function updateBoardPlayers() {
     $("#white-player-profile").html(`${whitePlayerProfile.username} (${whitePlayerProfile.rating})`);
 }
 
-function traverseMoves(moveCount) {
+function traverseMoves(moveCount: number) {
     if (ongoingEvaluation) return;
 
     let alreadyAtEndPosition = currentMoveIndex == evaluatedPositions.length - 1;
@@ -140,26 +127,35 @@ function traverseMoves(moveCount) {
 
     // Stop all playing board audio
     document.querySelectorAll(".sound-fx-board").forEach(boardSound => {
-        boardSound.pause();
-        boardSound.currentTime = 0;
+        let boardSoundElement = boardSound as HTMLAudioElement;
+
+        boardSoundElement.pause();
+        boardSoundElement.currentTime = 0;
     });
 
     // Play new audio based on move type
-    let moveSan = evaluatedPositions[currentMoveIndex + (moveCount == -1)].move.san;
+    let moveSan = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move!.san;
 
     if (moveSan.endsWith("#")) {
-        $("#sound-fx-check").get(0).play();
-        $("#sound-fx-game-end").get(0).play();
+        let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
+        let gameEndSound = $("#sound-fx-game-end").get(0)! as HTMLAudioElement;
+        checkSound.play();
+        gameEndSound.play();
     } else if (moveSan.endsWith("+")) {
-        $("#sound-fx-check").get(0).play();
+        let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
+        checkSound.play();
     } else if (/=[QRBN]/g.test(moveSan)) {
-        $("#sound-fx-promote").get(0).play();
+        let promoteSound = $("#sound-fx-promote").get(0)! as HTMLAudioElement;
+        promoteSound.play();
     } else if (moveSan.includes("O-O")) {
-        $("#sound-fx-castle").get(0).play();
+        let castleSound = $("#sound-fx-castle").get(0)! as HTMLAudioElement;
+        castleSound.play();
     } else if (moveSan.includes("x")) {
-        $("#sound-fx-capture").get(0).play();
+        let captureSound = $("#sound-fx-capture").get(0)! as HTMLAudioElement;
+        captureSound.play();
     } else {
-        $("#sound-fx-move").get(0).play();
+        let moveSound = $("#sound-fx-move").get(0)! as HTMLAudioElement;
+        moveSound.play();
     }
 }
 
@@ -203,4 +199,8 @@ $("#flip-board-button").on("click", () => {
 
     drawBoard(evaluatedPositions[currentMoveIndex].fen);
     updateBoardPlayers();
+});
+
+Promise.all(pieceLoaders).then(() => {
+    drawBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
 });
