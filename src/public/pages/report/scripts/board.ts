@@ -103,11 +103,11 @@ function drawBoard(fen: string) {
 }
 
 function updateBoardPlayers() {
-    let whitePlayerProfile = boardFlipped ? blackPlayer : whitePlayer;
-    let blackPlayerProfile = boardFlipped ? whitePlayer : blackPlayer;
+    let bottomPlayerProfile = boardFlipped ? blackPlayer : whitePlayer;
+    let topPlayerProfile = boardFlipped ? whitePlayer : blackPlayer;
 
-    $("#black-player-profile").html(`${blackPlayerProfile.username} (${blackPlayerProfile.rating})`);
-    $("#white-player-profile").html(`${whitePlayerProfile.username} (${whitePlayerProfile.rating})`);
+    $("#top-player-profile").html(`${topPlayerProfile.username} (${topPlayerProfile.rating})`);
+    $("#bottom-player-profile").html(`${bottomPlayerProfile.username} (${bottomPlayerProfile.rating})`);
 }
 
 function traverseMoves(moveCount: number) {
