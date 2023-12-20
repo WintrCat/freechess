@@ -51,7 +51,7 @@ async function evaluate() {
         let parsedPGN: ParseResponse = await parseResponse.json();
 
         if (!parsedPGN.success) {
-            throw new Error();
+            return logAnalysisError(parsedPGN.message!);
         }
 
         var positions = parsedPGN.positions!;
@@ -176,6 +176,8 @@ async function report() {
         }
 
         reportResults = report.results!;
+
+        drawEvaluationBar(reportResults[0].evaluation!);
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
     }

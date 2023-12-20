@@ -22,10 +22,10 @@ router.post("/parse", async (req, res) => {
         var [ parsedPGN ] = pgnParser.parse(pgn);
 
         if (!parsedPGN) {
-            return res.json({ success: false });
+            return res.json({ success: false, message: "Please provide a PGN." });
         }
     } catch (err) {
-        return res.json({ success: false });
+        return res.json({ success: false, message: "Failed to parse invalid PGN." });
     }
 
     // Create a virtual board
@@ -38,7 +38,14 @@ router.post("/parse", async (req, res) => {
     for (let pgnMove of parsedPGN.moves) {
         let moveSAN = pgnMove.move;
 
-        let virtualBoardMove = board.move(moveSAN);
+        let virtualBoardMove;
+        try {
+            virtualBoardMove = board.move(moveSAN);
+        } catch (err) {
+            console.log(moveSAN + " is illegal move.");
+            return res.json({ success: false, message: "PGN contains illegal moves." });
+        }
+
         let moveUCI = virtualBoardMove.from + virtualBoardMove.to;
 
         positions.push({

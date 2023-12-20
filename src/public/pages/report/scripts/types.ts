@@ -30,12 +30,13 @@ interface Position {
 }
 
 interface UCIMove {
-    from?: Coordinate,
-    to?: Coordinate
+    from: Coordinate,
+    to: Coordinate
 }
 
 interface ParseResponse {
     success: boolean,
+    message?: string,
     positions?: Position[]
 }
 

@@ -1,5 +1,4 @@
 const ctx = ($("#board").get(0)! as HTMLCanvasElement).getContext("2d")!;
-const evaluationBarCtx = ($("#evaluation-bar").get(0)! as HTMLCanvasElement).getContext("2d")!;
 
 const classificationColours: {[key: string]: string} = {
     "brilliant": "#1baaa6",
@@ -40,13 +39,7 @@ function getBoardCoordinates(square: string): Coordinate {
     }
 }
 
-function drawEvaluationBar(evaluation: Evaluation) {
-    evaluationBarCtx.clearRect(0, 0, 30, 720);
-
-    
-}
-
-function drawBoard(fen: string) {
+async function drawBoard(fen: string) {
     // Draw surface of board
     let colours = ["#f6dfc0", "#b88767"];
 
@@ -59,7 +52,10 @@ function drawBoard(fen: string) {
     }
 
     // Draw last move highlight
-    let lastMove: UCIMove = {};
+    let lastMove: UCIMove = {
+        from: { x: 0, y: 0 },
+        to: { x: 0, y: 0 }
+    };
 
     if (currentMoveIndex > 0) {
         let lastMoveUCI = reportResults[currentMoveIndex].move!.uci;
@@ -95,8 +91,8 @@ function drawBoard(fen: string) {
         let classification = reportResults[currentMoveIndex].classification;
         ctx.drawImage(
             classificationIcons[classification!]!, 
-            lastMove.to!.x * 90 + 68, 
-            lastMove.to!.y * 90 - 10, 
+            lastMove.to.x * 90 + 68, 
+            lastMove.to.y * 90 - 10, 
             32, 32
         );
     }
@@ -113,44 +109,45 @@ function updateBoardPlayers() {
 function traverseMoves(moveCount: number) {
     if (ongoingEvaluation) return;
 
-    let alreadyAtEndPosition = currentMoveIndex == evaluatedPositions.length - 1;
+    let alreadyAtEndPosition = currentMoveIndex == reportResults.length - 1;
 
     currentMoveIndex = Math.max(
-        Math.min(currentMoveIndex + moveCount, evaluatedPositions.length - 1),
+        Math.min(currentMoveIndex + moveCount, reportResults.length - 1),
         0,
     );
 
-    drawBoard(evaluatedPositions[currentMoveIndex].fen);
+    drawBoard(reportResults[currentMoveIndex].fen);
+    drawEvaluationBar(reportResults[currentMoveIndex].evaluation!);
 
     // Do not play board audio if at start or end
     if (currentMoveIndex == 0 || (alreadyAtEndPosition && moveCount > 0)) return;
 
     // Stop all playing board audio
-    document.querySelectorAll(".sound-fx-board").forEach(boardSound => {
-        let boardSoundElement = boardSound as HTMLAudioElement;
+    for (let boardSoundElement of $(".sound-fx-board").get()) {
+        let boardSound = boardSoundElement as HTMLAudioElement;
 
-        boardSoundElement.pause();
-        boardSoundElement.currentTime = 0;
-    });
+        boardSound.pause();
+        boardSound.currentTime = 0;
+    }
 
     // Play new audio based on move type
-    let moveSan = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move!.san;
+    let moveSAN = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move!.san;
 
-    if (moveSan.endsWith("#")) {
+    if (moveSAN.endsWith("#")) {
         let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
         let gameEndSound = $("#sound-fx-game-end").get(0)! as HTMLAudioElement;
         checkSound.play();
         gameEndSound.play();
-    } else if (moveSan.endsWith("+")) {
+    } else if (moveSAN.endsWith("+")) {
         let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
         checkSound.play();
-    } else if (/=[QRBN]/g.test(moveSan)) {
+    } else if (/=[QRBN]/g.test(moveSAN)) {
         let promoteSound = $("#sound-fx-promote").get(0)! as HTMLAudioElement;
         promoteSound.play();
-    } else if (moveSan.includes("O-O")) {
+    } else if (moveSAN.includes("O-O")) {
         let castleSound = $("#sound-fx-castle").get(0)! as HTMLAudioElement;
         castleSound.play();
-    } else if (moveSan.includes("x")) {
+    } else if (moveSAN.includes("x")) {
         let captureSound = $("#sound-fx-capture").get(0)! as HTMLAudioElement;
         captureSound.play();
     } else {
@@ -197,10 +194,11 @@ $(window).on("keydown", (event) => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
-    drawBoard(evaluatedPositions[currentMoveIndex].fen);
+    drawBoard(reportResults[currentMoveIndex].fen);
     updateBoardPlayers();
 });
 
 Promise.all(pieceLoaders).then(() => {
     drawBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    drawEvaluationBar({ type: "cp", value: 0 });
 });

@@ -9,7 +9,7 @@ async function loadSprite(filename: string): Promise<HTMLImageElement> {
     });
 }
 
-// Load Piece Assets
+// Load piece assets
 const pieceIds = {
     "white_pawn": "P",
     "white_knight": "N",
