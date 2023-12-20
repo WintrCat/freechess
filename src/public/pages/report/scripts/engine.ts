@@ -2,42 +2,90 @@ const webAssemblyModifier = typeof WebAssembly == "object" ? ".wasm.js" : ".js";
 
 class Stockfish {
 
-    _worker = new Worker("/static/scripts/stockfish" + webAssemblyModifier);
+    private worker = new Worker("/static/scripts/stockfish" + webAssemblyModifier);
 
     depth = 0;
 
     constructor() {
-        this._worker.postMessage("uci");
+        this.worker.postMessage("uci");
+        this.worker.postMessage("setoption name MultiPV value 2")
     }
 
-    async evaluate(fen: string, targetDepth: number): Promise<Evaluation> {
-        this._worker.postMessage("position fen " + fen);
-        this._worker.postMessage("go depth " + targetDepth);
+    async evaluate(fen: string, targetDepth: number): Promise<EngineLine[]> {
+        this.worker.postMessage("position fen " + fen);
+        this.worker.postMessage("go depth " + targetDepth);
+
+        const messages: string[] = [];
+        const lines: EngineLine[] = [];
 
         return new Promise(res => {
-            this._worker.addEventListener("message", event => {
+            this.worker.addEventListener("message", event => {
                 let message: string = event.data;
+                messages.unshift(message);
 
-                if (!message.startsWith("info depth")) return;
+                // Best move log indicates end of search
+                if (message.startsWith("bestmove")) {            
+                    let searchMessages = messages.filter(msg => msg.startsWith("info depth"));
 
-                this.depth = parseInt(message.match(/(?<=info depth )\d+/)?.[0]?.toString()!);
+                    for (let searchMessage of searchMessages) {
+                        // Extract depth, MultiPV line ID and evaluation from search message
+                        let lineIDString = searchMessage.match(/(?<=multipv )\d+/)?.[0];
+                        let depthString = searchMessage.match(/(?<=depth )\d+/)?.[0];
+                        let moveUCI = searchMessage.match(/(?<= pv ).+?(?= )/)?.[0];
+                        let evaluation: Evaluation = {
+                            type: searchMessage.includes(" cp ") ? "cp" : "mate",
+                            value: parseInt(searchMessage.match(/(?<=(cp|mate) )\d+/)?.[0] || "0")
+                        };
 
-                const evaluationType = message.includes(" cp ") ? "cp" : "mate";
-                let evaluationScore = parseInt(message.match(/(?<=[cp|mate] )[\d-]+/g)?.[0]?.toString()!);
+                        // If any piece of data from message is missing, discard message
+                        if (!lineIDString || !depthString || !moveUCI) continue;
 
-                if (fen.includes(" b ") && evaluationScore != 0) {
-                    evaluationScore *= -1;
+                        // Add engine line data to lines list
+                        let lineID = parseInt(lineIDString);
+                        let depth = parseInt(depthString);
+                        
+                        lines.push({
+                            lineID,
+                            depth,
+                            moveUCI,
+                            evaluation
+                        });
+                    }
+
+                    res(lines);
                 }
-
-                if (this.depth == targetDepth || (evaluationType == "mate" && evaluationScore == 0)) {
-                    this._worker.terminate();
-                    res({
-                        type: evaluationType,
-                        value: evaluationScore,
-                    });
-                }      
             });
         });
     }
+
+    // async evaluate(fen: string, targetDepth: number): Promise<Evaluation> {
+    //     this._worker.postMessage("position fen " + fen);
+    //     this._worker.postMessage("go depth " + targetDepth);
+
+    //     return new Promise(res => {
+    //         this._worker.addEventListener("message", event => {
+    //             let message: string = event.data;
+
+    //             if (!message.startsWith("info depth")) return;
+
+    //             this.depth = parseInt(message.match(/(?<=info depth )\d+/)?.[0]?.toString()!);
+
+    //             const evaluationType = message.includes(" cp ") ? "cp" : "mate";
+    //             let evaluationScore = parseInt(message.match(/(?<=[cp|mate] )[\d-]+/g)?.[0]?.toString()!);
+
+    //             if (fen.includes(" b ") && evaluationScore != 0) {
+    //                 evaluationScore *= -1;
+    //             }
+
+    //             if (this.depth == targetDepth || (evaluationType == "mate" && evaluationScore == 0)) {
+    //                 this._worker.terminate();
+    //                 res({
+    //                     type: evaluationType,
+    //                     value: evaluationScore,
+    //                 });
+    //             }      
+    //         });
+    //     });
+    // }
 
 }

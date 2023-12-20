@@ -1,7 +1,6 @@
 let ongoingEvaluation = false;
 
 let evaluatedPositions: Position[] = [];
-
 let reportResults: Position[] = [];
 
 function logAnalysisInfo(message: string) {
@@ -118,8 +117,8 @@ async function evaluate() {
             if (position.worker || workerCount >= 8) continue;
 
             let worker = new Stockfish();
-            worker.evaluate(position.fen, depth).then(evaluation => {
-                position.evaluation = evaluation;
+            worker.evaluate(position.fen, depth).then(engineLines => {
+                position.evaluation = engineLines.find(line => line.lineID == 1)!.evaluation;
                 workerCount--;
             });
             position.worker = worker;

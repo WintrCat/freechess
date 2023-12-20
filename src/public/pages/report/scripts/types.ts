@@ -13,6 +13,11 @@ interface Coordinate {
     y: number
 }
 
+interface UCIMove {
+    from: Coordinate,
+    to: Coordinate
+}
+
 interface Evaluation {
     type: "cp" | "mate",
     value: number
@@ -29,9 +34,11 @@ interface Position {
     worker?: Stockfish | { depth: number }
 }
 
-interface UCIMove {
-    from: Coordinate,
-    to: Coordinate
+interface EngineLine {
+    lineID: number,
+    depth: number,
+    evaluation: Evaluation,
+    moveUCI: string
 }
 
 interface ParseResponse {

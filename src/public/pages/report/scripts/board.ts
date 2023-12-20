@@ -116,8 +116,10 @@ function traverseMoves(moveCount: number) {
         0,
     );
 
-    drawBoard(reportResults[currentMoveIndex].fen);
-    drawEvaluationBar(reportResults[currentMoveIndex].evaluation!);
+    if (reportResults.length > 0) {
+        drawBoard(reportResults[currentMoveIndex].fen);
+        drawEvaluationBar(reportResults[currentMoveIndex].evaluation!);
+    }
 
     // Do not play board audio if at start or end
     if (currentMoveIndex == 0 || (alreadyAtEndPosition && moveCount > 0)) return;
