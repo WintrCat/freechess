@@ -7,14 +7,14 @@ import analyse from "./lib/analysis";
 import Position from "./lib/types/Position";
 import { ParseRequestBody, ReportRequestBody } from "./lib/types/RequestBody";
 
-export const router = Router();
+const router = Router();
 
 router.post("/parse", async (req, res) => {
 
     let { pgn }: ParseRequestBody = req.body;
     
     if (!pgn) {
-        return res.json({ success: false });
+        return res.status(400).json({ message: "Enter a PGN to analyse." });
     }
 
     // Parse PGN into object
@@ -22,10 +22,10 @@ router.post("/parse", async (req, res) => {
         var [ parsedPGN ] = pgnParser.parse(pgn);
 
         if (!parsedPGN) {
-            return res.json({ success: false, message: "Please provide a PGN." });
+            return res.status(400).json({ message: "Enter a PGN to analyse." });
         }
     } catch (err) {
-        return res.json({ success: false, message: "Failed to parse invalid PGN." });
+        return res.status(500).json({ message: "Failed to parse invalid PGN." });
     }
 
     // Create a virtual board
@@ -42,8 +42,7 @@ router.post("/parse", async (req, res) => {
         try {
             virtualBoardMove = board.move(moveSAN);
         } catch (err) {
-            console.log(moveSAN + " is illegal move.");
-            return res.json({ success: false, message: "PGN contains illegal moves." });
+            return res.status(400).json({ message: "PGN contains illegal moves." });
         }
 
         let moveUCI = virtualBoardMove.from + virtualBoardMove.to;
@@ -57,10 +56,7 @@ router.post("/parse", async (req, res) => {
         });
     }
 
-    res.json({
-        success: true,
-        positions: positions
-    });
+    res.json({ positions });
 
 });
 
@@ -69,7 +65,7 @@ router.post("/report", async (req, res) => {
     let { positions, captchaToken }: ReportRequestBody = req.body;
 
     if (!positions || !captchaToken) {
-        return res.json({ success: false });
+        return res.status(400).json({ message: "Missing parameters." });
     }
 
     console.log("RECEIVED REPORT REQUEST!");
@@ -78,19 +74,19 @@ router.post("/report", async (req, res) => {
     if (!process.env.DEV) {
         try {
             let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-                "method": "POST",
-                "headers": {
+                method: "POST",
+                headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
-                "body": `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
+                body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
             });
     
             let captchaResult = await captchaResponse.json();
             if (!captchaResult.success) {
-                return res.json({ success: false, message: "You must complete the CAPTCHA." });
+                return res.status(400).json({ message: "You must complete the CAPTCHA." });
             }
         } catch (err) {
-            return res.json({ success: false, message: "Failed to verify CAPTCHA." });
+            return res.status(500).json({ message: "Failed to verify CAPTCHA." });
         }
     }
 
@@ -98,10 +94,10 @@ router.post("/report", async (req, res) => {
     try {
         var results = await analyse(positions);
     } catch (err) {
-        return res.json({ success: false, message: "Failed to generate report." });
+        return res.status(500).json({ message: "Failed to generate report." });
     }
 
-    res.json({ success: true, results: results });
+    res.json({ results });
 
 });
 

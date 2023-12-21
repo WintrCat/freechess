@@ -99,9 +99,18 @@ async function drawBoard(fen: string) {
 }
 
 function updateBoardPlayers() {
+    // Get profiles depending on board orientation
     let bottomPlayerProfile = boardFlipped ? blackPlayer : whitePlayer;
     let topPlayerProfile = boardFlipped ? whitePlayer : blackPlayer;
 
+    // Remove <> characters to prevent XSS
+    topPlayerProfile.username = topPlayerProfile.username.replace(/[<>]/g, "");
+    topPlayerProfile.rating = topPlayerProfile.rating.replace(/[<>]/g, "");
+
+    bottomPlayerProfile.username = bottomPlayerProfile.username.replace(/[<>]/g, "");
+    bottomPlayerProfile.rating = bottomPlayerProfile.rating.replace(/[<>]/g, "");
+
+    // Apply profiles to board
     $("#top-player-profile").html(`${topPlayerProfile.username} (${topPlayerProfile.rating})`);
     $("#bottom-player-profile").html(`${bottomPlayerProfile.username} (${bottomPlayerProfile.rating})`);
 }

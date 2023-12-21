@@ -49,13 +49,13 @@ async function evaluate() {
 
         let parsedPGN: ParseResponse = await parseResponse.json();
 
-        if (!parsedPGN.success) {
-            return logAnalysisError(parsedPGN.message!);
+        if (!parseResponse.ok) {
+            return logAnalysisError(parsedPGN.message || "Failed to parse PGN.");
         }
 
         var positions = parsedPGN.positions!;
     } catch (err) {
-        return logAnalysisError("Failed to parse PGN file.");
+        return logAnalysisError("Failed to parse PGN.");
     }
 
     // Update board player usernames
@@ -72,12 +72,9 @@ async function evaluate() {
     
     $("#secondary-message").html("It can take around a minute to process a full game.")
 
-    let workerCount = 0;
-
     // Fetch cloud evaluations where possible
     for (let position of positions) {
         let queryFen = position.fen.replace(/\s/g, "%20");
-
         let cloudEvaluationResponse = await fetch("https://lichess.org/api/cloud-eval?fen=" + queryFen, {
             method: "GET"
         });
@@ -88,9 +85,9 @@ async function evaluate() {
 
         position.evaluation = {
             type: cloudEvaluation.pvs[0].cp ? "cp" : "mate",
-            value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
+            value: cloudEvaluation.pvs[0].cp || cloudEvaluation.pvs[0].mate
         };
-        position.worker = { depth };
+        position.worker = "cloud";
 
         let progress = (positions.indexOf(position) + 1) / positions.length * 100;
         $("#evaluation-progress-bar").attr("value", progress);
@@ -98,6 +95,8 @@ async function evaluate() {
     }
 
     // Evaluate remaining positions
+    let workerCount = 0;
+
     const stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
         if (!positions.some(pos => !pos.evaluation)) {
@@ -118,20 +117,22 @@ async function evaluate() {
 
             let worker = new Stockfish();
             worker.evaluate(position.fen, depth).then(engineLines => {
-                position.evaluation = engineLines.find(line => line.lineID == 1)!.evaluation;
+                let topLine = engineLines.find(line => line.lineID == 1);
+
+                position.evaluation = topLine?.evaluation || { type: "mate", value: 0 };
                 workerCount--;
             });
-            position.worker = worker;
 
+            position.worker = worker;
             workerCount++;
         }
 
         // Update progress monitor
         let workerDepths = 0;
         for (let position of positions) {
-            if (!position.evaluation) {
-                workerDepths += position.worker ? position.worker.depth : 0;
-            } else {
+            if (typeof position.worker == "object") {
+                workerDepths += position.worker.depth;
+            } else if (typeof position.worker == "string") {
                 workerDepths += depth;
             }
         }
@@ -170,13 +171,15 @@ async function report() {
 
         let report: ReportResponse = await reportResponse.json();
 
-        if (!report.success) {
-            return logAnalysisError(report.message!);
+        if (!reportResponse.ok) {
+            return logAnalysisError(report.message || "Failed to generate report.");
         }
 
-        reportResults = report.results!;
+        reportResults = report.results || [];
 
         drawEvaluationBar(reportResults[0].evaluation!);
+        logAnalysisInfo("");
+        $("#evaluation-progress-bar").css("display", "none");
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
     }

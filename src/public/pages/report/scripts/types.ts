@@ -31,7 +31,7 @@ interface Position {
     },
     evaluation?: Evaluation,
     classification?: string,
-    worker?: Stockfish | { depth: number }
+    worker?: Stockfish | string
 }
 
 interface EngineLine {
@@ -42,13 +42,11 @@ interface EngineLine {
 }
 
 interface ParseResponse {
-    success: boolean,
     message?: string,
     positions?: Position[]
 }
 
 interface ReportResponse {
-    success: boolean,
     message?: string,
     results?: Position[]
 }
