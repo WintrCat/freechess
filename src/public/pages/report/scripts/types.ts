@@ -8,6 +8,13 @@ interface Profile {
     rating: string
 }
 
+interface Game {
+    white: Profile,
+    black: Profile,
+    timeClass: string,
+    pgn: string
+}
+
 interface Coordinate {
     x: number,
     y: number

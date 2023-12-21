@@ -39,16 +39,62 @@
 }
 
 /*
+    GAME LOAD TYPE DROPDOWN
+*/
+#load-type-dropdown-container {
+    margin-bottom: 5px;
+}
+
+#load-type-dropdown {
+    text-align: center;
+    border-radius: 5px;
+    background-color: var(--border-color);
+    color: white;
+}
+
+/*
     PGN INPUT TEXTAREA
 */
 #pgn {
     width: 90%;
-
-    background-color: var(--border-color);
+    resize: none;
 
     border-radius: 10px;
+    background-color: var(--border-color);
+}
+
+/*
+    CHESS.COM / LICHES USERNAME INPUT TEXTAREA
+*/
+#chess-site-username-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+
+    width: 90%;
+}
+
+#chess-site-username {
+    display: none;
+    width: 100%;
+    height: 30px;
+
+    border-radius: 10px;
+    background-color: var(--border-color);
 
     resize: none;
+    font-size: 16px;
+    overflow: hidden;
+}
+
+#fetch-account-games-button {
+    display: none;
+    transform: translateY(-2px);
+}
+
+#fetch-account-games-button:active {
+    transform: translateY(0px);
 }
 
 /*

@@ -1,5 +1,7 @@
 const ctx = ($("#board").get(0)! as HTMLCanvasElement).getContext("2d")!;
 
+const startingPositionFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+
 const classificationColours: {[key: string]: string} = {
     "brilliant": "#1baaa6",
     "great": "#5b8baf",
@@ -205,11 +207,11 @@ $(window).on("keydown", (event) => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
-    drawBoard(reportResults[currentMoveIndex].fen);
+    drawBoard(reportResults[currentMoveIndex]?.fen || startingPositionFen);
     updateBoardPlayers();
 });
 
 Promise.all(pieceLoaders).then(() => {
-    drawBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    drawBoard(startingPositionFen);
     drawEvaluationBar({ type: "cp", value: 0 });
 });

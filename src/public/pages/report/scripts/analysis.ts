@@ -32,7 +32,7 @@ async function evaluate() {
 
     // Content validate PGN input
     if (pgn.length == 0) {
-        return logAnalysisError("Enter a PGN to analyse.");
+        return logAnalysisError("Provide a game to analyse.");
     }
 
     // Post PGN to server to have it parsed

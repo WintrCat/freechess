@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="/static/pages/report/styles/index.css">
     <link rel="stylesheet" href="/static/pages/report/styles/board.css">
+    <link rel="stylesheet" href="/static/pages/report/styles/gameselect.css">
     <link rel="stylesheet" href="/static/pages/report/styles/reviewpanel.css">
 
     <link rel="icon" href="/static/media/favicon.ico">
@@ -42,7 +43,22 @@
                 <div id="review-panel-main">
                     <h1 id="review-panel-title" class="white">📑 Game Report</h1>
 
+                    <div id="load-type-dropdown-container" class="white">
+                        <span>Load game from</span>
+                        <select id="load-type-dropdown">
+                            <option value="pgn">PGN</option>
+                            <option value="chesscom">Chess.com</option>
+                            <option value="lichess">Lichess.org</option>
+                        </select>
+                    </div>
+
                     <textarea id="pgn" class="white" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
+                    <div id="chess-site-username-container">
+                        <textarea id="chess-site-username" class="white" spellcheck="false" maxlength="48" placeholder="Username..."></textarea>
+                        <button id="fetch-account-games-button" class="std-btn success-btn">
+                            <img src="/static/media/next.png" alt=">" height="25">
+                        </button>
+                    </div>
 
                     <button id="review-button" class="std-btn success-btn white">
                         <img src="/static/media/analysis_icon.png" height="25">
@@ -76,11 +92,15 @@
         </div>
     </div>
 
+    <div id="game-select-menu-container"></div>
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <script src="/static/pages/report/scripts/sprites.js"></script>
     <script src="/static/pages/report/scripts/evalbar.js"></script>
     <script src="/static/pages/report/scripts/board.js"></script>
+
+    <script src="/static/pages/report/scripts/loadgame.js"></script>
 
     <script src="/static/pages/report/scripts/engine.js"></script>
     <script src="/static/pages/report/scripts/analysis.js"></script>
