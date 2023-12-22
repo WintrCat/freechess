@@ -84,9 +84,10 @@ async function evaluate() {
         let cloudEvaluation = await cloudEvaluationResponse.json();
 
         position.evaluation = {
-            type: cloudEvaluation.pvs[0].cp ? "cp" : "mate",
-            value: cloudEvaluation.pvs[0].cp || cloudEvaluation.pvs[0].mate
+            type: cloudEvaluation.pvs[0].cp == undefined ? "mate" : "cp",
+            value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
         };
+
         position.worker = "cloud";
 
         let progress = (positions.indexOf(position) + 1) / positions.length * 100;
@@ -177,7 +178,9 @@ async function report() {
 
         reportResults = report.results || [];
 
+        traverseMoves(-Infinity);
         drawEvaluationBar(reportResults[0].evaluation!);
+
         logAnalysisInfo("");
         $("#evaluation-progress-bar").css("display", "none");
     } catch (err) {

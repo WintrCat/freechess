@@ -66,6 +66,7 @@ class Stockfish {
                         });
                     }
 
+                    this.worker.terminate();
                     res(lines);
                 }
             });

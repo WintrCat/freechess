@@ -1,3 +1,6 @@
+/* 
+    DIALOG CONTAINER (SPANS ENTIRE SCREEN 
+*/
 #game-select-menu-container {
     display: none;
     justify-content: center;
@@ -11,6 +14,9 @@
     background-color: rgba(0, 0, 0, 0.7);
 }
 
+/*
+    MODAL
+*/
 #game-select-menu {
     display: flex;
     flex-direction: column;
@@ -25,16 +31,85 @@
     color: white;
 }
 
+/*
+    MODAL TITLE
+*/
 #game-select-menu h1 {
-    margin: 0;
+    margin: 0 0 10px 0;
 }
 
-#game-fetch-error-message {
-    color: rgb(255, 53, 53);
+/*
+    GAMES LIST TIME PERIOD
+*/
+#game-select-period {
+    margin-bottom: 10px;
+    font-size: 24px;
 }
 
+/*
+    GAMES LIST CONTAINER
+*/
 #games-list {
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 5px 20px;
+
+    width: 90%;
+    max-height: 420px;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    background-color: #232323;
+}
+
+#games-list::-webkit-scrollbar {
+    background-color: #0e0e0e;
+}
+
+#games-list::-webkit-scrollbar-thumb {
+    background-color: whitesmoke;
+}
+
+/*
+    GAME LISTING
+*/
+.game-listing {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin: 5px;
+    padding: 5px;
+
+    width: 100%;
+
+    background-color: var(--secondary-color);
+    cursor: pointer;
+}
+
+/*
+    PAGINATION BUTTONS
+*/
+#game-select-page-buttons button {
+    margin: 10px 5px 0 5px;
+}
+
+/*
+    CANCEL SELECTION BUTTON
+*/
+#game-select-cancel-button {
+    margin-top: 10px;
+
+    background-color: whitesmoke;
+    box-shadow: 0px 4px 0px #c7c7c7;
+
+    font-size: 18px;
+
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+#game-select-cancel-button:active {
+    box-shadow: 0px 2px 0px #c7c7c7;
+    transform: translateY(2px);
 }
