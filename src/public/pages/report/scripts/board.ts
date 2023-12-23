@@ -54,7 +54,7 @@ async function drawBoard(fen: string) {
     }
 
     // Draw last move highlight
-    let lastMove: UCIMove = {
+    let lastMove = {
         from: { x: 0, y: 0 },
         to: { x: 0, y: 0 }
     };

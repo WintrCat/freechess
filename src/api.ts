@@ -4,7 +4,7 @@ import { Chess } from "chess.js";
 import pgnParser from "pgn-parser";
 
 import analyse from "./lib/analysis";
-import Position from "./lib/types/Position";
+import { Position } from "./lib/types/Position";
 import { ParseRequestBody, ReportRequestBody } from "./lib/types/RequestBody";
 
 const router = Router();
@@ -90,7 +90,7 @@ router.post("/report", async (req, res) => {
         }
     }
 
-    // Analyse positions to produce results
+    // Classify positions to produce results
     try {
         var results = await analyse(positions);
     } catch (err) {

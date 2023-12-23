@@ -35,9 +35,11 @@ class Stockfish {
 
                     for (let searchMessage of searchMessages) {
                         // Extract depth, MultiPV line ID and evaluation from search message
-                        let lineIDString = searchMessage.match(/(?<=multipv )\d+/)?.[0];
+                        let idString = searchMessage.match(/(?<=multipv )\d+/)?.[0];
                         let depthString = searchMessage.match(/(?<=depth )\d+/)?.[0];
+
                         let moveUCI = searchMessage.match(/(?<= pv ).+?(?= |$)/)?.[0];
+
                         let evaluation: Evaluation = {
                             type: searchMessage.includes(" cp ") ? "cp" : "mate",
                             value: parseInt(searchMessage.match(/(?:(?<=cp )|(?<=mate ))[\d-]+/)?.[0] || "0")
@@ -50,19 +52,22 @@ class Stockfish {
                         }
 
                         // If any piece of data from message is missing, discard message
-                        if (!lineIDString || !depthString || !moveUCI) continue;
+                        if (!idString || !depthString || !moveUCI) continue;
 
-                        let lineID = parseInt(lineIDString);
+                        let id = parseInt(idString);
                         let depth = parseInt(depthString);
 
                         // Discard if target depth not reached or lineID already present
-                        if (depth != targetDepth || lines.some(line => line.lineID == lineID)) continue;
+                        if (depth != targetDepth || lines.some(line => line.id == id)) continue;
                         
                         lines.push({
-                            lineID,
+                            id,
                             depth,
-                            moveUCI,
-                            evaluation
+                            evaluation,
+                            move: {
+                                san: "",
+                                uci: moveUCI
+                            }
                         });
                     }
 

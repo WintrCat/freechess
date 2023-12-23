@@ -118,9 +118,11 @@ async function evaluate() {
 
             let worker = new Stockfish();
             worker.evaluate(position.fen, depth).then(engineLines => {
-                let topLine = engineLines.find(line => line.lineID == 1);
+                let topLine = engineLines.find(line => line.id == 1);
 
-                position.evaluation = topLine?.evaluation || { type: "mate", value: 0 };
+                position.evaluation = topLine?.evaluation || { type: "cp", value: 0 };
+                position.topLines = engineLines;
+
                 workerCount--;
             });
 

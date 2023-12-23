@@ -20,9 +20,9 @@ interface Coordinate {
     y: number
 }
 
-interface UCIMove {
-    from: Coordinate,
-    to: Coordinate
+interface Move {
+    san: string,
+    uci: string
 }
 
 interface Evaluation {
@@ -30,22 +30,20 @@ interface Evaluation {
     value: number
 }
 
-interface Position {
-    fen: string,
-    move?: {
-        san: string,
-        uci: string
-    },
-    evaluation?: Evaluation,
-    classification?: string,
-    worker?: Stockfish | string
-}
-
 interface EngineLine {
-    lineID: number,
+    id: number,
     depth: number,
     evaluation: Evaluation,
-    moveUCI: string
+    move: Move
+}
+
+interface Position {
+    fen: string,
+    move?: Move,
+    evaluation?: Evaluation,
+    topLines?: EngineLine[],
+    worker?: Stockfish | string
+    classification?: string
 }
 
 interface ParseResponse {

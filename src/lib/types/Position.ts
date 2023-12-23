@@ -1,12 +1,18 @@
-export default interface Position {
+import { Evaluation, EngineLine } from "./Engine";
+
+interface Move {
+    san: string,
+    uci: string
+}
+
+export interface Position {
     fen: string,
-    move?: {
-        san: string,
-        uci: string,
-    },
-    evaluation?: {
-        type: "cp" | "mate",
-        value: number
-    },
+    move?: Move
+}
+
+export interface EvaluatedPosition extends Position {
+    move: Move,
+    evaluation: Evaluation,
+    topLines: EngineLine[],
     classification?: string
 }

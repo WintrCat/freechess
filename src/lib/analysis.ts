@@ -1,6 +1,6 @@
-import Position from "./types/Position";
+import { EvaluatedPosition } from "./types/Position";
 
-async function analyse(positions: Position[]): Promise<any> {
+async function analyse(positions: EvaluatedPosition[]): Promise<any> {
     
     for (let position of positions) {
         position.classification = [
@@ -15,6 +15,8 @@ async function analyse(positions: Position[]): Promise<any> {
             "forced",
             "book"
         ][Math.round(Math.random() * 9)];
+
+        
     }
 
     return positions;
