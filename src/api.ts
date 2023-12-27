@@ -68,8 +68,6 @@ router.post("/report", async (req, res) => {
         return res.status(400).json({ message: "Missing parameters." });
     }
 
-    console.log("RECEIVED REPORT REQUEST!");
-
     // Verify CAPTCHA response token
     if (!process.env.DEV) {
         try {
@@ -90,10 +88,11 @@ router.post("/report", async (req, res) => {
         }
     }
 
-    // Classify positions to produce results
+    // Generate report
     try {
         var results = await analyse(positions);
     } catch (err) {
+        console.log(err);
         return res.status(500).json({ message: "Failed to generate report." });
     }
 

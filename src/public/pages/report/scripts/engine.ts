@@ -64,10 +64,7 @@ class Stockfish {
                             id,
                             depth,
                             evaluation,
-                            move: {
-                                san: "",
-                                uci: moveUCI
-                            }
+                            moveUCI
                         });
                     }
 

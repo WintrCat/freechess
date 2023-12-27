@@ -1,4 +1,5 @@
-import { Evaluation, EngineLine } from "./Engine";
+import { Classification } from "../classification";
+import { EngineLine } from "./Engine";
 
 interface Move {
     san: string,
@@ -12,7 +13,7 @@ export interface Position {
 
 export interface EvaluatedPosition extends Position {
     move: Move,
-    evaluation: Evaluation,
     topLines: EngineLine[],
-    classification?: string
+    classification?: Classification,
+    worker: string
 }

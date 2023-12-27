@@ -1,4 +1,4 @@
-const ctx = ($("#board").get(0)! as HTMLCanvasElement).getContext("2d")!;
+const ctx = $<HTMLCanvasElement>("#board").get(0)!.getContext("2d")!;
 
 const startingPositionFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
@@ -120,52 +120,54 @@ function updateBoardPlayers() {
 function traverseMoves(moveCount: number) {
     if (ongoingEvaluation) return;
 
-    let alreadyAtEndPosition = currentMoveIndex == reportResults.length - 1;
-
+    let previousMoveIndex = currentMoveIndex;
     currentMoveIndex = Math.max(
         Math.min(currentMoveIndex + moveCount, reportResults.length - 1),
         0,
     );
 
-    if (reportResults.length > 0) {
-        drawBoard(reportResults[currentMoveIndex].fen);
-        drawEvaluationBar(reportResults[currentMoveIndex].evaluation!);
-    }
+    drawBoard(reportResults[currentMoveIndex]?.fen ?? startingPositionFen);
 
-    // Do not play board audio if at start or end
-    if (currentMoveIndex == 0 || (alreadyAtEndPosition && moveCount > 0)) return;
+    let topLine = reportResults[currentMoveIndex]?.topLines?.find(line => line.id == 1);
+    drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 });
+
+    // Do not play board audio if trying to traverse outside of game
+    if (
+        (previousMoveIndex == 0 && moveCount < 0) 
+        || (previousMoveIndex == reportResults.length - 1 && moveCount > 0)
+    ) return;
 
     // Stop all playing board audio
-    for (let boardSoundElement of $(".sound-fx-board").get()) {
-        let boardSound = boardSoundElement as HTMLAudioElement;
-
+    for (let boardSound of $<HTMLAudioElement>(".sound-fx-board").get()) {
         boardSound.pause();
         boardSound.currentTime = 0;
     }
 
     // Play new audio based on move type
-    let moveSAN = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move!.san;
+    let moveSAN = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move?.san ?? "";
 
     if (moveSAN.endsWith("#")) {
-        let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
-        let gameEndSound = $("#sound-fx-game-end").get(0)! as HTMLAudioElement;
-        checkSound.play();
-        gameEndSound.play();
+        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
+        let gameEndSound = $<HTMLAudioElement>("#sound-fx-game-end").get(0);
+        if (checkSound && gameEndSound) {
+            checkSound.play();
+            gameEndSound.play();
+        }
     } else if (moveSAN.endsWith("+")) {
-        let checkSound = $("#sound-fx-check").get(0)! as HTMLAudioElement;
-        checkSound.play();
+        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
+        if (checkSound) checkSound.play();
     } else if (/=[QRBN]/g.test(moveSAN)) {
-        let promoteSound = $("#sound-fx-promote").get(0)! as HTMLAudioElement;
-        promoteSound.play();
+        let promoteSound = $<HTMLAudioElement>("#sound-fx-promote").get(0);
+        if (promoteSound) promoteSound.play();
     } else if (moveSAN.includes("O-O")) {
-        let castleSound = $("#sound-fx-castle").get(0)! as HTMLAudioElement;
-        castleSound.play();
+        let castleSound = $<HTMLAudioElement>("#sound-fx-castle").get(0);
+        if (castleSound) castleSound.play();
     } else if (moveSAN.includes("x")) {
-        let captureSound = $("#sound-fx-capture").get(0)! as HTMLAudioElement;
-        captureSound.play();
+        let captureSound = $<HTMLAudioElement>("#sound-fx-capture").get(0);
+        if (captureSound) captureSound.play();
     } else {
-        let moveSound = $("#sound-fx-move").get(0)! as HTMLAudioElement;
-        moveSound.play();
+        let moveSound = $<HTMLAudioElement>("#sound-fx-move").get(0);
+        if (moveSound) moveSound.play();
     }
 }
 

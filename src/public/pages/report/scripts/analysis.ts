@@ -50,7 +50,7 @@ async function evaluate() {
         let parsedPGN: ParseResponse = await parseResponse.json();
 
         if (!parseResponse.ok) {
-            return logAnalysisError(parsedPGN.message || "Failed to parse PGN.");
+            return logAnalysisError(parsedPGN.message ?? "Failed to parse PGN.");
         }
 
         var positions = parsedPGN.positions!;
@@ -59,11 +59,11 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)?.[0] || "White Player";
-    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)?.[0] || "?";
+    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)?.[0] ?? "White Player";
+    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)?.[0] ?? "?";
 
-    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)?.[0] || "Black Player";
-    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)?.[0] || "?";
+    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)?.[0] ?? "Black Player";
+    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)?.[0] ?? "?";
 
     updateBoardPlayers();
 
@@ -75,7 +75,7 @@ async function evaluate() {
     // Fetch cloud evaluations where possible
     for (let position of positions) {
         let queryFen = position.fen.replace(/\s/g, "%20");
-        let cloudEvaluationResponse = await fetch("https://lichess.org/api/cloud-eval?fen=" + queryFen, {
+        let cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
             method: "GET"
         });
 
@@ -83,10 +83,22 @@ async function evaluate() {
 
         let cloudEvaluation = await cloudEvaluationResponse.json();
 
-        position.evaluation = {
-            type: cloudEvaluation.pvs[0].cp == undefined ? "mate" : "cp",
-            value: cloudEvaluation.pvs[0].cp ?? cloudEvaluation.pvs[0].mate
-        };
+        position.topLines = cloudEvaluation.pvs.map((pv: any, id: number) => {
+            const evaluationType = pv.cp == undefined ? "mate" : "cp";
+            const evaluationScore = (pv.cp ?? pv.mate) ?? "cp";
+
+            let line: EngineLine = {
+                id: id + 1,
+                depth: depth,
+                moveUCI: pv.moves.split(" ")[0] ?? "",
+                evaluation: {
+                    type: evaluationType,
+                    value: evaluationScore
+                }
+            }
+
+            return line;
+        });
 
         position.worker = "cloud";
 
@@ -100,7 +112,7 @@ async function evaluate() {
 
     const stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
-        if (!positions.some(pos => !pos.evaluation)) {
+        if (!positions.some(pos => !pos.topLines)) {
             clearInterval(stockfishManager);
 
             logAnalysisInfo("Evaluation complete.");
@@ -109,6 +121,7 @@ async function evaluate() {
 
             evaluatedPositions = positions;
             ongoingEvaluation = false;
+
             return;
         }
 
@@ -118,11 +131,7 @@ async function evaluate() {
 
             let worker = new Stockfish();
             worker.evaluate(position.fen, depth).then(engineLines => {
-                let topLine = engineLines.find(line => line.id == 1);
-
-                position.evaluation = topLine?.evaluation || { type: "cp", value: 0 };
                 position.topLines = engineLines;
-
                 workerCount--;
             });
 
@@ -150,9 +159,9 @@ async function evaluate() {
 
 async function report() {
 
-    // Remove CAPTCHA and update progress bar
+    // Remove CAPTCHA and progress bar
     $(".g-recaptcha").css("display", "none");
-    $("#evaluation-progress-bar").attr("value", null);
+    $("#evaluation-progress-bar").css("display", "none");
     $("#secondary-message").html("");
     logAnalysisInfo("Generating report...");
 
@@ -165,7 +174,9 @@ async function report() {
             },
             body: JSON.stringify({
                 positions: evaluatedPositions.map(pos => {
-                    pos.worker = undefined;
+                    if (pos.worker != "cloud") {
+                        pos.worker = "local";
+                    }
                     return pos;
                 }),
                 captchaToken: grecaptcha.getResponse()
@@ -175,16 +186,18 @@ async function report() {
         let report: ReportResponse = await reportResponse.json();
 
         if (!reportResponse.ok) {
-            return logAnalysisError(report.message || "Failed to generate report.");
+            return logAnalysisError(report.message ?? "Failed to generate report.");
         }
 
-        reportResults = report.results || [];
+        // Set report results to results given by server
+        reportResults = report.results ?? [];
 
+        // Reset chess board, draw evaluation for starting position
         traverseMoves(-Infinity);
-        drawEvaluationBar(reportResults[0].evaluation!);
+        drawEvaluationBar({ type: "cp", value: 0 });
 
+        // Remove any status message
         logAnalysisInfo("");
-        $("#evaluation-progress-bar").css("display", "none");
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
     }

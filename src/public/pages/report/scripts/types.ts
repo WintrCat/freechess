@@ -34,13 +34,12 @@ interface EngineLine {
     id: number,
     depth: number,
     evaluation: Evaluation,
-    move: Move
+    moveUCI: string
 }
 
 interface Position {
     fen: string,
     move?: Move,
-    evaluation?: Evaluation,
     topLines?: EngineLine[],
     worker?: Stockfish | string
     classification?: string
