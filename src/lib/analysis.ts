@@ -1,6 +1,6 @@
 import { Chess } from "chess.js";
 
-import { 
+import {
     Classification, 
     centipawnClassifications, 
     getEvaluationLossThreshold 
@@ -14,8 +14,10 @@ async function analyse(positions: EvaluatedPosition[]) {
 
         positionIndex++;
 
+        let board = new Chess(position.fen);
+
         let lastPosition = positions[positionIndex - 1];
-        
+
         let topMove = lastPosition.topLines.find(line => line.id == 1);
         let secondTopMove = lastPosition.topLines.find(line => line.id == 2);
         if (!topMove) continue;
@@ -24,25 +26,38 @@ async function analyse(positions: EvaluatedPosition[]) {
         let evaluation = position.topLines.find(line => line.id == 1)?.evaluation;
         if (!previousEvaluation) continue;
 
+        let moveColour = position.fen.includes(" b ") ? "white" : "black";
+
         // If there are no legal moves in this position, game is in terminal state
         if (!evaluation) {
-            let board = new Chess(position.fen);
             evaluation = { type: board.isCheckmate() ? "mate" : "cp", value: 0 };
             position.topLines.push({
                 id: 1,
-                depth: topMove.depth,
+                depth: 0,
                 evaluation: evaluation,
                 moveUCI: ""
             });
         }
         
         // Calculate evaluation loss as a result of this move
-        let evalLoss = 0;
-        if (lastPosition.fen.includes(" b ")) {
-            evalLoss = evaluation.value - previousEvaluation.value
-        } else {
-            evalLoss = previousEvaluation.value - evaluation.value
+        let evalLoss = Infinity;
+        let cutoffEvalLoss = Infinity;
+
+        if (lastPosition.cutoffEvaluation) {
+            if (moveColour == "white") {
+                cutoffEvalLoss = lastPosition.cutoffEvaluation.value - evaluation.value;
+            } else {
+                cutoffEvalLoss = evaluation.value - lastPosition.cutoffEvaluation.value;
+            }   
         }
+
+        if (moveColour == "white") {
+            evalLoss = previousEvaluation.value - evaluation.value;
+        } else {
+            evalLoss = evaluation.value - previousEvaluation.value;
+        }
+
+        evalLoss = Math.min(evalLoss, cutoffEvalLoss);
 
         // If this move was the only legal one, apply forced
         if (!secondTopMove) {
@@ -53,23 +68,36 @@ async function analyse(positions: EvaluatedPosition[]) {
         let noMate = previousEvaluation.type == "cp" && evaluation.type == "cp";
 
         // If it is the top line, disregard other detections and give best
-        let topMovePlayed = topMove.moveUCI == position.move.uci;
-        if (topMovePlayed) {
+        if (topMove.moveUCI == position.move.uci) {
+            // Test for great move classification
             if (noMate && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150) {
-                position.classification = Classification.GREAT;
-            } else {
-                position.classification = Classification.BEST;
+                if (moveColour == "white") {
+                    if (
+                        (previousEvaluation.value <= -150 && Math.abs(evaluation.value) <= 30)
+                        || (Math.abs(previousEvaluation.value) <= 30 && evaluation.value >= 150)
+                        || lastPosition.classification == Classification.BLUNDER
+                    ) {
+                        position.classification = Classification.GREAT;
+                        continue;
+                    }
+                } else {
+                    if (
+                        (previousEvaluation.value >= 150 && Math.abs(evaluation.value) <= 30)
+                        || (Math.abs(previousEvaluation.value) <= 30 && evaluation.value <= -150)
+                        || lastPosition.classification == Classification.BLUNDER
+                    ) {
+                        position.classification = Classification.GREAT;
+                        continue;
+                    }
+                }
             }
+
+            position.classification = Classification.BEST;
             continue;
         }
 
         // If no mate on the board last move and still no mate
         if (noMate) {
-
-            if (topMovePlayed && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 1.5) {
-                position.classification = Classification.GREAT;
-                continue;
-            }
 
             for (let classif of centipawnClassifications) {
                 if (evalLoss <= getEvaluationLossThreshold(classif, previousEvaluation.value)) {

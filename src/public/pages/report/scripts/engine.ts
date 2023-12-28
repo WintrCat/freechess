@@ -30,7 +30,7 @@ class Stockfish {
                 this.depth = Math.max(latestDepth, this.depth);
 
                 // Best move or checkmate log indicates end of search
-                if (message.startsWith("bestmove") || message.includes("mate 0")) {            
+                if (message.startsWith("bestmove") || (message.includes("mate 0") && !message.includes(" pv "))) {            
                     let searchMessages = messages.filter(msg => msg.startsWith("info depth"));
 
                     for (let searchMessage of searchMessages) {

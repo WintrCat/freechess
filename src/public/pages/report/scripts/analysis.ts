@@ -79,7 +79,16 @@ async function evaluate() {
             method: "GET"
         });
 
-        if (!cloudEvaluationResponse.ok) break;
+        if (!cloudEvaluationResponse.ok) {
+            let lastPosition = positions[positions.indexOf(position) - 1];
+
+            let cutoffWorker = new Stockfish();
+            cutoffWorker.evaluate(lastPosition.fen, depth).then(engineLines => {
+                lastPosition.cutoffEvaluation = engineLines.find(line => line.id == 1)?.evaluation ?? { type: "cp", value: 0 };
+            });
+
+            break;
+        }
 
         let cloudEvaluation = await cloudEvaluationResponse.json();
 
@@ -116,6 +125,7 @@ async function evaluate() {
             clearInterval(stockfishManager);
 
             logAnalysisInfo("Evaluation complete.");
+            $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
             $("#secondary-message").html("Please complete the CAPTCHA to continue.");
 

@@ -41,6 +41,7 @@ interface Position {
     fen: string,
     move?: Move,
     topLines?: EngineLine[],
+    cutoffEvaluation?: Evaluation,
     worker?: Stockfish | string
     classification?: string
 }
