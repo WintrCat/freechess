@@ -59,14 +59,14 @@ async function drawBoard(fen: string) {
         to: { x: 0, y: 0 }
     };
 
-    if (currentMoveIndex > 0) {
-        let lastMoveUCI = reportResults[currentMoveIndex].move!.uci;
+    if (currentMoveIndex > 0 && reportResults) {
+        let lastMoveUCI = reportResults.positions[currentMoveIndex].move!.uci;
 
         lastMove.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
-        lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2));
+        lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2, 4));
 
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = classificationColours[reportResults[currentMoveIndex]!.classification || "book"];
+        ctx.fillStyle = classificationColours[reportResults.positions[currentMoveIndex]!.classification || "book"];
         ctx.fillRect(lastMove.from.x * 90, lastMove.from.y * 90, 90, 90);
         ctx.fillRect(lastMove.to.x * 90, lastMove.to.y * 90, 90, 90);
         ctx.globalAlpha = 1;
@@ -89,8 +89,8 @@ async function drawBoard(fen: string) {
     }
 
     // Draw last move classification
-    if (currentMoveIndex > 0) {
-        let classification = reportResults[currentMoveIndex].classification;
+    if (currentMoveIndex > 0 && reportResults) {
+        let classification = reportResults.positions[currentMoveIndex].classification;
         ctx.drawImage(
             classificationIcons[classification!]!, 
             lastMove.to.x * 90 + 68, 
@@ -118,23 +118,32 @@ function updateBoardPlayers() {
 }
 
 function traverseMoves(moveCount: number) {
-    if (ongoingEvaluation) return;
+    if (ongoingEvaluation || !reportResults) return;
 
+    let positions = reportResults.positions;
+
+    // Clamp move index to number of moves in game
     let previousMoveIndex = currentMoveIndex;
     currentMoveIndex = Math.max(
-        Math.min(currentMoveIndex + moveCount, reportResults.length - 1),
+        Math.min(currentMoveIndex + moveCount, reportResults.positions.length - 1),
         0,
     );
 
-    drawBoard(reportResults[currentMoveIndex]?.fen ?? startingPositionFen);
+    let currentPosition = positions[currentMoveIndex];
 
-    let topLine = reportResults[currentMoveIndex]?.topLines?.find(line => line.id == 1);
+    // Draw board, evaluation bar, update classification message and engine suggestions card
+    drawBoard(currentPosition?.fen ?? startingPositionFen);
+
+    let topLine = currentPosition?.topLines?.find(line => line.id == 1);
     drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 });
+
+    updateClassificationMessage(currentPosition);
+    updateEngineSuggestions(currentPosition.topLines ?? []);
 
     // Do not play board audio if trying to traverse outside of game
     if (
         (previousMoveIndex == 0 && moveCount < 0) 
-        || (previousMoveIndex == reportResults.length - 1 && moveCount > 0)
+        || (previousMoveIndex == positions.length - 1 && moveCount > 0)
     ) return;
 
     // Stop all playing board audio
@@ -144,7 +153,7 @@ function traverseMoves(moveCount: number) {
     }
 
     // Play new audio based on move type
-    let moveSAN = reportResults[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move?.san ?? "";
+    let moveSAN = positions[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move?.san ?? "";
 
     if (moveSAN.endsWith("#")) {
         let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
@@ -209,7 +218,9 @@ $(window).on("keydown", (event) => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
-    drawBoard(reportResults[currentMoveIndex]?.fen || startingPositionFen);
+    if (reportResults) {
+        drawBoard(reportResults.positions[currentMoveIndex]?.fen || startingPositionFen);
+    } 
     updateBoardPlayers();
 });
 

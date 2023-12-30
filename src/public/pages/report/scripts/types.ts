@@ -34,7 +34,8 @@ interface EngineLine {
     id: number,
     depth: number,
     evaluation: Evaluation,
-    moveUCI: string
+    moveUCI: string,
+    moveSAN?: string
 }
 
 interface Position {
@@ -46,6 +47,14 @@ interface Position {
     classification?: string
 }
 
+interface Report {
+    accuracies: {
+        white: number,
+        black: number
+    },
+    positions: Position[]
+}
+
 interface ParseResponse {
     message?: string,
     positions?: Position[]
@@ -53,5 +62,5 @@ interface ParseResponse {
 
 interface ReportResponse {
     message?: string,
-    results?: Position[]
+    results?: Report 
 }

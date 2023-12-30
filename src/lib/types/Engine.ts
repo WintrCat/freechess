@@ -7,5 +7,6 @@ export interface EngineLine {
     id: number,
     depth: number,
     evaluation: Evaluation,
-    moveUCI: string
+    moveUCI: string,
+    moveSAN?: string
 }

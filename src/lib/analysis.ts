@@ -3,12 +3,16 @@ import { Chess } from "chess.js";
 import {
     Classification, 
     centipawnClassifications, 
+    classificationValues, 
     getEvaluationLossThreshold 
 } from "./classification";
 import { EvaluatedPosition } from "./types/Position";
+import { EngineLine } from "./types/Engine";
+import Report from "./types/Report";
 
-async function analyse(positions: EvaluatedPosition[]) {
+async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     
+    // Generate classifications for each position
     let positionIndex = 0;
     for (let position of positions.slice(1)) {
 
@@ -112,6 +116,7 @@ async function analyse(positions: EvaluatedPosition[]) {
 
     }
 
+    // Apply book moves for non-mistake cloud evaluated moves
     const positiveClassifs = centipawnClassifications.slice(0, 3);
     for (let position of positions.slice(1)) {
         if (position.worker == "cloud" && positiveClassifs.includes(position.classification!)) {
@@ -121,7 +126,50 @@ async function analyse(positions: EvaluatedPosition[]) {
         }
     }
 
-    return positions;
+    // Generate SAN moves from all engine lines
+    // This is used for the engine suggestions card on the frontend
+    for (let position of positions) {
+        for (let line of position.topLines) {
+            let board = new Chess(position.fen);
+
+            if (line.moveUCI.length == 0) continue;
+            line.moveSAN = board.move({
+                from: line.moveUCI.slice(0, 2),
+                to: line.moveUCI.slice(2, 4)
+            }).san;
+        }
+    }
+
+    // Calculate computer accuracy percentages
+    let whiteAccuracy = {
+        current: 0,
+        maximum: 0
+    };
+    let blackAccuracy = {
+        current: 0,
+        maximum: 0
+    };
+
+    for (let position of positions.slice(1)) {
+        let moveColour = position.fen.includes(" b ") ? "white" : "black";
+
+        if (moveColour == "white") {
+            whiteAccuracy.current += classificationValues[position.classification!];
+            whiteAccuracy.maximum += 6;
+        } else {
+            blackAccuracy.current += classificationValues[position.classification!];
+            blackAccuracy.maximum += 6;
+        }
+    }
+
+    // Return complete report
+    return {
+        accuracies: {
+            white: parseInt((whiteAccuracy.current / whiteAccuracy.maximum * 100).toFixed(2)),
+            black: parseInt((blackAccuracy.current / blackAccuracy.maximum * 100).toFixed(2))
+        },
+        positions: positions
+    };
 
 }
 

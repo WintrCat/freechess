@@ -11,6 +11,19 @@ export enum Classification {
     FORCED = "forced"
 }
 
+export const classificationValues = {
+    "blunder": 1,
+    "mistake": 2,
+    "inaccuracy": 3,
+    "good": 4,
+    "excellent": 5,
+    "best": 6,
+    "great": 6,
+    "brilliant": 6,
+    "book": 6,
+    "forced": 6
+}
+
 // Classification types with no special rules
 export const centipawnClassifications = [
     Classification.BEST,

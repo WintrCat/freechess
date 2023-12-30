@@ -16,24 +16,24 @@ function updateGamesPeriod() {
     $("#game-select-period").html(`${padMonth(gamesPeriod.month)}/${gamesPeriod.year}`);
 }
 
-function generateGameListing(game: Game): HTMLDivElement {
+function generateGameListing(game: Game): JQuery<HTMLDivElement> {
 
-    let listingContainer = document.createElement("div");
-    listingContainer.className = "game-listing";
-    listingContainer.setAttribute("data-pgn", game.pgn);
-    listingContainer.addEventListener("click", () => {
-        $("#pgn").val(listingContainer.getAttribute("data-pgn") || "");
+    let listingContainer = $<HTMLDivElement>("<div>");
+    listingContainer.addClass("game-listing");
+    listingContainer.attr("data-pgn", game.pgn);
+    listingContainer.on("click", () => {
+        $("#pgn").val(listingContainer.attr("data-pgn") || "");
         closeModal();
     });
 
-    let timeClass = document.createElement("b");
-    timeClass.innerHTML = game.timeClass.replace(/^./, game.timeClass.charAt(0).toUpperCase());
+    let timeClass = $("<b>");
+    timeClass.html(game.timeClass.replace(/^./, game.timeClass.charAt(0).toUpperCase()));
 
-    let players = document.createElement("span");
-    players.innerHTML = `${game.white.username} (${game.white.rating}) vs. ${game.black.username} (${game.black.rating})`;
+    let players = $("<span>");
+    players.html(`${game.white.username} (${game.white.rating}) vs. ${game.black.username} (${game.black.rating})`);
 
-    listingContainer.appendChild(timeClass);
-    listingContainer.appendChild(players);
+    listingContainer.append(timeClass);
+    listingContainer.append(players);
 
     return listingContainer;
 
@@ -194,14 +194,21 @@ $("#load-type-dropdown").on("input", () => {
 
 });
 
-$("#fetch-account-games-button").on("click", () => {
-
+function onFetchButtonClick() {
     $("#games-list").html("Fetching games...");
     $("#game-select-menu-container").css("display", "flex");
 
     let username = $("#chess-site-username").val()!.toString();
     fetchGames(username);
+}
 
+$("#fetch-account-games-button").on("click", onFetchButtonClick);
+
+$(window).on("keydown", event => {
+    if (event.key == "Enter") {
+        event.preventDefault();
+        onFetchButtonClick();
+    }
 });
 
 $("#game-select-menu-container").load("/static/pages/report/gameselect.html", registerModalEvents);

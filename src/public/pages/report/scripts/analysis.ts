@@ -1,7 +1,7 @@
 let ongoingEvaluation = false;
 
 let evaluatedPositions: Position[] = [];
-let reportResults: Position[] = [];
+let reportResults: Report | undefined;
 
 function logAnalysisInfo(message: string) {
     $("#status-message").css("color", "white");
@@ -18,9 +18,11 @@ function logAnalysisError(message: string) {
 
 async function evaluate() {
 
-    // Remove and reset CAPTCHA in case it is verified from last evaluation
+    // Remove and reset CAPTCHA, remove report cards
     $(".g-recaptcha").css("display", "none");
     grecaptcha.reset();
+
+    $("#report-cards").css("display", "none");
 
     // Disallow evaluation if another evaluation is ongoing
     if (ongoingEvaluation) return;
@@ -200,11 +202,16 @@ async function report() {
         }
 
         // Set report results to results given by server
-        reportResults = report.results ?? [];
+        reportResults = report.results!;
 
         // Reset chess board, draw evaluation for starting position
         traverseMoves(-Infinity);
         drawEvaluationBar({ type: "cp", value: 0 });
+
+        // Reveal report cards and update accuracies
+        $("#report-cards").css("display", "flex");
+        $("#white-accuracy").html(`${reportResults.accuracies.white}%`);
+        $("#black-accuracy").html(`${reportResults.accuracies.black}%`);
 
         // Remove any status message
         logAnalysisInfo("");

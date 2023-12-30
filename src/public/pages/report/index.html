@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/static/pages/report/styles/board.css">
     <link rel="stylesheet" href="/static/pages/report/styles/gameselect.css">
     <link rel="stylesheet" href="/static/pages/report/styles/reviewpanel.css">
+    <link rel="stylesheet" href="/static/pages/report/styles/report.css">
 
     <link rel="icon" href="/static/media/favicon.ico">
 
@@ -79,6 +80,23 @@
                     <div class="g-recaptcha" data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA" data-theme="dark" data-callback="report"></div>
 
                     <b id="secondary-message" class="white"></b>
+
+                    <div id="report-cards">
+                        <h2 id="accuracies-title" class="white">Accuracies</h2>
+                        <div id="accuracies">
+                            <b id="white-accuracy">0%</b>
+                            <b id="black-accuracy">0%</b>
+                        </div>
+    
+                        <div id="classification-message-container">
+                            <img id="classification-icon" src="/static/media/book.png" height="25">
+                            <b id="classification-message"></b>
+                        </div>
+
+                        <div id="engine-suggestions">
+                            <h2 id="engine-suggestions-title" class="white">Engine</h2>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="review-panel-toolbar" class="center">
@@ -99,6 +117,7 @@
     <script src="/static/pages/report/scripts/sprites.js"></script>
     <script src="/static/pages/report/scripts/evalbar.js"></script>
     <script src="/static/pages/report/scripts/board.js"></script>
+    <script src="/static/pages/report/scripts/report.js"></script>
 
     <script src="/static/pages/report/scripts/loadgame.js"></script>
 

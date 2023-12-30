@@ -13,7 +13,7 @@ app.use("/static",
     express.static("dist/public"),
     express.static("src/public")
 );
-app.use("/static/media", express.static("src/media"));
+
 app.use("/api", apiRouter);
 
 app.get("/", async (req, res) => {
