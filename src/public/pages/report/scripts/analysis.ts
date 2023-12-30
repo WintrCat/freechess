@@ -191,7 +191,7 @@ async function report() {
                     }
                     return pos;
                 }),
-                captchaToken: grecaptcha.getResponse()
+                captchaToken: grecaptcha.getResponse() || "none"
             })
         });
 

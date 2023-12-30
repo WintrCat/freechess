@@ -103,28 +103,80 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         // If no mate on the board last move and still no mate
         if (noMate) {
-
             for (let classif of centipawnClassifications) {
                 if (evalLoss <= getEvaluationLossThreshold(classif, previousEvaluation.value)) {
                     position.classification = classif;
+
+                    let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
+                    if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
+                        position.classification = Classification.GOOD;
+                    }
+
                     break;
                 }
             }
+        }
 
+        // If no mate last move but you blundered a mate
+        if (previousEvaluation.type == "cp" && evaluation.type == "mate") {
+            let absoluteMate = Math.abs(evaluation.value);
+
+            if (absoluteMate <= 2) {
+                position.classification = Classification.BLUNDER;
+            } else if (absoluteMate <= 5) {
+                position.classification = Classification.MISTAKE;
+            } else {
+                position.classification = Classification.INACCURACY;
+            }
+            continue;
+        }
+
+        // If mate last move and there is no longer a mate
+        if (previousEvaluation.type == "mate" && evaluation.type == "cp") {
+            let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
+
+            if (absoluteValue >= 400) {
+                position.classification = Classification.GOOD;
+            } else if (absoluteValue >= 150) {
+                position.classification = Classification.INACCURACY;
+            } else if (absoluteValue >= -100) {
+                position.classification = Classification.MISTAKE;
+            } else {
+                position.classification = Classification.BLUNDER;
+            }
+            continue;
+        }
+
+        // If mate last move and forced mate still exists
+        if (previousEvaluation.type == "mate" && evaluation.type == "mate") {
+            let prevAbsoluteMate = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
+            let newAbsoluteMate = evaluation.value * (moveColour == "white" ? 1 : -1);
+
+            if (prevAbsoluteMate > 0) {
+                if (newAbsoluteMate <= -4) {
+                    position.classification = Classification.MISTAKE;
+                } else if (newAbsoluteMate < 0) {
+                    position.classification = Classification.BLUNDER
+                } else if (newAbsoluteMate < prevAbsoluteMate) {
+                    position.classification = Classification.BEST;
+                } else if (newAbsoluteMate <= prevAbsoluteMate + 2) {
+                    position.classification = Classification.EXCELLENT;
+                } else {
+                    position.classification = Classification.GOOD;
+                }
+            } else {
+                if (newAbsoluteMate == prevAbsoluteMate) {
+                    position.classification = Classification.BEST;
+                } else {
+                    position.classification = Classification.GOOD;
+                }
+            }
+
+            continue;
         }
 
         position.classification ??= Classification.BOOK;
 
-    }
-
-    // Apply book moves for cloud evaluations
-    const positiveClassifs = centipawnClassifications.slice(0, 3);
-    for (let position of positions.slice(1)) {
-        if (position.worker == "cloud" && positiveClassifs.includes(position.classification!)) {
-            position.classification = Classification.BOOK;
-        } else {
-            break;
-        }
     }
 
     // Generate opening names for named positions
@@ -133,17 +185,49 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         position.opening = opening?.name;
     }
 
+    // Apply book moves for cloud evaluations and named positions
+    const positiveClassifs = centipawnClassifications.slice(0, 2);
+    for (let position of positions.slice(1)) {
+        if (
+            (position.worker == "cloud" && positiveClassifs.includes(position.classification!))
+            || position.opening
+        ) {
+            position.classification = Classification.BOOK;
+        } else {
+            break;
+        }
+    }
+
     // Generate SAN moves from all engine lines
     // This is used for the engine suggestions card on the frontend
     for (let position of positions) {
         for (let line of position.topLines) {
+            if (line.evaluation.type == "mate" && line.evaluation.value == 0) continue;
+
             let board = new Chess(position.fen);
 
-            if (line.moveUCI.length == 0) continue;
-            line.moveSAN = board.move({
-                from: line.moveUCI.slice(0, 2),
-                to: line.moveUCI.slice(2, 4)
-            }).san;
+            try {
+                line.moveSAN = board.move({
+                    from: line.moveUCI.slice(0, 2),
+                    to: line.moveUCI.slice(2, 4),
+                    promotion: line.moveUCI.slice(4) || undefined
+                }).san;
+            } catch (err) {
+                let cloudUCIFixes: { [key: string]: string } = {
+                    "e8h8": "e8g8",
+                    "e1h1": "e1g1",
+                    "e8a8": "e8c8",
+                    "e1a1": "e1c1"
+                };
+                line.moveUCI = cloudUCIFixes[line.moveUCI];
+                if (!line.moveUCI) continue;
+
+                line.moveSAN = board.move({
+                    from: line.moveUCI.slice(0, 2),
+                    to: line.moveUCI.slice(2, 4),
+                    promotion: line.moveUCI.slice(4) || undefined
+                }).san;
+            }
         }
     }
 
