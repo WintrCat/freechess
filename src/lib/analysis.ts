@@ -7,8 +7,9 @@ import {
     getEvaluationLossThreshold 
 } from "./classification";
 import { EvaluatedPosition } from "./types/Position";
-import { EngineLine } from "./types/Engine";
 import Report from "./types/Report";
+
+import openings from "../resources/openings.json";
 
 async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     
@@ -116,7 +117,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
     }
 
-    // Apply book moves for non-mistake cloud evaluated moves
+    // Apply book moves for cloud evaluations
     const positiveClassifs = centipawnClassifications.slice(0, 3);
     for (let position of positions.slice(1)) {
         if (position.worker == "cloud" && positiveClassifs.includes(position.classification!)) {
@@ -124,6 +125,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         } else {
             break;
         }
+    }
+
+    // Generate opening names for named positions
+    for (let position of positions) {
+        let opening = openings.find(opening => position.fen.includes(opening.fen));
+        position.opening = opening?.name;
     }
 
     // Generate SAN moves from all engine lines

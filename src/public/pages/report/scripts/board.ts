@@ -131,7 +131,7 @@ function traverseMoves(moveCount: number) {
 
     let currentPosition = positions[currentMoveIndex];
 
-    // Draw board, evaluation bar, update classification message and engine suggestions card
+    // Draw board, evaluation bar, update report card
     drawBoard(currentPosition?.fen ?? startingPositionFen);
 
     let topLine = currentPosition?.topLines?.find(line => line.id == 1);
@@ -139,6 +139,9 @@ function traverseMoves(moveCount: number) {
 
     updateClassificationMessage(currentPosition);
     updateEngineSuggestions(currentPosition.topLines ?? []);
+    if (currentPosition.opening) {
+        $("#opening-name").html(currentPosition.opening);
+    }
 
     // Do not play board audio if trying to traverse outside of game
     if (

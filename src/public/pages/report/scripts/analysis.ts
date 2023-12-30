@@ -206,7 +206,6 @@ async function report() {
 
         // Reset chess board, draw evaluation for starting position
         traverseMoves(-Infinity);
-        drawEvaluationBar({ type: "cp", value: 0 });
 
         // Reveal report cards and update accuracies
         $("#report-cards").css("display", "flex");

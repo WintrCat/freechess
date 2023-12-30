@@ -44,7 +44,8 @@ interface Position {
     topLines?: EngineLine[],
     cutoffEvaluation?: Evaluation,
     worker?: Stockfish | string
-    classification?: string
+    classification?: string,
+    opening?: string
 }
 
 interface Report {

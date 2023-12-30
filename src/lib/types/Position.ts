@@ -16,5 +16,6 @@ export interface EvaluatedPosition extends Position {
     topLines: EngineLine[],
     cutoffEvaluation?: Evaluation,
     classification?: Classification,
+    opening?: string,
     worker: string
 }

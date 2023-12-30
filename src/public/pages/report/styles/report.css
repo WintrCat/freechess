@@ -2,7 +2,7 @@
     REPORT CARDS CONTAINER
 */
 #report-cards {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
 
@@ -13,7 +13,7 @@
     ACCURACY PERCENTAGES
 */
 #accuracies-title {
-    margin: 5px;
+    margin-bottom: 5px;
 }
 
 #accuracies {
@@ -46,7 +46,7 @@
     align-items: center;
     gap: 5px;
 
-    margin-top: 5px;
+    margin: 5px;
 }
 
 #classification-message {
@@ -63,7 +63,8 @@
 }
 
 #engine-suggestions-title {
-    margin: 5px;
+    margin-top: 0;
+    margin-bottom: 5px;
 }
 
 .engine-suggestion {
@@ -80,4 +81,11 @@
     padding: 0 3px;
     text-align: center;
     border-radius: 5px;
+}
+
+/*
+    OPENING NAME
+*/
+#opening-name {
+    text-align: center;
 }

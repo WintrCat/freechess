@@ -24,6 +24,7 @@ function updateClassificationMessage(position: Position) {
 function updateEngineSuggestions(lines: EngineLine[]) {
 
     $(".engine-suggestion").remove();
+    $("#engine-suggestions-title").css("display", "block");
 
     for (let line of lines.sort((a, b) => a.id - b.id)) {
         let engineSuggestion = $<HTMLDivElement>("<div>");
@@ -33,6 +34,7 @@ function updateEngineSuggestions(lines: EngineLine[]) {
         if (line.evaluation.type == "cp") {
             evaluation.html(Math.abs(line.evaluation.value / 100).toFixed(2));
         } else if (line.evaluation.value == 0) {
+            $("#engine-suggestions-title").css("display", "none");
             break;
         } else {
             evaluation.html("M" + Math.abs(line.evaluation.value).toString());
