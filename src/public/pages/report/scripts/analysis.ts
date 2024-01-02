@@ -76,19 +76,22 @@ async function evaluate() {
 
     // Fetch cloud evaluations where possible
     for (let position of positions) {
-        let queryFen = position.fen.replace(/\s/g, "%20");
-        let cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
-            method: "GET"
-        });
-
-        if (!cloudEvaluationResponse.ok) {
+        function placeCutoff() {
             let lastPosition = positions[positions.indexOf(position) - 1];
 
             let cutoffWorker = new Stockfish();
             cutoffWorker.evaluate(lastPosition.fen, depth).then(engineLines => {
                 lastPosition.cutoffEvaluation = engineLines.find(line => line.id == 1)?.evaluation ?? { type: "cp", value: 0 };
             });
+        }
 
+        let queryFen = position.fen.replace(/\s/g, "%20");
+        let cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
+            method: "GET"
+        });
+
+        if (!cloudEvaluationResponse.ok) {
+            placeCutoff();
             break;
         }
 
@@ -108,8 +111,21 @@ async function evaluate() {
                 }
             }
 
+            let cloudUCIFixes: { [key: string]: string } = {
+                "e8h8": "e8g8",
+                "e1h1": "e1g1",
+                "e8a8": "e8c8",
+                "e1a1": "e1c1"
+            };
+            line.moveUCI = cloudUCIFixes[line.moveUCI] ?? line.moveUCI;
+
             return line;
         });
+
+        if (position.topLines?.length != 2) {
+            placeCutoff();
+            break;
+        }
 
         position.worker = "cloud";
 

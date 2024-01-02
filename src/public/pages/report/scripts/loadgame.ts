@@ -198,6 +198,8 @@ function onFetchButtonClick() {
     $("#games-list").html("Fetching games...");
     $("#game-select-menu-container").css("display", "flex");
 
+    updateGamesPeriod();
+
     let username = $("#chess-site-username").val()!.toString();
     fetchGames(username);
 }

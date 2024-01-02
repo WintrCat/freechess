@@ -1,4 +1,4 @@
-import { Chess } from "chess.js";
+import { Chess, Square } from "chess.js";
 
 import {
     Classification, 
@@ -6,6 +6,8 @@ import {
     classificationValues, 
     getEvaluationLossThreshold 
 } from "./classification";
+import { isPieceHanging, pieceValues } from "./board";
+
 import { EvaluatedPosition } from "./types/Position";
 import Report from "./types/Report";
 
@@ -47,6 +49,16 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         // Calculate evaluation loss as a result of this move
         let evalLoss = Infinity;
         let cutoffEvalLoss = Infinity;
+        let lastLineEvalLoss = Infinity;
+
+        let matchingTopLine = lastPosition.topLines.find(line => line.moveUCI == position.move.uci);
+        if (matchingTopLine) {
+            if (moveColour == "white") {
+                lastLineEvalLoss = previousEvaluation.value - matchingTopLine.evaluation.value;
+            } else {
+                lastLineEvalLoss = matchingTopLine.evaluation.value - previousEvaluation.value;
+            }
+        }
 
         if (lastPosition.cutoffEvaluation) {
             if (moveColour == "white") {
@@ -62,7 +74,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
             evalLoss = evaluation.value - previousEvaluation.value;
         }
 
-        evalLoss = Math.min(evalLoss, cutoffEvalLoss);
+        evalLoss = Math.min(evalLoss, cutoffEvalLoss, lastLineEvalLoss);
 
         // If this move was the only legal one, apply forced
         if (!secondTopMove) {
@@ -74,105 +86,124 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         // If it is the top line, disregard other detections and give best
         if (topMove.moveUCI == position.move.uci) {
-            // Test for great move classification
-            if (noMate && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150) {
-                if (moveColour == "white") {
-                    if (
-                        (previousEvaluation.value <= -150 && Math.abs(evaluation.value) <= 30)
-                        || (Math.abs(previousEvaluation.value) <= 30 && evaluation.value >= 150)
-                        || lastPosition.classification == Classification.BLUNDER
-                    ) {
-                        position.classification = Classification.GREAT;
-                        continue;
-                    }
-                } else {
-                    if (
-                        (previousEvaluation.value >= 150 && Math.abs(evaluation.value) <= 30)
-                        || (Math.abs(previousEvaluation.value) <= 30 && evaluation.value <= -150)
-                        || lastPosition.classification == Classification.BLUNDER
-                    ) {
-                        position.classification = Classification.GREAT;
-                        continue;
+            position.classification = Classification.BEST;
+        } else {
+            // If no mate on the board last move and still no mate
+            if (noMate) {
+                for (let classif of centipawnClassifications) {
+                    if (evalLoss <= getEvaluationLossThreshold(classif, previousEvaluation.value)) {
+                        position.classification = classif;
+
+                        // Do not allow blunder if move still completely winning
+                        let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
+                        if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
+                            position.classification = Classification.GOOD;
+                        }
+
+                        break;
                     }
                 }
             }
 
-            position.classification = Classification.BEST;
-            continue;
-        }
+            // If no mate last move but you blundered a mate
+            else if (previousEvaluation.type == "cp" && evaluation.type == "mate") {
+                let absoluteMate = Math.abs(evaluation.value);
 
-        // If no mate on the board last move and still no mate
-        if (noMate) {
-            for (let classif of centipawnClassifications) {
-                if (evalLoss <= getEvaluationLossThreshold(classif, previousEvaluation.value)) {
-                    position.classification = classif;
+                if (absoluteMate <= 2) {
+                    position.classification = Classification.BLUNDER;
+                } else if (absoluteMate <= 5) {
+                    position.classification = Classification.MISTAKE;
+                } else {
+                    position.classification = Classification.INACCURACY;
+                }
+            }
 
-                    let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
-                    if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
+            // If mate last move and there is no longer a mate
+            else if (previousEvaluation.type == "mate" && evaluation.type == "cp") {
+                let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
+
+                if (absoluteValue >= 400) {
+                    position.classification = Classification.GOOD;
+                } else if (absoluteValue >= 150) {
+                    position.classification = Classification.INACCURACY;
+                } else if (absoluteValue >= -100) {
+                    position.classification = Classification.MISTAKE;
+                } else {
+                    position.classification = Classification.BLUNDER;
+                }
+            }
+
+            // If mate last move and forced mate still exists
+            else if (previousEvaluation.type == "mate" && evaluation.type == "mate") {
+                let prevAbsoluteMate = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
+                let newAbsoluteMate = evaluation.value * (moveColour == "white" ? 1 : -1);
+
+                if (prevAbsoluteMate > 0) {
+                    if (newAbsoluteMate <= -4) {
+                        position.classification = Classification.MISTAKE;
+                    } else if (newAbsoluteMate < 0) {
+                        position.classification = Classification.BLUNDER
+                    } else if (newAbsoluteMate < prevAbsoluteMate) {
+                        position.classification = Classification.BEST;
+                    } else if (newAbsoluteMate <= prevAbsoluteMate + 2) {
+                        position.classification = Classification.EXCELLENT;
+                    } else {
                         position.classification = Classification.GOOD;
                     }
-
-                    break;
-                }
-            }
-        }
-
-        // If no mate last move but you blundered a mate
-        if (previousEvaluation.type == "cp" && evaluation.type == "mate") {
-            let absoluteMate = Math.abs(evaluation.value);
-
-            if (absoluteMate <= 2) {
-                position.classification = Classification.BLUNDER;
-            } else if (absoluteMate <= 5) {
-                position.classification = Classification.MISTAKE;
-            } else {
-                position.classification = Classification.INACCURACY;
-            }
-            continue;
-        }
-
-        // If mate last move and there is no longer a mate
-        if (previousEvaluation.type == "mate" && evaluation.type == "cp") {
-            let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
-
-            if (absoluteValue >= 400) {
-                position.classification = Classification.GOOD;
-            } else if (absoluteValue >= 150) {
-                position.classification = Classification.INACCURACY;
-            } else if (absoluteValue >= -100) {
-                position.classification = Classification.MISTAKE;
-            } else {
-                position.classification = Classification.BLUNDER;
-            }
-            continue;
-        }
-
-        // If mate last move and forced mate still exists
-        if (previousEvaluation.type == "mate" && evaluation.type == "mate") {
-            let prevAbsoluteMate = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
-            let newAbsoluteMate = evaluation.value * (moveColour == "white" ? 1 : -1);
-
-            if (prevAbsoluteMate > 0) {
-                if (newAbsoluteMate <= -4) {
-                    position.classification = Classification.MISTAKE;
-                } else if (newAbsoluteMate < 0) {
-                    position.classification = Classification.BLUNDER
-                } else if (newAbsoluteMate < prevAbsoluteMate) {
-                    position.classification = Classification.BEST;
-                } else if (newAbsoluteMate <= prevAbsoluteMate + 2) {
-                    position.classification = Classification.EXCELLENT;
                 } else {
-                    position.classification = Classification.GOOD;
-                }
-            } else {
-                if (newAbsoluteMate == prevAbsoluteMate) {
-                    position.classification = Classification.BEST;
-                } else {
-                    position.classification = Classification.GOOD;
+                    if (newAbsoluteMate == prevAbsoluteMate) {
+                        position.classification = Classification.BEST;
+                    } else {
+                        position.classification = Classification.GOOD;
+                    }
                 }
             }
 
-            continue;
+        }
+
+        // If current verdict is best, check for possible brilliancy
+        if (position.classification == Classification.BEST) {
+            // Test for brilliant move classification
+            if (evaluation.value * (moveColour == "white" ? 1 : -1) > 0) {
+                let lastBoard = new Chess(lastPosition.fen);
+                let currentBoard = new Chess(position.fen);
+
+                let lastPiece = lastBoard.get(position.move.uci.slice(2, 4) as Square) || { type: "m" };
+
+                if (lastBoard.isCheck() && position.move.san.startsWith("K")) {
+                    continue;
+                }
+
+                for (let row of currentBoard.board()) {
+                    for (let piece of row) {
+                        if (piece?.color != moveColour.charAt(0)) continue;
+                        if (piece.type == "k" || piece.type == "p") continue;
+
+                        // If the piece just captured is of higher value than the candidate
+                        // hanging piece, then this is not hanging because it would have been better to
+                        // take that other one instead
+                        if (pieceValues[lastPiece.type] >= pieceValues[piece.type]) {
+                            continue;
+                        }
+
+                        if (isPieceHanging(lastPosition.fen, position.fen, piece.square)) {
+                            position.classification = Classification.BRILLIANT;
+                            break;
+                        }
+                    }
+                    if (position.classification == Classification.BRILLIANT) break;
+                }
+            }
+
+            // Test for great move classification
+            if (
+                noMate
+                && position.classification != Classification.BRILLIANT
+                && lastPosition.classification == Classification.BLUNDER
+                && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150
+            ) {
+                position.classification = Classification.GREAT;
+            }
         }
 
         position.classification ??= Classification.BOOK;
@@ -206,28 +237,11 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             let board = new Chess(position.fen);
 
-            try {
-                line.moveSAN = board.move({
-                    from: line.moveUCI.slice(0, 2),
-                    to: line.moveUCI.slice(2, 4),
-                    promotion: line.moveUCI.slice(4) || undefined
-                }).san;
-            } catch (err) {
-                let cloudUCIFixes: { [key: string]: string } = {
-                    "e8h8": "e8g8",
-                    "e1h1": "e1g1",
-                    "e8a8": "e8c8",
-                    "e1a1": "e1c1"
-                };
-                line.moveUCI = cloudUCIFixes[line.moveUCI];
-                if (!line.moveUCI) continue;
-
-                line.moveSAN = board.move({
-                    from: line.moveUCI.slice(0, 2),
-                    to: line.moveUCI.slice(2, 4),
-                    promotion: line.moveUCI.slice(4) || undefined
-                }).san;
-            }
+            line.moveSAN = board.move({
+                from: line.moveUCI.slice(0, 2),
+                to: line.moveUCI.slice(2, 4),
+                promotion: line.moveUCI.slice(4) || undefined
+            }).san;
         }
     }
 

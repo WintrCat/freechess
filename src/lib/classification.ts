@@ -41,19 +41,28 @@ export function getEvaluationLossThreshold(classif: Classification, prevEval: nu
 
     prevEval = Math.abs(prevEval);
 
+    let threshold = 0;
+
     switch (classif) {
         case Classification.BEST:
-            return Math.pow(0.000018 * prevEval, 2) + (0.082 * prevEval) - 1.6364;
+            threshold = 0.0001 * Math.pow(prevEval, 2) + (0.0236 * prevEval) - 3.7143;
+            break;
         case Classification.EXCELLENT:
-            return Math.pow(0.0002 * prevEval, 2) + (0.1231 * prevEval) + 27.5455;
+            threshold = 0.0002 * Math.pow(prevEval, 2) + (0.1231 * prevEval) + 27.5455;
+            break;
         case Classification.GOOD:
-            return Math.pow(0.0002 * prevEval, 2) + (0.2643 * prevEval) + 60.5455;
+            threshold = 0.0002 * Math.pow(prevEval, 2) + (0.2643 * prevEval) + 60.5455;
+            break;
         case Classification.INACCURACY:
-            return Math.pow(0.0002 * prevEval, 2) + (0.3624 * prevEval) + 108.0909;
+            threshold = 0.0002 * Math.pow(prevEval, 2) + (0.3624 * prevEval) + 108.0909;
+            break;
         case Classification.MISTAKE:
-            return Math.pow(0.0003 * prevEval, 2) + (0.4027 * prevEval) + 225.8182;
+            threshold = 0.0003 * Math.pow(prevEval, 2) + (0.4027 * prevEval) + 225.8182;
+            break;
         default:
-            return Infinity;
+            threshold = Infinity;
     }
+
+    return Math.max(threshold, 0);
 
 }
