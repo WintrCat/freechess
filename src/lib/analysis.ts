@@ -27,7 +27,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         let topMove = lastPosition.topLines.find(line => line.id == 1);
         let secondTopMove = lastPosition.topLines.find(line => line.id == 2);
-        if (!topMove || !secondTopMove) continue;
+        if (!topMove) continue;
 
         let previousEvaluation = topMove.evaluation;
         let evaluation = position.topLines.find(line => line.id == 1)?.evaluation;
@@ -168,24 +168,29 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                     continue;
                 }
 
+                let maxSacrificeValue = 0;
                 for (let row of currentBoard.board()) {
                     for (let piece of row) {
                         if (piece?.color != moveColour.charAt(0)) continue;
                         if (piece.type == "k" || piece.type == "p") continue;
 
                         // If the piece just captured is of higher or equal value than the candidate
-                        // hanging piece, not hanging, trade happening somewhere else
+                        // hanging piece, not hanging, better trade happening somewhere else
                         if (pieceValues[lastPiece.type] >= pieceValues[piece.type]) {
                             continue;
                         }
 
                         if (isPieceHanging(lastPosition.fen, position.fen, piece.square)) {
                             position.classification = Classification.BRILLIANT;
-                            break;
+                            maxSacrificeValue = Math.max(maxSacrificeValue, pieceValues[piece.type]);
                         }
                     }
                     if (position.classification == Classification.BRILLIANT) break;
                 }
+
+                // If an enemy piece of greater value than the most valuable
+                // sacrificed piece is also hanging, danger levels, not brilliant
+                
             }
 
             // Test for great move classification
