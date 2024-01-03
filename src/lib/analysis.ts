@@ -93,13 +93,6 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 for (let classif of centipawnClassifications) {
                     if (evalLoss <= getEvaluationLossThreshold(classif, previousEvaluation.value)) {
                         position.classification = classif;
-
-                        // Do not allow blunder if move still completely winning
-                        let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
-                        if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
-                            position.classification = Classification.GOOD;
-                        }
-
                         break;
                     }
                 }
@@ -206,9 +199,17 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
             }
         }
 
+        // Do not allow blunder if move still completely winning
+        let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
+        if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
+            position.classification = Classification.GOOD;
+        }
+
         position.classification ??= Classification.BOOK;
 
     }
+
+    
 
     // Generate opening names for named positions
     for (let position of positions) {
