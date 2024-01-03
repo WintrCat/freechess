@@ -27,9 +27,9 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         let topMove = lastPosition.topLines.find(line => line.id == 1);
         let secondTopMove = lastPosition.topLines.find(line => line.id == 2);
-        if (!topMove) continue;
+        if (!topMove || !secondTopMove) continue;
 
-        let previousEvaluation = topMove?.evaluation;
+        let previousEvaluation = topMove.evaluation;
         let evaluation = position.topLines.find(line => line.id == 1)?.evaluation;
         if (!previousEvaluation) continue;
 
@@ -163,6 +163,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
                 let lastPiece = lastBoard.get(position.move.uci.slice(2, 4) as Square) || { type: "m" };
 
+                // If it is a king move to get out of check, not brilliant
                 if (lastBoard.isCheck() && position.move.san.startsWith("K")) {
                     continue;
                 }
@@ -172,9 +173,8 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                         if (piece?.color != moveColour.charAt(0)) continue;
                         if (piece.type == "k" || piece.type == "p") continue;
 
-                        // If the piece just captured is of higher value than the candidate
-                        // hanging piece, then this is not hanging because it would have been better to
-                        // take that other one instead
+                        // If the piece just captured is of higher or equal value than the candidate
+                        // hanging piece, not hanging, trade happening somewhere else
                         if (pieceValues[lastPiece.type] >= pieceValues[piece.type]) {
                             continue;
                         }
@@ -209,8 +209,6 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
     }
 
-    
-
     // Generate opening names for named positions
     for (let position of positions) {
         let opening = openings.find(opening => position.fen.includes(opening.fen));
@@ -218,7 +216,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     }
 
     // Apply book moves for cloud evaluations and named positions
-    const positiveClassifs = centipawnClassifications.slice(0, 2);
+    let positiveClassifs = centipawnClassifications.slice(0, 2);
     for (let position of positions.slice(1)) {
         if (
             (position.worker == "cloud" && positiveClassifs.includes(position.classification!))
