@@ -78,6 +78,7 @@ async function evaluate() {
     for (let position of positions) {
         function placeCutoff() {
             let lastPosition = positions[positions.indexOf(position) - 1];
+            if (!lastPosition) return;
 
             let cutoffWorker = new Stockfish();
             cutoffWorker.evaluate(lastPosition.fen, depth).then(engineLines => {
