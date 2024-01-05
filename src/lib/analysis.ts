@@ -6,7 +6,7 @@ import {
     classificationValues, 
     getEvaluationLossThreshold 
 } from "./classification";
-import { isPieceHanging, pieceValues } from "./board";
+import { getAttackers, isPieceHanging, pieceValues, promotions } from "./board";
 
 import { EvaluatedPosition } from "./types/Position";
 import Report from "./types/Report";
@@ -157,21 +157,25 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         // If current verdict is best, check for possible brilliancy
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
-            if (evaluation.value * (moveColour == "white" ? 1 : -1) > 0) {
+            let absoluteEvaluation = evaluation.value * (moveColour == "white" ? 1 : -1);
+
+            // Must be winning for the side that played the brilliancy
+            if (absoluteEvaluation > 0) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
 
                 let lastPiece = lastBoard.get(position.move.uci.slice(2, 4) as Square) || { type: "m" };
 
                 // If it is a king move to get out of check, not brilliant
-                if (lastBoard.isCheck() && position.move.san.startsWith("K")) {
+                if (lastBoard.isCheck()) {
                     continue;
                 }
 
                 let maxSacrificeValue = 0;
                 for (let row of currentBoard.board()) {
                     for (let piece of row) {
-                        if (piece?.color != moveColour.charAt(0)) continue;
+                        if (!piece) continue;
+                        if (piece.color != moveColour.charAt(0)) continue;
                         if (piece.type == "k" || piece.type == "p") continue;
 
                         // If the piece just captured is of higher or equal value than the candidate
@@ -180,17 +184,64 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                             continue;
                         }
 
+                        // If capturing the sacrificed piece in any way would lead to mate in 1, not brilliant
+                        let captureTestBoard = new Chess(position.fen);
+                        let attackers = getAttackers(position.fen, piece.square);
+                        let capturableWithoutMate = false;
+                        for (let attacker of attackers) {
+                            for (let promotion of promotions) {
+                                try {
+                                    captureTestBoard.move({
+                                        from: attacker.square,
+                                        to: piece.square,
+                                        promotion: promotion
+                                    });
+        
+                                    if (!captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                        capturableWithoutMate = true;
+                                        break;
+                                    }
+        
+                                    captureTestBoard.undo();
+                                } catch (err) {}
+                            }
+                            if (capturableWithoutMate) break;
+                        }
+
+                        if (!capturableWithoutMate) {
+                            continue;
+                        }
+
+                        // If the piece is otherwise hanging, brilliant
                         if (isPieceHanging(lastPosition.fen, position.fen, piece.square)) {
                             position.classification = Classification.BRILLIANT;
                             maxSacrificeValue = Math.max(maxSacrificeValue, pieceValues[piece.type]);
                         }
                     }
-                    if (position.classification == Classification.BRILLIANT) break;
                 }
 
-                // If an enemy piece of greater value than the most valuable
-                // sacrificed piece is also hanging, danger levels, not brilliant
-                
+                // If an enemy piece of greater or equal value than the most valuable
+                // sacrificed piece, danger levels, not brilliant
+                if (!currentBoard.isCheck()) {
+                    for (let row of currentBoard.board()) {
+                        for (let piece of row) {
+                            if (!piece) continue;
+                            if (piece.color == moveColour.charAt(0) || piece.type == "k") continue;
+    
+                            if (
+                                isPieceHanging(lastPosition.fen, position.fen, piece.square)
+                                && pieceValues[piece.type] >= maxSacrificeValue
+                                && !getAttackers(position.fen, piece.square).some(
+                                    atk => isPieceHanging(lastPosition.fen, position.fen, atk.square)
+                                )
+                            ) {
+                                position.classification = Classification.BEST;
+                                break;
+                            }
+                        }
+                        if (position.classification == Classification.BEST) break;
+                    }
+                }
             }
 
             // Test for great move classification
