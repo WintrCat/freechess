@@ -26,7 +26,7 @@ class Stockfish {
                 if (verbose) console.log(message);
 
                 // Get latest depth for progress monitoring
-                let latestDepth = parseInt(message.match(/(?<=depth )\d+/)?.[0] || "0");
+                let latestDepth = parseInt(message.match(/(?:depth )(\d+)/)?.[1] || "0");
                 this.depth = Math.max(latestDepth, this.depth);
 
                 // Best move or checkmate log indicates end of search
@@ -35,14 +35,14 @@ class Stockfish {
 
                     for (let searchMessage of searchMessages) {
                         // Extract depth, MultiPV line ID and evaluation from search message
-                        let idString = searchMessage.match(/(?<=multipv )\d+/)?.[0];
-                        let depthString = searchMessage.match(/(?<=depth )\d+/)?.[0];
+                        let idString = searchMessage.match(/(?:multipv )(\d+)/)?.[1];
+                        let depthString = searchMessage.match(/(?:depth )(\d+)/)?.[1];
 
-                        let moveUCI = searchMessage.match(/(?<= pv ).+?(?= |$)/)?.[0];
+                        let moveUCI = searchMessage.match(/(?: pv )(.+?)(?= |$)/)?.[1];
 
                         let evaluation: Evaluation = {
                             type: searchMessage.includes(" cp ") ? "cp" : "mate",
-                            value: parseInt(searchMessage.match(/(?:(?<=cp )|(?<=mate ))[\d-]+/)?.[0] || "0")
+                            value: parseInt(searchMessage.match(/(?:(?:cp )|(?:mate ))([\d-]+)/)?.[1] || "0")
                         };
 
                         // Invert evaluation if black to play since scores are from black perspective
