@@ -1,0 +1,16 @@
+#announcement {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 8px;
+    padding: 3px;
+
+    width: 100%;
+    background-color: rgb(104, 139, 255);
+}
+
+#announcement img {
+    cursor: pointer;
+}

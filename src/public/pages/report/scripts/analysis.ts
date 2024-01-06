@@ -242,9 +242,9 @@ $("#review-button").on("click", evaluate);
 $("#depth-slider").on("input", () => {
     let depth = parseInt($("#depth-slider").val()?.toString()!);
 
-    if (depth <= 15) {
+    if (depth <= 14) {
         $("#depth-counter").html(depth + " ⚡");
-    } else if (depth <= 18) {
+    } else if (depth <= 17) {
         $("#depth-counter").html(depth + " 🐇");
     } else {
         $("#depth-counter").html(depth + " 🐢");

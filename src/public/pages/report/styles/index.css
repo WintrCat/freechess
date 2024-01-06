@@ -1,6 +1,7 @@
 body {
     margin: 0;
     background-color: var(--primary-color);
+    overflow-x: hidden;
 }
 
 .white {

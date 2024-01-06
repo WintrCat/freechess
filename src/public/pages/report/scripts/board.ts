@@ -234,6 +234,13 @@ $(window).on("keydown", (event) => {
     }
 });
 
+$("#board").on("click", event => {
+    let boardBoundingBox = $<HTMLCanvasElement>("#board").get(0)?.getBoundingClientRect();
+    if (!boardBoundingBox) return;
+
+    traverseMoves(event.clientX > boardBoundingBox.left + boardBoundingBox.width / 2 ? 1 : -1);
+});
+
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
