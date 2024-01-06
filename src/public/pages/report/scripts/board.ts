@@ -53,6 +53,19 @@ async function drawBoard(fen: string) {
         }
     }
 
+    // Draw coordinates
+    ctx.font = "20px Arial";
+    
+    let files = "abcdefgh".split("");
+    for (let x = 0; x < 8; x++) {
+        ctx.fillStyle = colours[x % 2];
+        ctx.fillText(boardFlipped ? files[7 - x] : files[x], x * 90 + 5, 715);
+    }
+    for (let y = 0; y < 8; y++) {
+        ctx.fillStyle = colours[(y + 1) % 2];
+        ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * 90 + 22);
+    }
+
     // Draw last move highlight
     let lastMove = {
         from: { x: 0, y: 0 },
@@ -60,13 +73,14 @@ async function drawBoard(fen: string) {
     };
 
     if (currentMoveIndex > 0 && reportResults) {
-        let lastMoveUCI = reportResults.positions[currentMoveIndex].move!.uci;
+        let lastMoveUCI = reportResults?.positions[currentMoveIndex]?.move?.uci;
+        if (!lastMoveUCI) return;
 
         lastMove.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
         lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2, 4));
 
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = classificationColours[reportResults.positions[currentMoveIndex]!.classification || "book"];
+        ctx.fillStyle = classificationColours[reportResults.positions[currentMoveIndex].classification || "book"];
         ctx.fillRect(lastMove.from.x * 90, lastMove.from.y * 90, 90, 90);
         ctx.fillRect(lastMove.to.x * 90, lastMove.to.y * 90, 90, 90);
         ctx.globalAlpha = 1;
@@ -90,9 +104,11 @@ async function drawBoard(fen: string) {
 
     // Draw last move classification
     if (currentMoveIndex > 0 && reportResults) {
-        let classification = reportResults.positions[currentMoveIndex].classification;
+        let classification = reportResults?.positions[currentMoveIndex]?.classification;
+
+        if (!classification) return;
         ctx.drawImage(
-            classificationIcons[classification!]!, 
+            classificationIcons[classification]!, 
             lastMove.to.x * 90 + 68, 
             lastMove.to.y * 90 - 10, 
             32, 32
@@ -221,9 +237,7 @@ $(window).on("keydown", (event) => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
-    if (reportResults) {
-        drawBoard(reportResults.positions[currentMoveIndex]?.fen || startingPositionFen);
-    } 
+    drawBoard(reportResults?.positions[currentMoveIndex]?.fen || startingPositionFen); 
     updateBoardPlayers();
 });
 
