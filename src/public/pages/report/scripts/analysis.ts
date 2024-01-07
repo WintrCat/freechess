@@ -188,10 +188,10 @@ async function evaluate() {
 
 async function report() {
 
-    // Remove CAPTCHA and progress bar
+    // Remove CAPTCHA
     $(".g-recaptcha").css("display", "none");
-    $("#evaluation-progress-bar").css("display", "none");
     $("#secondary-message").html("");
+    $("#evaluation-progress-bar").attr("value", null);
     logAnalysisInfo("Generating report...");
 
     // Post evaluations and get report results
@@ -229,7 +229,8 @@ async function report() {
         $("#white-accuracy").html(`${reportResults.accuracies.white}%`);
         $("#black-accuracy").html(`${reportResults.accuracies.black}%`);
 
-        // Remove any status message
+        // Remove progress bar and any status message
+        $("#evaluation-progress-bar").css("display", "none");
         logAnalysisInfo("");
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
