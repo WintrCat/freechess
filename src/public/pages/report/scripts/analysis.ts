@@ -233,8 +233,8 @@ async function report() {
 
         // Reveal report cards and update accuracies
         $("#report-cards").css("display", "flex");
-        $("#white-accuracy").html(`${reportResults.accuracies.white}%`);
-        $("#black-accuracy").html(`${reportResults.accuracies.black}%`);
+        $("#white-accuracy").html(`${reportResults.accuracies.white ?? "100"}%`);
+        $("#black-accuracy").html(`${reportResults.accuracies.black ?? "100"}%`);
 
         // Remove progress bar and any status message
         $("#evaluation-progress-bar").css("display", "none");
