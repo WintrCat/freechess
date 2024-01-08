@@ -17,12 +17,12 @@ function logAnalysisError(message: string) {
 }
 
 async function evaluate() {
-
-    // Remove and reset CAPTCHA, remove report cards
+    // Remove and reset CAPTCHA, remove report cards, display progress bar
     $(".g-recaptcha").css("display", "none");
     grecaptcha.reset();
 
     $("#report-cards").css("display", "none");
+    $("#evaluation-progress-bar").css("display", "inline");
 
     // Disallow evaluation if another evaluation is ongoing
     if (ongoingEvaluation) return;
@@ -44,15 +44,17 @@ async function evaluate() {
         let parseResponse = await fetch("/api/parse", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
-            body: JSON.stringify({ pgn })
+            body: JSON.stringify({ pgn }),
         });
 
         let parsedPGN: ParseResponse = await parseResponse.json();
 
         if (!parseResponse.ok) {
-            return logAnalysisError(parsedPGN.message ?? "Failed to parse PGN.");
+            return logAnalysisError(
+                parsedPGN.message ?? "Failed to parse PGN.",
+            );
         }
 
         var positions = parsedPGN.positions!;
@@ -61,18 +63,19 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    whitePlayer.username = pgn.match(/(?:\[White ")(.+)(?="\])/)?.[1] ?? "White Player";
+    whitePlayer.username =
+        pgn.match(/(?:\[White ")(.+)(?="\])/)?.[1] ?? "White Player";
     whitePlayer.rating = pgn.match(/(?:\[WhiteElo ")(.+)(?="\])/)?.[1] ?? "?";
 
-    blackPlayer.username = pgn.match(/(?:\[Black ")(.+)(?="\])/)?.[1] ?? "Black Player";
+    blackPlayer.username =
+        pgn.match(/(?:\[Black ")(.+)(?="\])/)?.[1] ?? "Black Player";
     blackPlayer.rating = pgn.match(/(?:\[BlackElo ")(.+)(?="\])/)?.[1] ?? "?";
 
     updateBoardPlayers();
 
-    // Display progress bar and secondary message
-    $("#evaluation-progress-bar").css("display", "inline");
-    
-    $("#secondary-message").html("It can take around a minute to process a full game.")
+    $("#secondary-message").html(
+        "It can take around a minute to process a full game.",
+    );
 
     // Fetch cloud evaluations where possible
     for (let position of positions) {
@@ -81,17 +84,24 @@ async function evaluate() {
             if (!lastPosition) return;
 
             let cutoffWorker = new Stockfish();
-            cutoffWorker.evaluate(lastPosition.fen, depth).then(engineLines => {
-                lastPosition.cutoffEvaluation = engineLines.find(line => line.id == 1)?.evaluation ?? { type: "cp", value: 0 };
-            });
+            cutoffWorker
+                .evaluate(lastPosition.fen, depth)
+                .then((engineLines) => {
+                    lastPosition.cutoffEvaluation = engineLines.find(
+                        (line) => line.id == 1,
+                    )?.evaluation ?? { type: "cp", value: 0 };
+                });
         }
 
         let queryFen = position.fen.replace(/\s/g, "%20");
         let cloudEvaluationResponse;
         try {
-            cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
-                method: "GET"
-            });
+            cloudEvaluationResponse = await fetch(
+                `https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`,
+                {
+                    method: "GET",
+                },
+            );
 
             if (!cloudEvaluationResponse) break;
         } catch (err) {
@@ -107,7 +117,7 @@ async function evaluate() {
 
         position.topLines = cloudEvaluation.pvs.map((pv: any, id: number) => {
             const evaluationType = pv.cp == undefined ? "mate" : "cp";
-            const evaluationScore = (pv.cp ?? pv.mate) ?? "cp";
+            const evaluationScore = pv.cp ?? pv.mate ?? "cp";
 
             let line: EngineLine = {
                 id: id + 1,
@@ -115,15 +125,15 @@ async function evaluate() {
                 moveUCI: pv.moves.split(" ")[0] ?? "",
                 evaluation: {
                     type: evaluationType,
-                    value: evaluationScore
-                }
-            }
+                    value: evaluationScore,
+                },
+            };
 
             let cloudUCIFixes: { [key: string]: string } = {
-                "e8h8": "e8g8",
-                "e1h1": "e1g1",
-                "e8a8": "e8c8",
-                "e1a1": "e1c1"
+                e8h8: "e8g8",
+                e1h1: "e1g1",
+                e8a8: "e8c8",
+                e1a1: "e1c1",
             };
             line.moveUCI = cloudUCIFixes[line.moveUCI] ?? line.moveUCI;
 
@@ -137,7 +147,8 @@ async function evaluate() {
 
         position.worker = "cloud";
 
-        let progress = (positions.indexOf(position) + 1) / positions.length * 100;
+        let progress =
+            ((positions.indexOf(position) + 1) / positions.length) * 100;
         $("#evaluation-progress-bar").attr("value", progress);
         logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
     }
@@ -147,13 +158,15 @@ async function evaluate() {
 
     const stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
-        if (!positions.some(pos => !pos.topLines)) {
+        if (!positions.some((pos) => !pos.topLines)) {
             clearInterval(stockfishManager);
 
             logAnalysisInfo("Evaluation complete.");
             $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
-            $("#secondary-message").html("Please complete the CAPTCHA to continue.");
+            $("#secondary-message").html(
+                "Please complete the CAPTCHA to continue.",
+            );
 
             evaluatedPositions = positions;
             ongoingEvaluation = false;
@@ -166,7 +179,7 @@ async function evaluate() {
             if (position.worker || workerCount >= 8) continue;
 
             let worker = new Stockfish();
-            worker.evaluate(position.fen, depth).then(engineLines => {
+            worker.evaluate(position.fen, depth).then((engineLines) => {
                 position.topLines = engineLines;
                 workerCount--;
             });
@@ -185,16 +198,14 @@ async function evaluate() {
             }
         }
 
-        let progress = workerDepths / (positions.length * depth) * 100;
+        let progress = (workerDepths / (positions.length * depth)) * 100;
 
         $("#evaluation-progress-bar").attr("value", progress);
         logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
     }, 10);
-
 }
 
 async function report() {
-
     // Remove CAPTCHA
     $(".g-recaptcha").css("display", "none");
     $("#secondary-message").html("");
@@ -206,23 +217,25 @@ async function report() {
         let reportResponse = await fetch("/api/report", {
             method: "POST",
             headers: {
-                "Content-Type": "application/json"
+                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                positions: evaluatedPositions.map(pos => {
+                positions: evaluatedPositions.map((pos) => {
                     if (pos.worker != "cloud") {
                         pos.worker = "local";
                     }
                     return pos;
                 }),
-                captchaToken: grecaptcha.getResponse() || "none"
-            })
+                captchaToken: grecaptcha.getResponse() || "none",
+            }),
         });
 
         let report: ReportResponse = await reportResponse.json();
 
         if (!reportResponse.ok) {
-            return logAnalysisError(report.message ?? "Failed to generate report.");
+            return logAnalysisError(
+                report.message ?? "Failed to generate report.",
+            );
         }
 
         // Set report results to results given by server
@@ -233,8 +246,12 @@ async function report() {
 
         // Reveal report cards and update accuracies
         $("#report-cards").css("display", "flex");
-        $("#white-accuracy").html(`${reportResults.accuracies.white ?? "100"}%`);
-        $("#black-accuracy").html(`${reportResults.accuracies.black ?? "100"}%`);
+        $("#white-accuracy").html(
+            `${reportResults.accuracies.white ?? "100"}%`,
+        );
+        $("#black-accuracy").html(
+            `${reportResults.accuracies.black ?? "100"}%`,
+        );
 
         // Remove progress bar and any status message
         $("#evaluation-progress-bar").css("display", "none");
@@ -242,7 +259,6 @@ async function report() {
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
     }
-
 }
 
 $("#review-button").on("click", evaluate);
