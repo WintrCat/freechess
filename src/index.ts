@@ -20,6 +20,6 @@ app.get("/", async (req, res) => {
     res.sendFile(path.resolve("src/public/pages/report/index.html"));
 });
 
-app.listen(8080, () => {
+app.listen(process.env.PORT, () => {
     console.log("Server running.");
 });

@@ -5,11 +5,13 @@ interface Coordinate {
     y: number
 }
 
-interface InfluencingPiece {
+export interface InfluencingPiece {
     square: Square,
     color: string,
     type: string
 }
+
+export const promotions = [undefined, "b", "n", "r", "q"];
 
 export const pieceValues: { [key: string]: number } = {
     "p": 1,
@@ -111,17 +113,22 @@ export function getDefenders(fen: string, square: Square) {
     board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, piece.color == "w" ? "b" : "w"));
 
     for (let attacker of attackers) {
-        board.move({
-            from: attacker.square,
-            to: square
-        });
-
-        let counterattackers = getAttackers(board.fen(), square);
-        if (!defenders || counterattackers.length < defenders.length) {
-            defenders = counterattackers;
+        for (let promotion of promotions) {
+            try {
+                board.move({
+                    from: attacker.square,
+                    to: square,
+                    promotion: promotion
+                });
+        
+                let counterattackers = getAttackers(board.fen(), square);
+                if (!defenders || counterattackers.length < defenders.length) {
+                    defenders = counterattackers;
+                }
+        
+                board.undo();
+            } catch (err) {}
         }
-
-        board.undo();
     }
 
     return defenders ?? [];
@@ -138,8 +145,6 @@ export function isPieceHanging(lastFen: string, fen: string, square: Square) {
 
     let attackers = getAttackers(fen, square);
     let defenders = getDefenders(fen, square);
-
-    console.log(`FEN: ${fen}`);
 
     // If piece was just traded equally or better, not hanging
     if (pieceValues[lastPiece.type] >= pieceValues[piece.type] && lastPiece.color != piece.color) {

@@ -6,7 +6,7 @@ import {
     classificationValues, 
     getEvaluationLossThreshold 
 } from "./classification";
-import { isPieceHanging, pieceValues } from "./board";
+import { InfluencingPiece, getAttackers, isPieceHanging, pieceValues, promotions } from "./board";
 
 import { EvaluatedPosition } from "./types/Position";
 import Report from "./types/Report";
@@ -45,6 +45,9 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 moveUCI: ""
             });
         }
+
+        let absoluteEvaluation = evaluation.value * (moveColour == "white" ? 1 : -1);
+        let previousAbsoluteValue = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
         
         // Calculate evaluation loss as a result of this move
         let evalLoss = Infinity;
@@ -100,11 +103,11 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             // If no mate last move but you blundered a mate
             else if (previousEvaluation.type == "cp" && evaluation.type == "mate") {
-                let absoluteMate = Math.abs(evaluation.value);
-
-                if (absoluteMate <= 2) {
+                if (absoluteEvaluation > 0) {
+                    position.classification = Classification.BEST;
+                } else if (absoluteEvaluation >= -2) {
                     position.classification = Classification.BLUNDER;
-                } else if (absoluteMate <= 5) {
+                } else if (absoluteEvaluation >= -5) {
                     position.classification = Classification.MISTAKE;
                 } else {
                     position.classification = Classification.INACCURACY;
@@ -113,13 +116,13 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             // If mate last move and there is no longer a mate
             else if (previousEvaluation.type == "mate" && evaluation.type == "cp") {
-                let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
-
-                if (absoluteValue >= 400) {
+                if (previousAbsoluteValue < 0 && absoluteEvaluation < 0) {
+                    position.classification = Classification.BEST;
+                } else if (absoluteEvaluation >= 400) {
                     position.classification = Classification.GOOD;
-                } else if (absoluteValue >= 150) {
+                } else if (absoluteEvaluation >= 150) {
                     position.classification = Classification.INACCURACY;
-                } else if (absoluteValue >= -100) {
+                } else if (absoluteEvaluation >= -100) {
                     position.classification = Classification.MISTAKE;
                 } else {
                     position.classification = Classification.BLUNDER;
@@ -128,23 +131,20 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             // If mate last move and forced mate still exists
             else if (previousEvaluation.type == "mate" && evaluation.type == "mate") {
-                let prevAbsoluteMate = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
-                let newAbsoluteMate = evaluation.value * (moveColour == "white" ? 1 : -1);
-
-                if (prevAbsoluteMate > 0) {
-                    if (newAbsoluteMate <= -4) {
+                if (previousAbsoluteValue > 0) {
+                    if (absoluteEvaluation <= -4) {
                         position.classification = Classification.MISTAKE;
-                    } else if (newAbsoluteMate < 0) {
+                    } else if (absoluteEvaluation < 0) {
                         position.classification = Classification.BLUNDER
-                    } else if (newAbsoluteMate < prevAbsoluteMate) {
+                    } else if (absoluteEvaluation < previousAbsoluteValue) {
                         position.classification = Classification.BEST;
-                    } else if (newAbsoluteMate <= prevAbsoluteMate + 2) {
+                    } else if (absoluteEvaluation <= previousAbsoluteValue + 2) {
                         position.classification = Classification.EXCELLENT;
                     } else {
                         position.classification = Classification.GOOD;
                     }
                 } else {
-                    if (newAbsoluteMate == prevAbsoluteMate) {
+                    if (absoluteEvaluation == previousAbsoluteValue) {
                         position.classification = Classification.BEST;
                     } else {
                         position.classification = Classification.GOOD;
@@ -157,21 +157,19 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         // If current verdict is best, check for possible brilliancy
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
-            if (evaluation.value * (moveColour == "white" ? 1 : -1) > 0) {
+            // Must be winning for the side that played the brilliancy
+            if (absoluteEvaluation > 0) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
+                if (lastBoard.isCheck()) continue;
 
                 let lastPiece = lastBoard.get(position.move.uci.slice(2, 4) as Square) || { type: "m" };
 
-                // If it is a king move to get out of check, not brilliant
-                if (lastBoard.isCheck() && position.move.san.startsWith("K")) {
-                    continue;
-                }
-
-                let maxSacrificeValue = 0;
+                let sacrificedPieces: InfluencingPiece[] = [];
                 for (let row of currentBoard.board()) {
                     for (let piece of row) {
-                        if (piece?.color != moveColour.charAt(0)) continue;
+                        if (!piece) continue;
+                        if (piece.color != moveColour.charAt(0)) continue;
                         if (piece.type == "k" || piece.type == "p") continue;
 
                         // If the piece just captured is of higher or equal value than the candidate
@@ -180,17 +178,74 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                             continue;
                         }
 
+                        // If the piece is otherwise hanging, brilliant
                         if (isPieceHanging(lastPosition.fen, position.fen, piece.square)) {
                             position.classification = Classification.BRILLIANT;
-                            maxSacrificeValue = Math.max(maxSacrificeValue, pieceValues[piece.type]);
+                            sacrificedPieces.push(piece);
                         }
                     }
-                    if (position.classification == Classification.BRILLIANT) break;
                 }
 
-                // If an enemy piece of greater value than the most valuable
-                // sacrificed piece is also hanging, danger levels, not brilliant
-                
+                // If all captures of all of your hanging pieces would result in an enemy piece
+                // of greater or equal value also being hanging OR mate in 1, not brilliant
+                if (!currentBoard.isCheck()) {
+                    let anyPieceViablyCapturable = false;
+                    let captureTestBoard = new Chess(position.fen);
+
+                    for (let piece of sacrificedPieces) {
+                        let attackers = getAttackers(position.fen, piece.square);
+
+                        for (let attacker of attackers) {
+                            for (let promotion of promotions) {
+                                try {
+                                    captureTestBoard.move({
+                                        from: attacker.square,
+                                        to: piece.square,
+                                        promotion: promotion
+                                    });
+
+                                    // If the capture of the piece with the current attacker leads to
+                                    // a piece of greater or equal value being hung (if attacker is pinned)
+                                    let attackerPinned = false;
+                                    for (let row of captureTestBoard.board()) {
+                                        for (let enemyPiece of row) {
+                                            if (!enemyPiece) continue;
+                                            if (enemyPiece.color == captureTestBoard.turn() || enemyPiece.type == "k") continue;
+                    
+                                            if (
+                                                isPieceHanging(lastPosition.fen, position.fen, enemyPiece.square)
+                                                && pieceValues[enemyPiece.type] >= Math.max(...sacrificedPieces.map(sack => pieceValues[sack.type]))
+                                                && !getAttackers(position.fen, enemyPiece.square).some(
+                                                    atk => isPieceHanging(lastPosition.fen, position.fen, atk.square)
+                                                )
+                                            ) {
+                                                attackerPinned = true;
+                                                break;
+                                            }
+                                        }
+                                        if (attackerPinned) break;
+                                    }
+
+                                    // If the capture of the piece leads to mate in 1
+                                    if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                        anyPieceViablyCapturable = true;
+                                        break;
+                                    }
+
+                                    captureTestBoard.undo();
+                                } catch (err) {}
+                            }
+
+                            if (anyPieceViablyCapturable) break;
+                        }
+
+                        if (anyPieceViablyCapturable) break;
+                    }
+
+                    if (!anyPieceViablyCapturable) {
+                        position.classification = Classification.BEST;
+                    }
+                }
             }
 
             // Test for great move classification
@@ -205,8 +260,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         }
 
         // Do not allow blunder if move still completely winning
-        let absoluteValue = evaluation.value * (moveColour == "white" ? 1 : -1);
-        if (position.classification == Classification.BLUNDER && absoluteValue >= 600) {
+        if (position.classification == Classification.BLUNDER && absoluteEvaluation >= 600) {
+            position.classification = Classification.GOOD;
+        }
+
+        // Do not allow blunder if you were already in a completely lost position
+        if (position.classification == Classification.BLUNDER && previousAbsoluteValue <= -600) {
             position.classification = Classification.GOOD;
         }
 

@@ -61,11 +61,11 @@ async function evaluate() {
     }
 
     // Update board player usernames
-    whitePlayer.username = pgn.match(/(?<=\[White ").+(?="\])/)?.[0] ?? "White Player";
-    whitePlayer.rating = pgn.match(/(?<=\[WhiteElo ").+(?="\])/)?.[0] ?? "?";
+    whitePlayer.username = pgn.match(/(?:\[White ")(.+)(?="\])/)?.[1] ?? "White Player";
+    whitePlayer.rating = pgn.match(/(?:\[WhiteElo ")(.+)(?="\])/)?.[1] ?? "?";
 
-    blackPlayer.username = pgn.match(/(?<=\[Black ").+(?="\])/)?.[0] ?? "Black Player";
-    blackPlayer.rating = pgn.match(/(?<=\[BlackElo ").+(?="\])/)?.[0] ?? "?";
+    blackPlayer.username = pgn.match(/(?:\[Black ")(.+)(?="\])/)?.[1] ?? "Black Player";
+    blackPlayer.rating = pgn.match(/(?:\[BlackElo ")(.+)(?="\])/)?.[1] ?? "?";
 
     updateBoardPlayers();
 
@@ -195,10 +195,10 @@ async function evaluate() {
 
 async function report() {
 
-    // Remove CAPTCHA and progress bar
+    // Remove CAPTCHA
     $(".g-recaptcha").css("display", "none");
-    $("#evaluation-progress-bar").css("display", "none");
     $("#secondary-message").html("");
+    $("#evaluation-progress-bar").attr("value", null);
     logAnalysisInfo("Generating report...");
 
     // Post evaluations and get report results
@@ -236,7 +236,8 @@ async function report() {
         $("#white-accuracy").html(`${reportResults.accuracies.white}%`);
         $("#black-accuracy").html(`${reportResults.accuracies.black}%`);
 
-        // Remove any status message
+        // Remove progress bar and any status message
+        $("#evaluation-progress-bar").css("display", "none");
         logAnalysisInfo("");
     } catch (err) {
         return logAnalysisError("Failed to generate report.");
@@ -249,9 +250,9 @@ $("#review-button").on("click", evaluate);
 $("#depth-slider").on("input", () => {
     let depth = parseInt($("#depth-slider").val()?.toString()!);
 
-    if (depth <= 15) {
+    if (depth <= 14) {
         $("#depth-counter").html(depth + " ⚡");
-    } else if (depth <= 18) {
+    } else if (depth <= 17) {
         $("#depth-counter").html(depth + " 🐇");
     } else {
         $("#depth-counter").html(depth + " 🐢");

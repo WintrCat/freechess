@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/static/global.css">
 
     <link rel="stylesheet" href="/static/pages/report/styles/index.css">
+    <link rel="stylesheet" href="/static/pages/report/styles/announcement.css">
     <link rel="stylesheet" href="/static/pages/report/styles/board.css">
     <link rel="stylesheet" href="/static/pages/report/styles/gameselect.css">
     <link rel="stylesheet" href="/static/pages/report/styles/reviewpanel.css">
@@ -25,6 +26,11 @@
 
 </head>
 <body>
+
+    <div id="announcement">
+        <b>I pay to keep my app free for everyone. Any donations appreciated ❤️</b>
+        <img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi5.png?v=3"/>
+    </div>
 
     <div class="center">
         <div id="review-container">
@@ -68,10 +74,10 @@
 
                     <b class="white">⚙️ Search depth</b>
                     <div id="depth-slider-container">
-                        <input id="depth-slider" type="range" min="12" max="22" value="18">
-                        <span id="depth-counter" class="white">18 🐇</span>
+                        <input id="depth-slider" type="range" min="12" max="20" value="16">
+                        <span id="depth-counter" class="white">16 🐇</span>
                     </div>
-                    <h6 id="depth-message" class="white">Lower depths recommended for mobile devices.</h6>
+                    <h6 id="depth-message" class="white">Lower depths recommended for slower devices.</h6>
 
                     <progress id="evaluation-progress-bar" max="100"></progress>
 
@@ -115,6 +121,8 @@
     <div id="game-select-menu-container"></div>
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <script src="/static/pages/report/scripts/announcement.js"></script>
 
     <script src="/static/pages/report/scripts/sprites.js"></script>
     <script src="/static/pages/report/scripts/evalbar.js"></script>
