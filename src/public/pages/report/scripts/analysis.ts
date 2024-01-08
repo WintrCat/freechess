@@ -87,9 +87,16 @@ async function evaluate() {
         }
 
         let queryFen = position.fen.replace(/\s/g, "%20");
-        let cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
-            method: "GET"
-        });
+        let cloudEvaluationResponse;
+        try {
+            cloudEvaluationResponse = await fetch(`https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`, {
+                method: "GET"
+            });
+
+            if (!cloudEvaluationResponse) break;
+        } catch (err) {
+            break;
+        }
 
         if (!cloudEvaluationResponse.ok) {
             placeCutoff();
