@@ -13,8 +13,6 @@ import Report from "./types/Report";
 
 import openings from "../resources/openings.json";
 
-const theo = "8/8/8/1R6/P3B3/1Q3K2/7P/k7 b - - 8 70";
-
 async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     
     // Generate classifications for each position
@@ -256,6 +254,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 && position.classification != Classification.BRILLIANT
                 && lastPosition.classification == Classification.BLUNDER
                 && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150
+                && !isPieceHanging(lastPosition.fen, position.fen, position.move.uci.slice(2, 4) as Square)
             ) {
                 position.classification = Classification.GREAT;
             }
