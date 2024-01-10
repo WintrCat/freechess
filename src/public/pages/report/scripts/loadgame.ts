@@ -67,7 +67,7 @@ async function fetchChessComGames(username: string) {
 
             $("#games-list").append(gameListing);
         }
-    } catch (err) {
+    } catch {
         $("#games-list").html("No games found.");
     }
 
@@ -118,7 +118,7 @@ async function fetchLichessGames(username: string) {
 
             $("#games-list").append(gameListing);
         }
-    } catch (err) {
+    } catch {
         $("#games-list").html("No games found.");
     }
 

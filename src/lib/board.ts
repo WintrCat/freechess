@@ -79,7 +79,7 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
                         from: offsetSquare,
                         to: square
                     });
-                } catch (err) {
+                } catch {
                     oppositeKingFound = true;
                     break;
                 }
@@ -127,7 +127,7 @@ export function getDefenders(fen: string, square: Square) {
                 }
         
                 board.undo();
-            } catch (err) {}
+            } catch {}
         }
     }
 

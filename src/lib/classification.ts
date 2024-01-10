@@ -12,16 +12,16 @@ export enum Classification {
 }
 
 export const classificationValues = {
-    "blunder": 1,
-    "mistake": 2,
-    "inaccuracy": 3,
-    "good": 4,
-    "excellent": 5,
-    "best": 6,
-    "great": 6,
-    "brilliant": 6,
-    "book": 6,
-    "forced": 6
+    "blunder": 0,
+    "mistake": 0.2,
+    "inaccuracy": 0.4,
+    "good": 0.65,
+    "excellent": 0.9,
+    "best": 1,
+    "great": 1,
+    "brilliant": 1,
+    "book": 1,
+    "forced": 1
 }
 
 // Classification types with no special rules

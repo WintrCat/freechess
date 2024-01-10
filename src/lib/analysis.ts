@@ -13,6 +13,8 @@ import Report from "./types/Report";
 
 import openings from "../resources/openings.json";
 
+const theo = "8/8/8/1R6/P3B3/1Q3K2/7P/k7 b - - 8 70";
+
 async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     
     // Generate classifications for each position
@@ -47,7 +49,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         }
 
         let absoluteEvaluation = evaluation.value * (moveColour == "white" ? 1 : -1);
-        let previousAbsoluteValue = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
+        let previousAbsoluteEvaluation = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
         
         // Calculate evaluation loss as a result of this move
         let evalLoss = Infinity;
@@ -116,7 +118,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             // If mate last move and there is no longer a mate
             else if (previousEvaluation.type == "mate" && evaluation.type == "cp") {
-                if (previousAbsoluteValue < 0 && absoluteEvaluation < 0) {
+                if (previousAbsoluteEvaluation < 0 && absoluteEvaluation < 0) {
                     position.classification = Classification.BEST;
                 } else if (absoluteEvaluation >= 400) {
                     position.classification = Classification.GOOD;
@@ -131,20 +133,20 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             // If mate last move and forced mate still exists
             else if (previousEvaluation.type == "mate" && evaluation.type == "mate") {
-                if (previousAbsoluteValue > 0) {
+                if (previousAbsoluteEvaluation > 0) {
                     if (absoluteEvaluation <= -4) {
                         position.classification = Classification.MISTAKE;
                     } else if (absoluteEvaluation < 0) {
                         position.classification = Classification.BLUNDER
-                    } else if (absoluteEvaluation < previousAbsoluteValue) {
+                    } else if (absoluteEvaluation < previousAbsoluteEvaluation) {
                         position.classification = Classification.BEST;
-                    } else if (absoluteEvaluation <= previousAbsoluteValue + 2) {
+                    } else if (absoluteEvaluation <= previousAbsoluteEvaluation + 2) {
                         position.classification = Classification.EXCELLENT;
                     } else {
                         position.classification = Classification.GOOD;
                     }
                 } else {
-                    if (absoluteEvaluation == previousAbsoluteValue) {
+                    if (absoluteEvaluation == previousAbsoluteEvaluation) {
                         position.classification = Classification.BEST;
                     } else {
                         position.classification = Classification.GOOD;
@@ -158,7 +160,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
             // Must be winning for the side that played the brilliancy
-            if (absoluteEvaluation > 0) {
+            if (absoluteEvaluation > 0 && absoluteEvaluation < 700) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
                 if (lastBoard.isCheck()) continue;
@@ -233,7 +235,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                     }
 
                                     captureTestBoard.undo();
-                                } catch (err) {}
+                                } catch {}
                             }
 
                             if (anyPieceViablyCapturable) break;
@@ -265,7 +267,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         }
 
         // Do not allow blunder if you were already in a completely lost position
-        if (position.classification == Classification.BLUNDER && previousAbsoluteValue <= -600) {
+        if (position.classification == Classification.BLUNDER && previousAbsoluteEvaluation <= -600) {
             position.classification = Classification.GOOD;
         }
 
@@ -300,41 +302,42 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
             let board = new Chess(position.fen);
 
-            line.moveSAN = board.move({
-                from: line.moveUCI.slice(0, 2),
-                to: line.moveUCI.slice(2, 4),
-                promotion: line.moveUCI.slice(4) || undefined
-            }).san;
+            try {
+                line.moveSAN = board.move({
+                    from: line.moveUCI.slice(0, 2),
+                    to: line.moveUCI.slice(2, 4),
+                    promotion: line.moveUCI.slice(4) || undefined
+                }).san;
+            } catch {
+                line.moveSAN = "";
+            }
         }
     }
 
     // Calculate computer accuracy percentages
-    let whiteAccuracy = {
-        current: 0,
-        maximum: 0
-    };
-    let blackAccuracy = {
-        current: 0,
-        maximum: 0
+    let accuracies = {
+        white: {
+            current: 0,
+            maximum: 0
+        },
+        black: {
+            current: 0,
+            maximum: 0
+        }
     };
 
     for (let position of positions.slice(1)) {
-        let moveColour = position.fen.includes(" b ") ? "white" : "black";
+        const moveColour = position.fen.includes(" b ") ? "white" : "black";
 
-        if (moveColour == "white") {
-            whiteAccuracy.current += classificationValues[position.classification!];
-            whiteAccuracy.maximum += 6;
-        } else {
-            blackAccuracy.current += classificationValues[position.classification!];
-            blackAccuracy.maximum += 6;
-        }
+        accuracies[moveColour].current += classificationValues[position.classification!];
+        accuracies[moveColour].maximum++;
     }
 
     // Return complete report
     return {
         accuracies: {
-            white: parseInt((whiteAccuracy.current / whiteAccuracy.maximum * 100).toFixed(2)),
-            black: parseInt((blackAccuracy.current / blackAccuracy.maximum * 100).toFixed(2))
+            white: parseFloat((accuracies.white.current / accuracies.white.maximum * 100).toFixed(1)),
+            black: parseFloat((accuracies.black.current / accuracies.black.maximum * 100).toFixed(1))
         },
         positions: positions
     };

@@ -58,7 +58,7 @@ async function evaluate() {
         }
 
         var positions = parsedPGN.positions!;
-    } catch (err) {
+    } catch {
         return logAnalysisError("Failed to parse PGN.");
     }
 
@@ -104,7 +104,7 @@ async function evaluate() {
             );
 
             if (!cloudEvaluationResponse) break;
-        } catch (err) {
+        } catch {
             break;
         }
 
@@ -256,7 +256,7 @@ async function report() {
         // Remove progress bar and any status message
         $("#evaluation-progress-bar").css("display", "none");
         logAnalysisInfo("");
-    } catch (err) {
+    } catch {
         return logAnalysisError("Failed to generate report.");
     }
 }
