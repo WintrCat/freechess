@@ -336,8 +336,8 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     // Return complete report
     return {
         accuracies: {
-            white: parseFloat((accuracies.white.current / accuracies.white.maximum * 100).toFixed(1)),
-            black: parseFloat((accuracies.black.current / accuracies.black.maximum * 100).toFixed(1))
+            white: accuracies.white.current / accuracies.white.maximum * 100,
+            black: accuracies.black.current / accuracies.black.maximum * 100
         },
         positions: positions
     };
