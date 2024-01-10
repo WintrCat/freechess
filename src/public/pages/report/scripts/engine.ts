@@ -8,7 +8,7 @@ class Stockfish {
 
     constructor() {
         this.worker.postMessage("uci");
-        this.worker.postMessage("setoption name MultiPV value 2")
+        this.worker.postMessage("setoption name MultiPV value 2");
     }
 
     async evaluate(fen: string, targetDepth: number, verbose: boolean = false): Promise<EngineLine[]> {
@@ -30,7 +30,7 @@ class Stockfish {
                 this.depth = Math.max(latestDepth, this.depth);
 
                 // Best move or checkmate log indicates end of search
-                if (message.startsWith("bestmove") || (message.includes("mate 0") && !message.includes(" pv "))) {            
+                if (message.startsWith("bestmove") || message.includes("depth 0")) {            
                     let searchMessages = messages.filter(msg => msg.startsWith("info depth"));
 
                     for (let searchMessage of searchMessages) {
