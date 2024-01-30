@@ -57,6 +57,7 @@
 */
 #pgn {
     width: 90%;
+    height: 130px;
     resize: none;
 
     border-radius: 10px;

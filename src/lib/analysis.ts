@@ -160,7 +160,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
             // Must be winning for the side that played the brilliancy
-            if (absoluteEvaluation > 0 && absoluteSecondEvaluation < 700) {
+            if (absoluteEvaluation >= 0 && absoluteSecondEvaluation < 700) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
                 if (lastBoard.isCheck()) continue;

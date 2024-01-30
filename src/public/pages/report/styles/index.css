@@ -8,6 +8,12 @@ body {
     color: white;
 }
 
+@media (max-width: 999px) {
+    #review-panel {
+        grid-template-rows: 88% 12%;
+    }
+}
+
 @media (max-width: 1264px) {
     #review-panel {
         grid-template-rows: 82% 18%;
