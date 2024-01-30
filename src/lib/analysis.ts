@@ -48,6 +48,8 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         let absoluteEvaluation = evaluation.value * (moveColour == "white" ? 1 : -1);
         let previousAbsoluteEvaluation = previousEvaluation.value * (moveColour == "white" ? 1 : -1);
+
+        let absoluteSecondEvaluation = (secondTopMove?.evaluation.value ?? 0) * (moveColour == "white" ? 1 : -1);
         
         // Calculate evaluation loss as a result of this move
         let evalLoss = Infinity;
@@ -158,7 +160,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
             // Must be winning for the side that played the brilliancy
-            if (absoluteEvaluation > 0 && absoluteEvaluation < 700) {
+            if (absoluteEvaluation > 0 && absoluteSecondEvaluation < 700) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
                 if (lastBoard.isCheck()) continue;
@@ -188,63 +190,58 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
                 // If all captures of all of your hanging pieces would result in an enemy piece
                 // of greater or equal value also being hanging OR mate in 1, not brilliant
-                if (!currentBoard.isCheck()) {
-                    let anyPieceViablyCapturable = false;
-                    let captureTestBoard = new Chess(position.fen);
+                let anyPieceViablyCapturable = false;
+                let captureTestBoard = new Chess(position.fen);
 
-                    for (let piece of sacrificedPieces) {
-                        let attackers = getAttackers(position.fen, piece.square);
+                for (let piece of sacrificedPieces) {
+                    let attackers = getAttackers(position.fen, piece.square);
 
-                        for (let attacker of attackers) {
-                            for (let promotion of promotions) {
-                                try {
-                                    captureTestBoard.move({
-                                        from: attacker.square,
-                                        to: piece.square,
-                                        promotion: promotion
-                                    });
+                    for (let attacker of attackers) {
+                        for (let promotion of promotions) {
+                            try {
+                                captureTestBoard.move({
+                                    from: attacker.square,
+                                    to: piece.square,
+                                    promotion: promotion
+                                });
 
-                                    // If the capture of the piece with the current attacker leads to
-                                    // a piece of greater or equal value being hung (if attacker is pinned)
-                                    let attackerPinned = false;
-                                    for (let row of captureTestBoard.board()) {
-                                        for (let enemyPiece of row) {
-                                            if (!enemyPiece) continue;
-                                            if (enemyPiece.color == captureTestBoard.turn() || enemyPiece.type == "k") continue;
-                    
-                                            if (
-                                                isPieceHanging(lastPosition.fen, position.fen, enemyPiece.square)
-                                                && pieceValues[enemyPiece.type] >= Math.max(...sacrificedPieces.map(sack => pieceValues[sack.type]))
-                                                && !getAttackers(position.fen, enemyPiece.square).some(
-                                                    atk => isPieceHanging(lastPosition.fen, position.fen, atk.square)
-                                                )
-                                            ) {
-                                                attackerPinned = true;
-                                                break;
-                                            }
+                                // If the capture of the piece with the current attacker leads to
+                                // a piece of greater or equal value being hung (if attacker is pinned)
+                                let attackerPinned = false;
+                                for (let row of captureTestBoard.board()) {
+                                    for (let enemyPiece of row) {
+                                        if (!enemyPiece) continue;
+                                        if (enemyPiece.color == captureTestBoard.turn() || enemyPiece.type == "k") continue;
+                
+                                        if (
+                                            isPieceHanging(position.fen, captureTestBoard.fen(), enemyPiece.square)
+                                            && pieceValues[enemyPiece.type] >= Math.max(...sacrificedPieces.map(sack => pieceValues[sack.type]))
+                                        ) {
+                                            attackerPinned = true;
+                                            break;
                                         }
-                                        if (attackerPinned) break;
                                     }
+                                    if (attackerPinned) break;
+                                }
 
-                                    // If the capture of the piece leads to mate in 1
-                                    if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
-                                        anyPieceViablyCapturable = true;
-                                        break;
-                                    }
+                                // If the capture of the piece leads to mate in 1
+                                if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                    anyPieceViablyCapturable = true;
+                                    break;
+                                }
 
-                                    captureTestBoard.undo();
-                                } catch {}
-                            }
-
-                            if (anyPieceViablyCapturable) break;
+                                captureTestBoard.undo();
+                            } catch {}
                         }
 
                         if (anyPieceViablyCapturable) break;
                     }
 
-                    if (!anyPieceViablyCapturable) {
-                        position.classification = Classification.BEST;
-                    }
+                    if (anyPieceViablyCapturable) break;
+                }
+
+                if (!anyPieceViablyCapturable) {
+                    position.classification = Classification.BEST;
                 }
             }
 

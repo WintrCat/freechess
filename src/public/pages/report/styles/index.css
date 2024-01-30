@@ -8,6 +8,18 @@ body {
     color: white;
 }
 
+@media (max-width: 1264px) {
+    #review-panel {
+        grid-template-rows: 82% 18%;
+    }
+}
+
+@media (min-width: 1265px) {
+    #review-panel {
+        grid-template-rows: 88% 12%;
+    }
+}
+
 @media (min-width: 1000px) and (min-height: 860px) {
     #review-container {
         display: grid;
@@ -17,8 +29,6 @@ body {
     }
 
     #review-panel {
-        grid-template-rows: 90% 10%;
-        
         margin: 20px;
     }
 }

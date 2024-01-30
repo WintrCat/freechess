@@ -64,6 +64,7 @@
                             <option value="pgn">PGN</option>
                             <option value="chesscom">Chess.com</option>
                             <option value="lichess">Lichess.org</option>
+                            <option value="json">JSON</option>
                         </select>
                     </div>
 
@@ -107,6 +108,8 @@
                             <b id="classification-message"></b>
                         </div>
 
+                        <b id="top-alternative-message">Qxf2+ was best</b>
+
                         <div id="engine-suggestions">
                             <h2 id="engine-suggestions-title" class="white">Engine</h2>
                         </div>
@@ -115,12 +118,20 @@
                     </div>
                 </div>
 
-                <div id="review-panel-toolbar" class="center">
-                    <img id="flip-board-button" src="/static/media/flip.png" alt="Flip Board" title="Flip board">
-                    <img id="back-start-move-button" src="/static/media/back_to_start.png" alt="Back to start" title="Back to start">
-                    <img id="back-move-button" src="/static/media/back.png" alt="Back" title="Back">
-                    <img id="next-move-button" src="/static/media/next.png" alt="Next" title="Next">
-                    <img id="go-end-move-button" src="/static/media/go_to_end.png" alt="Go to end" title="Go to end">
+                <div id="review-panel-toolbar">
+                    <div id="review-panel-toolbar-buttons" class="center">
+                        <img id="flip-board-button" src="/static/media/flip.png" alt="Flip Board" title="Flip board">
+                        <img id="back-start-move-button" src="/static/media/back_to_start.png" alt="Back to start" title="Back to start">
+                        <img id="back-move-button" src="/static/media/back.png" alt="Back" title="Back">
+                        <img id="next-move-button" src="/static/media/next.png" alt="Next" title="Next">
+                        <img id="go-end-move-button" src="/static/media/go_to_end.png" alt="Go to end" title="Go to end">
+                        <img id="save-analysis-button" src="/static/media/save.png" alt="Save analysis" title="Save analysis">
+                    </div>
+
+                    <div class="white" style="margin-bottom:10px">
+                        <input id="suggestion-arrows-setting" type="checkbox">
+                        <span>Suggestion Arrows</span>
+                    </div>
                 </div>
             </div>
         </div>

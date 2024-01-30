@@ -205,6 +205,24 @@ async function evaluate() {
     }, 10);
 }
 
+function loadReportCards() {
+    // Reset chess board, draw evaluation for starting position
+    traverseMoves(-Infinity);
+
+    // Reveal report cards and update accuracies
+    $("#report-cards").css("display", "flex");
+    $("#white-accuracy").html(
+        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`,
+    );
+    $("#black-accuracy").html(
+        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`,
+    );
+
+    // Remove progress bar and any status message
+    $("#evaluation-progress-bar").css("display", "none");
+    logAnalysisInfo("");
+}
+
 async function report() {
     // Remove CAPTCHA
     $(".g-recaptcha").css("display", "none");
@@ -241,27 +259,30 @@ async function report() {
         // Set report results to results given by server
         reportResults = report.results!;
 
-        // Reset chess board, draw evaluation for starting position
-        traverseMoves(-Infinity);
-
-        // Reveal report cards and update accuracies
-        $("#report-cards").css("display", "flex");
-        $("#white-accuracy").html(
-            `${reportResults.accuracies.white.toFixed(1) ?? "100"}%`,
-        );
-        $("#black-accuracy").html(
-            `${reportResults.accuracies.black.toFixed(1) ?? "100"}%`,
-        );
-
-        // Remove progress bar and any status message
-        $("#evaluation-progress-bar").css("display", "none");
-        logAnalysisInfo("");
+        loadReportCards();
     } catch {
         return logAnalysisError("Failed to generate report.");
     }
 }
 
-$("#review-button").on("click", evaluate);
+$("#review-button").on("click", () => {
+    if ($("#load-type-dropdown").val() == "json") {
+        try {
+            let savedAnalysis: SavedAnalysis = JSON.parse($("#pgn").val()?.toString()!);
+
+            whitePlayer = savedAnalysis.players.white;
+            blackPlayer = savedAnalysis.players.black;
+            updateBoardPlayers();
+
+            reportResults = savedAnalysis.results;
+            loadReportCards();
+        } catch {
+            logAnalysisError("Invalid savefile.");
+        }
+    } else {
+        evaluate();
+    }
+});
 
 $("#depth-slider").on("input", () => {
     let depth = parseInt($("#depth-slider").val()?.toString()!);

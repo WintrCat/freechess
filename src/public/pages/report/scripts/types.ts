@@ -56,6 +56,14 @@ interface Report {
     positions: Position[]
 }
 
+interface SavedAnalysis {
+    results: Report,
+    players: {
+        white: Profile,
+        black: Profile
+    }
+}
+
 interface ParseResponse {
     message?: string,
     positions?: Position[]

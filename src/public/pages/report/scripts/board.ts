@@ -41,6 +41,43 @@ function getBoardCoordinates(square: string): Coordinate {
     }
 }
 
+function drawArrow(fromX: number, fromY: number, toX: number, toY: number, width: number) {
+    let arrowCtx = $<HTMLCanvasElement>("<canvas>").get(0)?.getContext("2d");
+    if (!arrowCtx) return;
+
+    arrowCtx.canvas.width = 720;
+    arrowCtx.canvas.height = 720;
+
+    let headlen = 15;
+    let angle = Math.atan2(toY - fromY, toX - fromX);
+    toX -= Math.cos(angle) * ((width * 1.15));
+    toY -= Math.sin(angle) * ((width * 1.15));
+    
+    arrowCtx.beginPath();
+    arrowCtx.moveTo(fromX, fromY);
+    arrowCtx.lineTo(toX, toY);
+    arrowCtx.strokeStyle = classificationColours.best;
+    arrowCtx.lineWidth = width;
+    arrowCtx.stroke();
+    
+    arrowCtx.beginPath();
+    arrowCtx.moveTo(toX, toY);
+    arrowCtx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 7), toY - headlen * Math.sin(angle - Math.PI / 7));
+    
+    arrowCtx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 7), toY - headlen * Math.sin(angle + Math.PI / 7));
+    
+    arrowCtx.lineTo(toX, toY);
+    arrowCtx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 7),toY - headlen * Math.sin(angle - Math.PI / 7));
+
+    arrowCtx.strokeStyle = classificationColours.best;
+    arrowCtx.lineWidth = width;
+    arrowCtx.stroke();
+    arrowCtx.fillStyle = classificationColours.best;
+    arrowCtx.fill();
+
+    return arrowCtx.canvas;
+}
+
 async function drawBoard(fen: string) {
     // Draw surface of board
     let colours = ["#f6dfc0", "#b88767"];
@@ -66,23 +103,25 @@ async function drawBoard(fen: string) {
         ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * 90 + 22);
     }
 
-    // Draw last move highlight
-    let lastMove = {
+    // Draw last move highlight and top move arrows
+    let lastMove = reportResults?.positions[currentMoveIndex];
+    
+    let lastMoveCoordinates = {
         from: { x: 0, y: 0 },
         to: { x: 0, y: 0 }
     };
 
-    if (currentMoveIndex > 0 && reportResults) {
-        let lastMoveUCI = reportResults?.positions[currentMoveIndex]?.move?.uci;
+    if (currentMoveIndex > 0 && lastMove) {
+        let lastMoveUCI = lastMove.move?.uci;
         if (!lastMoveUCI) return;
 
-        lastMove.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
-        lastMove.to = getBoardCoordinates(lastMoveUCI.slice(2, 4));
+        lastMoveCoordinates.from = getBoardCoordinates(lastMoveUCI.slice(0, 2));
+        lastMoveCoordinates.to = getBoardCoordinates(lastMoveUCI.slice(2, 4));
 
         ctx.globalAlpha = 0.7;
-        ctx.fillStyle = classificationColours[reportResults.positions[currentMoveIndex].classification || "book"];
-        ctx.fillRect(lastMove.from.x * 90, lastMove.from.y * 90, 90, 90);
-        ctx.fillRect(lastMove.to.x * 90, lastMove.to.y * 90, 90, 90);
+        ctx.fillStyle = classificationColours[reportResults?.positions[currentMoveIndex].classification ?? "book"];
+        ctx.fillRect(lastMoveCoordinates.from.x * 90, lastMoveCoordinates.from.y * 90, 90, 90);
+        ctx.fillRect(lastMoveCoordinates.to.x * 90, lastMoveCoordinates.to.y * 90, 90, 90);
         ctx.globalAlpha = 1;
     }
 
@@ -108,11 +147,40 @@ async function drawBoard(fen: string) {
 
         if (!classification) return;
         ctx.drawImage(
-            classificationIcons[classification]!, 
-            lastMove.to.x * 90 + 68, 
-            lastMove.to.y * 90 - 10, 
+            classificationIcons[classification]!,
+            lastMoveCoordinates.to.x * 90 + 68, 
+            lastMoveCoordinates.to.y * 90 - 10, 
             32, 32
         );
+    }
+
+    // Draw engine suggestion arrows
+    if ($<HTMLInputElement>("#suggestion-arrows-setting").get(0)?.checked) {
+        let arrowAttributes = [
+            {
+                width: 20,
+                opacity: 0.8
+            },
+            {
+                width: 12,
+                opacity: 0.55
+            }
+        ];
+        
+        let topLineIndex = -1;
+        for (let topLine of lastMove?.topLines ?? []) {
+            topLineIndex++;
+    
+            let from = getBoardCoordinates(topLine.moveUCI.slice(0, 2));
+            let to = getBoardCoordinates(topLine.moveUCI.slice(2, 4));
+    
+            let arrow = drawArrow(from.x * 90 + 45, from.y * 90 + 45, to.x * 90 + 45, to.y * 90 + 45, arrowAttributes[topLineIndex].width);
+            if (!arrow) continue;
+    
+            ctx.globalAlpha = arrowAttributes[topLineIndex].opacity;
+            ctx.drawImage(arrow, 0, 0);
+            ctx.globalAlpha = 1;
+        }
     }
 }
 
@@ -153,7 +221,7 @@ function traverseMoves(moveCount: number) {
     let topLine = currentPosition?.topLines?.find(line => line.id == 1);
     drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 });
 
-    updateClassificationMessage(currentPosition);
+    updateClassificationMessage(positions[currentMoveIndex - 1], currentPosition);
     updateEngineSuggestions(currentPosition.topLines ?? []);
     if (currentPosition.opening) {
         $("#opening-name").html(currentPosition.opening);
@@ -244,8 +312,12 @@ $("#board").on("click", event => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
 
-    drawBoard(reportResults?.positions[currentMoveIndex]?.fen || startingPositionFen); 
+    drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
     updateBoardPlayers();
+});
+
+$("#suggestion-arrows-setting").on("input", () => {
+    drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
 });
 
 Promise.all(pieceLoaders).then(() => {

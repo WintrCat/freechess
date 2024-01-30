@@ -192,26 +192,30 @@
     REVIEW PANEL BOTTOM TOOLBAR
 */
 #review-panel-toolbar {
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
 
+#review-panel-toolbar {
     grid-row: 2 / 3;
 
     border-top: 2px solid var(--border-color);
+}
 
+#review-panel-toolbar-buttons {
+    margin: 10px;
+    gap: 10px;
+    flex-wrap: wrap;
     transition: gap 0.5s ease;
 }
 
-@media (max-width: 1100px) {
-    #review-panel-toolbar {
-        gap: 5px;
-    }
-}
-
-#review-panel-toolbar img {
+#review-panel-toolbar-buttons img {
     cursor: pointer;
     transition: transform 0.5s ease;
 }
 
-#review-panel-toolbar img:hover {
+#review-panel-toolbar-buttons img:hover {
     transform: translateY(-3px);
 }

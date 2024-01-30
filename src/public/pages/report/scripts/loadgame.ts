@@ -187,10 +187,16 @@ $("#load-type-dropdown").on("input", () => {
     
     let selectedLoadType = $("#load-type-dropdown").val();
 
-    let isPGN = selectedLoadType == "pgn";
-    $("#pgn").css("display", isPGN ? "block" : "none");
-    $("#chess-site-username").css("display", isPGN ? "none" : "block");
-    $("#fetch-account-games-button").css("display", isPGN ? "none" : "block");
+    let isLong = selectedLoadType == "pgn" || selectedLoadType == "json";
+    $("#pgn").css("display", isLong ? "block" : "none");
+    $("#chess-site-username").css("display", isLong ? "none" : "block");
+    $("#fetch-account-games-button").css("display", isLong ? "none" : "block");
+
+    if (selectedLoadType == "json") {
+        $("#pgn").attr("placeholder", "Enter save text here...");
+    } else {
+        $("#pgn").attr("placeholder", "Enter PGN here...");
+    }
 
 });
 
