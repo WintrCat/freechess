@@ -11,13 +11,13 @@
     border: 2px solid var(--border-color);
 }
 
-@media (min-width: 1258px) {
+@media (min-width: 1264px) {
     #review-panel {
         grid-template-rows: 88% 12%;
     }
 }
 
-@media (max-width: 1258px) and (min-width: 1000px) {
+@media (max-width: 1264px) and (min-width: 1000px) {
     #review-panel {
         grid-template-rows: 82% 18%;
     }
@@ -29,7 +29,7 @@
     }
 }
 
-@media (max-height: 950px) {
+@media (max-height: 860px) {
     #review-panel {
         grid-template-rows: 82% 18%;
     }
@@ -48,7 +48,7 @@
     padding: 10px;
 }
 
-@media (max-width: 1258px), (max-height: 950px) {
+@media (max-width: 1265px), (max-height: 860px) {
     #review-panel-main {
         padding-bottom: 30px;
     }

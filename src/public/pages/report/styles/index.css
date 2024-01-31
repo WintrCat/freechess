@@ -8,7 +8,7 @@ body {
     color: white;
 }
 
-@media (min-width: 1000px) and (min-height: 950px) {
+@media (min-width: 1000px) and (min-height: 860px) {
     #review-container {
         display: grid;
     
@@ -21,7 +21,7 @@ body {
     }
 }
 
-@media (max-width: 999px), (max-height: 950px) {
+@media (max-width: 999px), (max-height: 860px) {
     #review-container {
         display: flex;
         flex-direction: column;
