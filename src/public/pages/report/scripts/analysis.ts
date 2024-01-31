@@ -9,6 +9,7 @@ function logAnalysisInfo(message: string) {
 }
 
 function logAnalysisError(message: string) {
+    $("#evaluation-progress-bar").css("display", "none");
     $("#secondary-message").html("");
     $("#status-message").css("color", "rgb(255, 53, 53)");
     $("#status-message").html(message);

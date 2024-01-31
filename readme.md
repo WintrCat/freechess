@@ -1,6 +1,6 @@
 # WintrCat's Game Report
 
-The free version of Chess.com's Game Review feature. Available @ [chess.wintrcat.uk](https://chess.wintrcat.uk/)
+Generate classifications for your Chess moves, for free. Available @ [chess.wintrcat.uk](https://chess.wintrcat.uk/)
 <br><br>
 Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account and have it analysed so that you can see where your mistakes and brilliancies are.
 

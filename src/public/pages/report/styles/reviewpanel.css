@@ -11,6 +11,30 @@
     border: 2px solid var(--border-color);
 }
 
+@media (min-width: 1258px) {
+    #review-panel {
+        grid-template-rows: 88% 12%;
+    }
+}
+
+@media (max-width: 1258px) and (min-width: 1000px) {
+    #review-panel {
+        grid-template-rows: 82% 18%;
+    }
+}
+
+@media (max-width: 999px) {
+    #review-panel {
+        grid-template-rows: 82% 18%;
+    }
+}
+
+@media (max-height: 950px) {
+    #review-panel {
+        grid-template-rows: 82% 18%;
+    }
+}
+
 /*
     REVIEW PANEL NON-TOOLBAR SECTION
 */
@@ -22,6 +46,12 @@
     height: 100%;
 
     padding: 10px;
+}
+
+@media (max-width: 1258px), (max-height: 950px) {
+    #review-panel-main {
+        padding-bottom: 30px;
+    }
 }
 
 /*
