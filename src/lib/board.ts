@@ -151,12 +151,13 @@ export function isPieceHanging(lastFen: string, fen: string, square: Square) {
         return false;
     }
 
-    // If piece was rook, took a knight or bishop that was only defended by pieces of 3 points
-    // and over, it was a favourable rook exchange, so rook not hanging
+    // If a rook took a minor piece that was only defended by one other
+    // minor piece, it was a favourable rook exchange, so rook not hanging
     if (
         piece.type == "r"
         && pieceValues[lastPiece.type] == 3 
-        && !attackers.some(atk => pieceValues[atk.type] < 3)
+        && attackers.every(atk => pieceValues[atk.type] == 3)
+        && attackers.length == 1
     ) {
         return false;
     }
