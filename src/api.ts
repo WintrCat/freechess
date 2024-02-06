@@ -82,7 +82,7 @@ router.post("/report", async (req, res) => {
         
                 let captchaResult = await captchaResponse.json();
                 if (!captchaResult.success) {
-                    return res.status(400).json({ message: "You must complete the CAPTCHA." });
+                    return res.status(400).json({ message: "You must complete the CAPTCHA or you haven't used DEV=true / set a site key in .env." });
                 }
             } catch (err) {
                 return res.status(500).json({ message: "Failed to verify CAPTCHA." });
