@@ -61,31 +61,35 @@ router.post("/parse", async (req, res) => {
 });
 
 router.post("/report", async (req, res) => {
-
     let { positions, captchaToken }: ReportRequestBody = req.body;
 
     if (!positions || !captchaToken) {
         return res.status(400).json({ message: "Missing parameters." });
     }
 
-    // Verify CAPTCHA response token
-    if (!process.env.DEV) {
-        try {
-            let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
-            });
-    
-            let captchaResult = await captchaResponse.json();
-            if (!captchaResult.success) {
-                return res.status(400).json({ message: "You must complete the CAPTCHA." });
+    if (process.env.USE_RECAPTCHA != null || process.env.USE_RECAPTCHA == true){
+
+        // Verify CAPTCHA response token
+        if (!process.env.DEV) {
+            try {
+                let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: `secret=${process.env.RECAPTCHA_SECRET}&response=${captchaToken}`
+                });
+        
+                let captchaResult = await captchaResponse.json();
+                if (!captchaResult.success) {
+                    return res.status(400).json({ message: "You must complete the CAPTCHA." });
+                }
+            } catch (err) {
+                return res.status(500).json({ message: "Failed to verify CAPTCHA." });
             }
-        } catch (err) {
-            return res.status(500).json({ message: "Failed to verify CAPTCHA." });
         }
+    } else {
+        console.log(".env USE_RECAPTCHA doesn't exist or is set to false!");
     }
 
     // Generate report
