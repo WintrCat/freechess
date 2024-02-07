@@ -22,10 +22,6 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - `npm start` - Compiles TypeScript and starts the webserver.
 - `npm run build` - Compiles TypeScript.
 
-### Disabling the reCAPTCHA
-- add `USE_RECAPTCHA=false` to the `.env` file in the root directory
-- The reCAPTCHA will still appear on the website but clicking inside the checkbox will automatically accept it
-
 ## Donate
 I pay to keep my app running and free-to-use for everyone. Any donations are greatly appreciated ❤️
 <br><br>
