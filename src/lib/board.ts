@@ -182,6 +182,13 @@ export function isPieceHanging(lastFen: string, fen: string, square: Square) {
             return false;
         }
 
+        // If any of the piece's defenders are pawns, then the sacrificed piece
+        // is the defending pawn. The least valuable attacker is equal in value
+        // to the sacrificed piece at this point of the logic
+        if (defenders.some(dfn => pieceValues[dfn.type] == 1)) {
+            return false;
+        }
+
         return true;
     }
 

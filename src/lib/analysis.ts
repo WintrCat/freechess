@@ -1,5 +1,8 @@
 import { Chess, Square } from "chess.js";
 
+import { EvaluatedPosition } from "./types/Position";
+import Report from "./types/Report";
+
 import {
     Classification, 
     centipawnClassifications, 
@@ -7,9 +10,6 @@ import {
     getEvaluationLossThreshold 
 } from "./classification";
 import { InfluencingPiece, getAttackers, isPieceHanging, pieceValues, promotions } from "./board";
-
-import { EvaluatedPosition } from "./types/Position";
-import Report from "./types/Report";
 
 import openings from "../resources/openings.json";
 
@@ -160,7 +160,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         if (position.classification == Classification.BEST) {
             // Test for brilliant move classification
             // Must be winning for the side that played the brilliancy
-            if (absoluteEvaluation >= 0 && absoluteSecondEvaluation < 700) {
+            let winningAnyways = (
+                absoluteSecondEvaluation >= 700 && topMove.evaluation.type == "cp"
+                || (topMove.evaluation.type == "mate" && secondTopMove.evaluation.type == "mate")
+            );
+
+            if (absoluteEvaluation >= 0 && !winningAnyways) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
                 if (lastBoard.isCheck()) continue;
@@ -278,7 +283,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     }
 
     // Apply book moves for cloud evaluations and named positions
-    let positiveClassifs = centipawnClassifications.slice(0, 2);
+    let positiveClassifs = Object.keys(classificationValues).slice(4, 8);
     for (let position of positions.slice(1)) {
         if (
             (position.worker == "cloud" && positiveClassifs.includes(position.classification!))
