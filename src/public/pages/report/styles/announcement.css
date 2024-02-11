@@ -14,3 +14,11 @@
 #announcement img {
     cursor: pointer;
 }
+
+#announcement img:hover {
+    opacity: 0.7;
+}
+
+#announcement img:active {
+    opacity: 0.5;
+}

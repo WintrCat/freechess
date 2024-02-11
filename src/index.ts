@@ -7,6 +7,8 @@ import apiRouter from "./api";
 
 const app = express();
 
+const port = process.env.PORT || 3001;
+
 app.use(express.json());
 
 app.use("/static",
@@ -20,6 +22,6 @@ app.get("/", async (req, res) => {
     res.sendFile(path.resolve("src/public/pages/report/index.html"));
 });
 
-app.listen(process.env.PORT, () => {
-    console.log("Server running.");
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}.`);
 });

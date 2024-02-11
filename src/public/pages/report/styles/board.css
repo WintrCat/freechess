@@ -1,6 +1,7 @@
 .profile {
     color: white;
     font-size: 20px;
+    margin: 5px 0;
 }
 
 #board-outer-container {
@@ -14,6 +15,7 @@
 #evaluation-bar {
     background-color: white;
     border: 2px solid var(--border-color);
+    border-radius: var(--rounded-radius);
 }
 
 #board {
@@ -22,5 +24,5 @@
     max-width: 100%;
 
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: var(--rounded-radius);
 }

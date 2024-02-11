@@ -6,6 +6,7 @@ body {
 
 .white {
     color: white;
+    margin: 10px 0 0 0;
 }
 
 @media (min-width: 1000px) and (min-height: 860px) {
