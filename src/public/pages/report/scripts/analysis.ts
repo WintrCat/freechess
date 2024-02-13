@@ -1,7 +1,23 @@
-let ongoingEvaluation = false;
+//#region imports
+import {
+    GenerateReport,
+    positionsFromPGN,
+} from "./classificationLogic/createAnalysis";
+import {
+    whitePlayer,
+    blackPlayer,
+    updateBoardPlayers,
+    traverseMoves,
+    setBlackPlayer,
+    setWhitePlayer,
+} from "./board";
+//#endregion
 
-let evaluatedPositions: Position[] = [];
-let reportResults: Report | undefined;
+//TODO: remove global variables
+export let ongoingEvaluation = false;
+
+export let evaluatedPositions: Position[] = [];
+export let reportResults: Report | undefined;
 
 function logAnalysisInfo(message: string) {
     $("#status-message").css("color", "white");
@@ -15,6 +31,15 @@ function logAnalysisError(message: string) {
     $("#status-message").html(message);
 
     ongoingEvaluation = false;
+}
+
+async function parsePGN(pgn?: string): Promise<Position[]> {
+    try {
+        const positions = await positionsFromPGN(pgn);
+        return positions;
+    } catch {
+        throw logAnalysisError("Failed to parse PGN.");
+    }
 }
 
 async function evaluate() {
@@ -41,27 +66,8 @@ async function evaluate() {
     // Post PGN to server to have it parsed
     logAnalysisInfo("Parsing PGN...");
 
-    try {
-        let parseResponse = await fetch("/api/parse", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ pgn }),
-        });
-
-        let parsedPGN: ParseResponse = await parseResponse.json();
-
-        if (!parseResponse.ok) {
-            return logAnalysisError(
-                parsedPGN.message ?? "Failed to parse PGN.",
-            );
-        }
-
-        var positions = parsedPGN.positions!;
-    } catch {
-        return logAnalysisError("Failed to parse PGN.");
-    }
+    const positions: Position[] = await parsePGN(pgn);
+    console.log(positions);
 
     // Update board player usernames
     whitePlayer.username =
@@ -75,7 +81,7 @@ async function evaluate() {
     updateBoardPlayers();
 
     $("#secondary-message").html(
-        "It can take around a minute to process a full game.",
+        "It can take around a minute to process a full game."
     );
 
     // Fetch cloud evaluations where possible
@@ -89,7 +95,7 @@ async function evaluate() {
                 .evaluate(lastPosition.fen, depth)
                 .then((engineLines) => {
                     lastPosition.cutoffEvaluation = engineLines.find(
-                        (line) => line.id == 1,
+                        (line) => line.id == 1
                     )?.evaluation ?? { type: "cp", value: 0 };
                 });
         }
@@ -101,7 +107,7 @@ async function evaluate() {
                 `https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`,
                 {
                     method: "GET",
-                },
+                }
             );
 
             if (!cloudEvaluationResponse) break;
@@ -166,7 +172,7 @@ async function evaluate() {
             $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
             $("#secondary-message").html(
-                "Please complete the CAPTCHA to continue.",
+                "Please complete the CAPTCHA to continue."
             );
 
             evaluatedPositions = positions;
@@ -213,10 +219,10 @@ function loadReportCards() {
     // Reveal report cards and update accuracies
     $("#report-cards").css("display", "flex");
     $("#white-accuracy").html(
-        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`,
+        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`
     );
     $("#black-accuracy").html(
-        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`,
+        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`
     );
 
     // Remove progress bar and any status message
@@ -253,7 +259,7 @@ async function report() {
 
         if (!reportResponse.ok) {
             return logAnalysisError(
-                report.message ?? "Failed to generate report.",
+                report.message ?? "Failed to generate report."
             );
         }
 
@@ -269,10 +275,12 @@ async function report() {
 $("#review-button").on("click", () => {
     if ($("#load-type-dropdown").val() == "json") {
         try {
-            let savedAnalysis: SavedAnalysis = JSON.parse($("#pgn").val()?.toString()!);
+            let savedAnalysis: SavedAnalysis = JSON.parse(
+                $("#pgn").val()?.toString()!
+            );
 
-            whitePlayer = savedAnalysis.players.white;
-            blackPlayer = savedAnalysis.players.black;
+            setWhitePlayer(savedAnalysis.players.white);
+            setBlackPlayer(savedAnalysis.players.black);
             updateBoardPlayers();
 
             reportResults = savedAnalysis.results;
