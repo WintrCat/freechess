@@ -213,6 +213,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                 // If the capture of the piece with the current attacker leads to
                                 // a piece of greater or equal value being hung (if attacker is pinned)
                                 let attackerPinned = false;
+                                let isPinnedAttackerQueen = false;
                                 for (let row of captureTestBoard.board()) {
                                     for (let enemyPiece of row) {
                                         if (!enemyPiece) continue;
@@ -220,8 +221,11 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 
                                         if (
                                             isPieceHanging(position.fen, captureTestBoard.fen(), enemyPiece.square)
-                                            && pieceValues[enemyPiece.type] >= Math.max(...sacrificedPieces.map(sack => pieceValues[sack.type]))
                                         ) {
+                                            if (enemyPiece.type == "q" ) {
+                                                isPinnedAttackerQueen = true
+                                            }
+
                                             attackerPinned = true;
                                             break;
                                         }
@@ -230,7 +234,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                 }
 
                                 // If the capture of the piece leads to mate in 1
-                                if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                if (attackerPinned && captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                    anyPieceViablyCapturable = true;
+                                    break;
+                                }
+
+                                if (attackerPinned && isPinnedAttackerQueen && currentBoard.isCheck()) {
                                     anyPieceViablyCapturable = true;
                                     break;
                                 }
