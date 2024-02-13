@@ -1,18 +1,14 @@
 import express from "express";
 import path from "path";
-import dotenv from "dotenv";
-dotenv.config();
+import "dotenv/config";
 
-import apiRouter from "./api";
+import apiRouter from "./api.js";
 
 const app = express();
 
 app.use(express.json());
 
-app.use("/static",
-    express.static("dist/public"),
-    express.static("src/public")
-);
+app.use("/static", express.static("dist/public"), express.static("src/public"));
 
 app.use("/api", apiRouter);
 

@@ -54,7 +54,7 @@ async function evaluate() {
 
         if (!parseResponse.ok) {
             return logAnalysisError(
-                parsedPGN.message ?? "Failed to parse PGN.",
+                parsedPGN.message ?? "Failed to parse PGN."
             );
         }
 
@@ -75,7 +75,7 @@ async function evaluate() {
     updateBoardPlayers();
 
     $("#secondary-message").html(
-        "It can take around a minute to process a full game.",
+        "It can take around a minute to process a full game."
     );
 
     // Fetch cloud evaluations where possible
@@ -89,7 +89,7 @@ async function evaluate() {
                 .evaluate(lastPosition.fen, depth)
                 .then((engineLines) => {
                     lastPosition.cutoffEvaluation = engineLines.find(
-                        (line) => line.id == 1,
+                        (line) => line.id == 1
                     )?.evaluation ?? { type: "cp", value: 0 };
                 });
         }
@@ -101,7 +101,7 @@ async function evaluate() {
                 `https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`,
                 {
                     method: "GET",
-                },
+                }
             );
 
             if (!cloudEvaluationResponse) break;
@@ -166,7 +166,7 @@ async function evaluate() {
             $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
             $("#secondary-message").html(
-                "Please complete the CAPTCHA to continue.",
+                "Please complete the CAPTCHA to continue."
             );
 
             evaluatedPositions = positions;
@@ -213,10 +213,10 @@ function loadReportCards() {
     // Reveal report cards and update accuracies
     $("#report-cards").css("display", "flex");
     $("#white-accuracy").html(
-        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`,
+        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`
     );
     $("#black-accuracy").html(
-        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`,
+        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`
     );
 
     // Remove progress bar and any status message
@@ -253,7 +253,7 @@ async function report() {
 
         if (!reportResponse.ok) {
             return logAnalysisError(
-                report.message ?? "Failed to generate report.",
+                report.message ?? "Failed to generate report."
             );
         }
 
@@ -269,7 +269,9 @@ async function report() {
 $("#review-button").on("click", () => {
     if ($("#load-type-dropdown").val() == "json") {
         try {
-            let savedAnalysis: SavedAnalysis = JSON.parse($("#pgn").val()?.toString()!);
+            let savedAnalysis: SavedAnalysis = JSON.parse(
+                $("#pgn").val()?.toString()!
+            );
 
             whitePlayer = savedAnalysis.players.white;
             blackPlayer = savedAnalysis.players.black;
