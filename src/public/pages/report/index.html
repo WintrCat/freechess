@@ -1,158 +1,325 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+    <head>
+        <title>Game Report</title>
 
-    <title>Game Report</title>
+        <meta name="og:title" content="♟️ WintrCat's Game Report" />
+        <meta name="og:url" content="https://chess.wintrcat.uk/" />
+        <meta name="og:image" content="/static/media/brilliant.png" />
+        <meta
+            name="og:description"
+            content="Analyse your games to find your mistakes and brilliancies."
+        />
+        <meta name="theme-color" content="#47acff" />
 
-    <meta name="og:title" content="♟️ WintrCat's Game Report">
-    <meta name="og:url" content="https://chess.wintrcat.uk/">
-    <meta name="og:image" content="/static/media/brilliant.png">
-    <meta name="og:description" content="Analyse your games to find your mistakes and brilliancies.">
-    <meta name="theme-color" content="#47acff">
+        <link rel="stylesheet" href="/static/global.css" />
 
-    <link rel="stylesheet" href="/static/global.css">
+        <link rel="stylesheet" href="/static/pages/report/styles/index.css" />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/announcement.css"
+        />
+        <link rel="stylesheet" href="/static/pages/report/styles/board.css" />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/gameselect.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/reviewpanel.css"
+        />
+        <link rel="stylesheet" href="/static/pages/report/styles/report.css" />
 
-    <link rel="stylesheet" href="/static/pages/report/styles/index.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/announcement.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/board.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/gameselect.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/reviewpanel.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/report.css">
+        <link rel="icon" href="/static/media/favicon.ico" />
 
-    <link rel="icon" href="/static/media/favicon.ico">
+        <audio
+            id="sound-fx-move"
+            class="sound-fx-board"
+            src="/static/media/move.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-capture"
+            class="sound-fx-board"
+            src="/static/media/capture.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-check"
+            class="sound-fx-board"
+            src="/static/media/check.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-castle"
+            class="sound-fx-board"
+            src="/static/media/castle.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-promote"
+            class="sound-fx-board"
+            src="/static/media/promote.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-game-end"
+            class="sound-fx-board"
+            src="/static/media/game_end.mp3"
+        ></audio>
 
-    <audio id="sound-fx-move" class="sound-fx-board" src="/static/media/move.mp3"></audio>
-    <audio id="sound-fx-capture" class="sound-fx-board" src="/static/media/capture.mp3"></audio>
-    <audio id="sound-fx-check" class="sound-fx-board" src="/static/media/check.mp3"></audio>
-    <audio id="sound-fx-castle" class="sound-fx-board" src="/static/media/castle.mp3"></audio>
-    <audio id="sound-fx-promote" class="sound-fx-board" src="/static/media/promote.mp3"></audio>
-    <audio id="sound-fx-game-end" class="sound-fx-board" src="/static/media/game_end.mp3"></audio>
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script src="/static/bundle.js" defer></script>
+    </head>
+    <body>
+        <div id="announcement">
+            <b
+                >I pay to keep my app free for everyone. Any donations
+                appreciated ❤️</b
+            >
+            <a
+                href="https://ko-fi.com/N4N7SORCC"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <img
+                    height="36"
+                    style="border: 0px; height: 36px"
+                    src="https://storage.ko-fi.com/cdn/kofi5.png?v=3"
+                    alt="Donate"
+                />
+            </a>
+            <a
+                href="https://discord.com/invite/XxtsAzPyCb"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <img
+                    height="36"
+                    src="/static/media/discord.png"
+                    alt="Discord"
+                />
+            </a>
+        </div>
 
-    <script src="https://www.google.com/recaptcha/api.js"></script>
+        <div class="center">
+            <div id="review-container">
+                <div id="board-outer-container" class="center">
+                    <canvas
+                        id="evaluation-bar"
+                        width="30"
+                        height="720"
+                    ></canvas>
 
-</head>
-<body>
+                    <div id="board-inner-container" class="center">
+                        <div id="top-player-profile" class="profile">
+                            Black Player (?)
+                        </div>
 
-    <div id="announcement">
-        <b>I pay to keep my app free for everyone. Any donations appreciated ❤️</b>
-        <a href="https://ko-fi.com/N4N7SORCC" target="_blank" rel="noopener noreferrer">
-            <img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi5.png?v=3" alt="Donate"/>
-        </a>
-        <a href="https://discord.com/invite/XxtsAzPyCb" target="_blank" rel="noopener noreferrer">
-            <img height="36" src="/static/media/discord.png" alt="Discord">
-        </a>
-    </div>
+                        <canvas id="board" width="720" height="720"></canvas>
 
-    <div class="center">
-        <div id="review-container">
-            <div id="board-outer-container" class="center">
-                <canvas id="evaluation-bar" width="30" height="720"></canvas>
-
-                <div id="board-inner-container" class="center">
-                    <div id="top-player-profile" class="profile">Black Player (?)</div>
-
-                    <canvas id="board" width="720" height="720"></canvas>
-                    
-                    <div id="bottom-player-profile" class="profile">White Player (?)</div>
-                </div>
-            </div>
-    
-            <div id="review-panel">
-                <div id="review-panel-main">
-                    <h1 id="review-panel-title" class="white">📑 Game Report</h1>
-
-                    <div id="load-type-dropdown-container" class="white">
-                        <span>Load game from</span>
-                        <select id="load-type-dropdown">
-                            <option value="pgn">PGN</option>
-                            <option value="chesscom">Chess.com</option>
-                            <option value="lichess">Lichess.org</option>
-                            <option value="json">JSON</option>
-                        </select>
+                        <div id="bottom-player-profile" class="profile">
+                            White Player (?)
+                        </div>
                     </div>
+                </div>
 
-                    <textarea id="pgn" class="white" cols="30" rows="10" spellcheck="false" placeholder="Enter PGN here..."></textarea>
-                    <div id="chess-site-username-container">
-                        <textarea id="chess-site-username" class="white" spellcheck="false" maxlength="48" placeholder="Username..."></textarea>
-                        <button id="fetch-account-games-button" class="std-btn success-btn">
-                            <img src="/static/media/next.png" alt=">" height="25">
+                <div id="review-panel">
+                    <div id="review-panel-main">
+                        <h1 id="review-panel-title" class="white">
+                            📑 Game Report
+                        </h1>
+
+                        <div id="load-type-dropdown-container" class="white">
+                            <span>Load game from</span>
+                            <select id="load-type-dropdown">
+                                <option value="pgn">PGN</option>
+                                <option value="chesscom">Chess.com</option>
+                                <option value="lichess">Lichess.org</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
+
+                        <textarea
+                            id="pgn"
+                            class="white"
+                            cols="30"
+                            rows="10"
+                            spellcheck="false"
+                            placeholder="Enter PGN here..."
+                        ></textarea>
+                        <div id="chess-site-username-container">
+                            <textarea
+                                id="chess-site-username"
+                                class="white"
+                                spellcheck="false"
+                                maxlength="48"
+                                placeholder="Username..."
+                            ></textarea>
+                            <button
+                                id="fetch-account-games-button"
+                                class="std-btn success-btn"
+                            >
+                                <img
+                                    src="/static/media/next.png"
+                                    alt=">"
+                                    height="25"
+                                />
+                            </button>
+                        </div>
+
+                        <button
+                            id="review-button"
+                            class="std-btn success-btn white"
+                        >
+                            <img
+                                src="/static/media/analysis_icon.png"
+                                height="25"
+                            />
+                            <b>Analyse</b>
                         </button>
-                    </div>
 
-                    <button id="review-button" class="std-btn success-btn white">
-                        <img src="/static/media/analysis_icon.png" height="25">
-                        <b>Analyse</b>
-                    </button>
-
-                    <b class="white">⚙️ Search depth</b>
-                    <div id="depth-slider-container">
-                        <input id="depth-slider" type="range" min="14" max="20" value="16">
-                        <span id="depth-counter" class="white">16 🐇</span>
-                    </div>
-                    <h6 id="depth-message" class="white">Lower depths recommended for slower devices.</h6>
-
-                    <progress id="evaluation-progress-bar" max="100"></progress>
-
-                    <b id="status-message"></b>
-
-                    <div class="g-recaptcha" data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA" data-theme="dark" data-callback="report"></div>
-
-                    <b id="secondary-message" class="white"></b>
-
-                    <div id="report-cards">
-                        <h2 id="accuracies-title" class="white">Accuracies</h2>
-                        <div id="accuracies">
-                            <b id="white-accuracy">0%</b>
-                            <b id="black-accuracy">0%</b>
+                        <b class="white">⚙️ Search depth</b>
+                        <div id="depth-slider-container">
+                            <input
+                                id="depth-slider"
+                                type="range"
+                                min="14"
+                                max="20"
+                                value="16"
+                            />
+                            <span id="depth-counter" class="white">16 🐇</span>
                         </div>
-    
-                        <div id="classification-message-container">
-                            <img id="classification-icon" src="/static/media/book.png" height="25">
-                            <b id="classification-message"></b>
+                        <h6 id="depth-message" class="white">
+                            Lower depths recommended for slower devices.
+                        </h6>
+
+                        <progress
+                            id="evaluation-progress-bar"
+                            max="100"
+                        ></progress>
+
+                        <b id="status-message"></b>
+
+                        <div
+                            class="g-recaptcha"
+                            data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA"
+                            data-theme="dark"
+                            data-callback="report"
+                        ></div>
+
+                        <b id="secondary-message" class="white"></b>
+
+                        <div id="report-cards">
+                            <h2 id="accuracies-title" class="white">
+                                Accuracies
+                            </h2>
+                            <div id="accuracies">
+                                <b id="white-accuracy">0%</b>
+                                <b id="black-accuracy">0%</b>
+                            </div>
+
+                            <div id="classification-message-container">
+                                <img
+                                    id="classification-icon"
+                                    src="/static/media/book.png"
+                                    height="25"
+                                />
+                                <b id="classification-message"></b>
+                            </div>
+
+                            <b id="top-alternative-message">Qxf2+ was best</b>
+
+                            <div id="engine-suggestions">
+                                <h2 id="engine-suggestions-title" class="white">
+                                    Engine
+                                </h2>
+                            </div>
+
+                            <span id="opening-name" class="white"></span>
+                        </div>
+                    </div>
+
+                    <div id="review-panel-toolbar">
+                        <div id="review-panel-toolbar-buttons" class="center">
+                            <img
+                                id="flip-board-button"
+                                src="/static/media/flip.png"
+                                alt="Flip Board"
+                                title="Flip board"
+                            />
+                            <img
+                                id="back-start-move-button"
+                                src="/static/media/back_to_start.png"
+                                alt="Back to start"
+                                title="Back to start"
+                            />
+                            <img
+                                id="back-move-button"
+                                src="/static/media/back.png"
+                                alt="Back"
+                                title="Back"
+                            />
+                            <img
+                                id="next-move-button"
+                                src="/static/media/next.png"
+                                alt="Next"
+                                title="Next"
+                            />
+                            <img
+                                id="go-end-move-button"
+                                src="/static/media/go_to_end.png"
+                                alt="Go to end"
+                                title="Go to end"
+                            />
+                            <img
+                                id="save-analysis-button"
+                                src="/static/media/save.png"
+                                alt="Save analysis"
+                                title="Save analysis"
+                            />
                         </div>
 
-                        <b id="top-alternative-message">Qxf2+ was best</b>
-
-                        <div id="engine-suggestions">
-                            <h2 id="engine-suggestions-title" class="white">Engine</h2>
+                        <div class="white" style="margin-bottom: 10px">
+                            <input
+                                id="suggestion-arrows-setting"
+                                type="checkbox"
+                            />
+                            <span>Suggestion Arrows</span>
                         </div>
-
-                        <span id="opening-name" class="white"></span>
-                    </div>
-                </div>
-
-                <div id="review-panel-toolbar">
-                    <div id="review-panel-toolbar-buttons" class="center">
-                        <img id="flip-board-button" src="/static/media/flip.png" alt="Flip Board" title="Flip board">
-                        <img id="back-start-move-button" src="/static/media/back_to_start.png" alt="Back to start" title="Back to start">
-                        <img id="back-move-button" src="/static/media/back.png" alt="Back" title="Back">
-                        <img id="next-move-button" src="/static/media/next.png" alt="Next" title="Next">
-                        <img id="go-end-move-button" src="/static/media/go_to_end.png" alt="Go to end" title="Go to end">
-                        <img id="save-analysis-button" src="/static/media/save.png" alt="Save analysis" title="Save analysis">
-                    </div>
-
-                    <div class="white" style="margin-bottom:10px">
-                        <input id="suggestion-arrows-setting" type="checkbox">
-                        <span>Suggestion Arrows</span>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="game-select-menu-container"></div>
+        <div id="game-select-menu-container"></div>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <script src="/static/pages/report/scripts/sprites.js"></script>
-    <script src="/static/pages/report/scripts/evalbar.js"></script>
-    <script src="/static/pages/report/scripts/board.js"></script>
-    <script src="/static/pages/report/scripts/report.js"></script>
+        <!-- <script
+            src="/static/pages/report/scripts/sprites.js"
+            type="module"
+        ></script>
+        <script
+            src="/static/pages/report/scripts/evalbar.js"
+            type="module"
+        ></script>
+        <script
+            src="/static/pages/report/scripts/board.js"
+            type="module"
+        ></script>
+        <script
+            src="/static/pages/report/scripts/report.js"
+            type="module"
+        ></script>
 
-    <script src="/static/pages/report/scripts/loadgame.js"></script>
+        <script
+            src="/static/pages/report/scripts/loadgame.js"
+            type="module"
+        ></script>
 
-    <script src="/static/pages/report/scripts/engine.js"></script>
-    <script src="/static/pages/report/scripts/analysis.js"></script>
-
-</body>
+        <script
+            src="/static/pages/report/scripts/engine.js"
+            type="module"
+        ></script>
+        <script
+            src="/static/pages/report/scripts/analysis.js"
+            type="module"
+        ></script> -->
+    </body>
 </html>
