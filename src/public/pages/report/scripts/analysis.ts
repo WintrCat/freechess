@@ -67,7 +67,6 @@ async function evaluate() {
     logAnalysisInfo("Parsing PGN...");
 
     const positions: Position[] = await parsePGN(pgn);
-    console.log(positions);
 
     // Update board player usernames
     whitePlayer.username =
