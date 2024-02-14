@@ -1,4 +1,4 @@
-import { EngineLine, Evaluation } from "./types";
+import { EngineLine, Evaluation } from "./types.js";
 
 const webAssemblyModifier = typeof WebAssembly == "object" ? ".wasm.js" : ".js";
 

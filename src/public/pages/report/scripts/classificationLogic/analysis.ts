@@ -1,26 +1,26 @@
 import { Chess, Square } from "chess.js";
 
-import { Position } from "../types";
-import { Report } from "../types";
+import { Position } from "../types.js";
+import { Report } from "../types.js";
 
 import {
     Classification,
     centipawnClassifications,
     classificationValues,
     getEvaluationLossThreshold,
-} from "./classification";
+} from "./classification.js";
 import {
     InfluencingPiece,
     getAttackers,
     isPieceHanging,
     pieceValues,
     promotions,
-} from "./board";
+} from "./board.js";
 
-import openings from "../../resources/openings.json";
+import openings from "../../resources/openings.json" assert { type: "json" };
 
 //FIXME: use correct types for analysis
-async function analyse(positions: Position[]): Promise<Report> {
+export default async function analyse(positions: Position[]): Promise<Report> {
     // Generate classifications for each position
     let positionIndex = 0;
     for (let position of positions.slice(1)) {
@@ -432,5 +432,3 @@ async function analyse(positions: Position[]): Promise<Report> {
         positions: positions,
     };
 }
-
-export default analyse;

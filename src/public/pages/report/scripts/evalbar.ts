@@ -1,4 +1,4 @@
-import { Evaluation } from "./types";
+import { Evaluation } from "./types.js";
 
 const evaluationBarCtx = (
     $("#evaluation-bar").get(0)! as HTMLCanvasElement

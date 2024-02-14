@@ -1,9 +1,9 @@
 import { parse as parsePGN, ParsedPGN } from "pgn-parser";
 import { Chess, Move } from "chess.js";
-import { Position } from "./types/Position";
-import { Position as EvaluatedPosition } from "../types";
-import { Report } from "../types";
-import analyse from "./analysis";
+import { Position } from "./types/Position.js";
+import { Position as EvaluatedPosition } from "../types.js";
+import { Report } from "../types.js";
+import analyse from "./analysis.js";
 
 // #region ParsePGNToPositions
 

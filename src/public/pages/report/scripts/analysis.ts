@@ -2,7 +2,7 @@
 import {
     generateReport,
     positionsFromPGN,
-} from "./classificationLogic/createAnalysis";
+} from "./classificationLogic/createAnalysis.js";
 import {
     whitePlayer,
     blackPlayer,
@@ -10,10 +10,9 @@ import {
     traverseMoves,
     setBlackPlayer,
     setWhitePlayer,
-} from "./board";
-import { Stockfish } from "./engine";
-import { Position, EngineLine, Report, SavedAnalysis } from "./types";
-import { EvaluatedPosition } from "./classificationLogic/types/Position";
+} from "./board.js";
+import { Stockfish } from "./engine.js";
+import { Position, EngineLine, Report, SavedAnalysis } from "./types.js";
 //#endregion
 
 //TODO: remove global variables

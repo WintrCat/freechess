@@ -1,5 +1,5 @@
-import { Stockfish } from "./engine";
-import { Classification } from "./classificationLogic/classification";
+import { Stockfish } from "./engine.js";
+import { Classification } from "./classificationLogic/classification.js";
 
 export declare class grecaptcha {
     static reset(): void;

@@ -1,4 +1,4 @@
-import { Game } from "./types";
+import { Game } from "./types.js";
 
 const monthLengths = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 

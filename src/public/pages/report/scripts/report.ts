@@ -1,7 +1,7 @@
-import { classificationColours } from "./board";
-import { whitePlayer, blackPlayer } from "./board";
-import { reportResults } from "./analysis";
-import { Position, EngineLine } from "./types";
+import { classificationColours } from "./board.js";
+import { whitePlayer, blackPlayer } from "./board.js";
+import { reportResults } from "./analysis.js";
+import { Position, EngineLine } from "./types.js";
 
 const bestClassifications = ["brilliant", "great", "best", "book", "forced"];
 

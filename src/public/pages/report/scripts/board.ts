@@ -1,8 +1,11 @@
-import { reportResults, ongoingEvaluation } from "./analysis";
-import { classificationIcons, pieceImages } from "./sprites";
-import { updateClassificationMessage, updateEngineSuggestions } from "./report";
-import { drawEvaluationBar } from "./evalbar";
-import { Profile, Coordinate, Report } from "./types";
+import { reportResults, ongoingEvaluation } from "./analysis.js";
+import { classificationIcons, pieceImages } from "./sprites.js";
+import {
+    updateClassificationMessage,
+    updateEngineSuggestions,
+} from "./report.js";
+import { drawEvaluationBar } from "./evalbar.js";
+import { Profile, Coordinate, Report } from "./types.js";
 
 const ctx = $<HTMLCanvasElement>("#board").get(0)!.getContext("2d")!;
 

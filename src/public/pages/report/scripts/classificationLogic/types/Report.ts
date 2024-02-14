@@ -1,9 +1,9 @@
-import { EvaluatedPosition } from "./Position"
+import { EvaluatedPosition } from "./Position.js";
 
 export default interface Report {
     accuracies: {
-        white: number,
-        black: number
-    },
-    positions: EvaluatedPosition[]
+        white: number;
+        black: number;
+    };
+    positions: EvaluatedPosition[];
 }

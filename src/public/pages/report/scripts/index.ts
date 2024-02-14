@@ -1,9 +1,9 @@
-import { drawBoard } from "./board";
-import { pieceLoaders } from "./sprites";
-import { drawEvaluationBar } from "./evalbar";
-import { startingPositionFen } from "./board";
-import "./loadgame";
-import "./analysis";
+import { drawBoard } from "./board.js";
+import { pieceLoaders } from "./sprites.js";
+import { drawEvaluationBar } from "./evalbar.js";
+import { startingPositionFen } from "./board.js";
+import "./loadgame.js";
+import "./analysis.js";
 
 function init() {
     Promise.all(pieceLoaders).then(() => {
