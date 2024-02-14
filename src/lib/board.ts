@@ -1,4 +1,4 @@
-import { Chess, Square } from "chess.js";
+import { Chess, Piece, Square } from "chess.js";
 
 interface Coordinate {
     x: number,
@@ -58,10 +58,11 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
     }
 
     // If there is an opposite king around the attacked piece add him as an attacker
-    let oppositeKingFound = false;
+    // if he is not the only attacker or it is a legal move for the king to capture it
+    let oppositeKing: InfluencingPiece | undefined;
     let oppositeColour = piece.color == "w" ? "b" : "w";
+
     let pieceCoordinate = getBoardCoordinates(square);
-    
     for (let xOffset = -1; xOffset <= 1; xOffset++) {
         for (let yOffset = -1; yOffset <= 1; yOffset++) {
             if (xOffset == 0 && yOffset == 0) continue;
@@ -74,26 +75,31 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
             if (!offsetPiece) continue;
 
             if (offsetPiece.color == oppositeColour && offsetPiece.type == "k") {
-                try {
-                    board.move({
-                        from: offsetSquare,
-                        to: square
-                    });
-                } catch {
-                    oppositeKingFound = true;
-                    break;
-                }
-
-                attackers.push({
-                    square: offsetSquare,
+                oppositeKing = {
                     color: offsetPiece.color,
+                    square: offsetSquare,
                     type: offsetPiece.type
-                });
-                oppositeKingFound = true;
+                };
                 break;
             }
         }
-        if (oppositeKingFound) break;
+        if (oppositeKing) break;
+    }
+
+    if (!oppositeKing) return attackers;
+
+    let kingCaptureLegal = false;
+    try {
+        board.move({
+            from: oppositeKing.square,
+            to: square
+        });
+
+        kingCaptureLegal = true;
+    } catch {}
+
+    if (oppositeKing && (attackers.length > 0 || kingCaptureLegal)) {
+        attackers.push(oppositeKing);
     }
 
     return attackers;
@@ -102,36 +108,16 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
 
 export function getDefenders(fen: string, square: Square) {
 
-    let defenders: InfluencingPiece[] | undefined;
+    let defenders: InfluencingPiece[] = [];
 
     let board = new Chess(fen);
 
     let piece = board.get(square);
     let attackers = getAttackers(fen, square);
 
-    // Set colour to move to opposite of defended piece
-    board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, piece.color == "w" ? "b" : "w"));
+    
 
-    for (let attacker of attackers) {
-        for (let promotion of promotions) {
-            try {
-                board.move({
-                    from: attacker.square,
-                    to: square,
-                    promotion: promotion
-                });
-        
-                let counterattackers = getAttackers(board.fen(), square);
-                if (!defenders || counterattackers.length < defenders.length) {
-                    defenders = counterattackers;
-                }
-        
-                board.undo();
-            } catch {}
-        }
-    }
-
-    return defenders ?? [];
+    return defenders;
 
 }
 
