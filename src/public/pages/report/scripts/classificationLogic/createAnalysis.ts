@@ -1,7 +1,8 @@
 import { parse as parsePGN, ParsedPGN } from "pgn-parser";
 import { Chess, Move } from "chess.js";
-import { Position, EvaluatedPosition } from "./types/Position";
-import Report from "./types/Report";
+import { Position } from "./types/Position";
+import { Position as EvaluatedPosition } from "../types";
+import { Report } from "../types";
 import analyse from "./analysis";
 
 // #region ParsePGNToPositions
@@ -58,7 +59,7 @@ function makeVirtualBoardMove(board: Chess, moveSAN: string): Move {
 
 // #region GenerateReport
 
-export async function GenerateReport(
+export async function generateReport(
     positions: EvaluatedPosition[]
 ): Promise<Report> {
     try {

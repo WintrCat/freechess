@@ -1,7 +1,7 @@
 import { Chess, Square } from "chess.js";
 
-import { EvaluatedPosition } from "./types/Position";
-import Report from "./types/Report";
+import { Position } from "../types";
+import { Report } from "../types";
 
 import {
     Classification,
@@ -19,7 +19,8 @@ import {
 
 import openings from "../../resources/openings.json";
 
-async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
+//FIXME: use correct types for analysis
+async function analyse(positions: Position[]): Promise<Report> {
     // Generate classifications for each position
     let positionIndex = 0;
     for (let position of positions.slice(1)) {
@@ -29,12 +30,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
         let lastPosition = positions[positionIndex - 1];
 
-        let topMove = lastPosition.topLines.find((line) => line.id == 1);
-        let secondTopMove = lastPosition.topLines.find((line) => line.id == 2);
+        let topMove = lastPosition.topLines!.find((line) => line.id == 1);
+        let secondTopMove = lastPosition.topLines!.find((line) => line.id == 2);
         if (!topMove) continue;
 
         let previousEvaluation = topMove.evaluation;
-        let evaluation = position.topLines.find(
+        let evaluation = position.topLines!.find(
             (line) => line.id == 1
         )?.evaluation;
         if (!previousEvaluation) continue;
@@ -47,7 +48,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 type: board.isCheckmate() ? "mate" : "cp",
                 value: 0,
             };
-            position.topLines.push({
+            position.topLines!.push({
                 id: 1,
                 depth: 0,
                 evaluation: evaluation,
@@ -69,8 +70,8 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         let cutoffEvalLoss = Infinity;
         let lastLineEvalLoss = Infinity;
 
-        let matchingTopLine = lastPosition.topLines.find(
-            (line) => line.moveUCI == position.move.uci
+        let matchingTopLine = lastPosition.topLines!.find(
+            (line) => line.moveUCI == position.move!.uci
         );
         if (matchingTopLine) {
             if (moveColour == "white") {
@@ -109,7 +110,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         let noMate = previousEvaluation.type == "cp" && evaluation.type == "cp";
 
         // If it is the top line, disregard other detections and give best
-        if (topMove.moveUCI == position.move.uci) {
+        if (topMove.moveUCI == position.move!.uci) {
             position.classification = Classification.BEST;
         } else {
             // If no mate on the board last move and still no mate
@@ -210,7 +211,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 if (lastBoard.isCheck()) continue;
 
                 let lastPiece = lastBoard.get(
-                    position.move.uci.slice(2, 4) as Square
+                    position.move!.uci.slice(2, 4) as Square
                 ) || { type: "m" };
 
                 let sacrificedPieces: InfluencingPiece[] = [];
@@ -333,7 +334,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 !isPieceHanging(
                     lastPosition.fen,
                     position.fen,
-                    position.move.uci.slice(2, 4) as Square
+                    position.move!.uci.slice(2, 4) as Square
                 )
             ) {
                 position.classification = Classification.GREAT;
@@ -384,7 +385,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
     // Generate SAN moves from all engine lines
     // This is used for the engine suggestions card on the frontend
     for (let position of positions) {
-        for (let line of position.topLines) {
+        for (let line of position.topLines!) {
             if (line.evaluation.type == "mate" && line.evaluation.value == 0)
                 continue;
 

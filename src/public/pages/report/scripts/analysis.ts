@@ -1,6 +1,6 @@
 //#region imports
 import {
-    GenerateReport,
+    generateReport,
     positionsFromPGN,
 } from "./classificationLogic/createAnalysis";
 import {
@@ -11,6 +11,9 @@ import {
     setBlackPlayer,
     setWhitePlayer,
 } from "./board";
+import { Stockfish } from "./engine";
+import { Position, EngineLine, Report, SavedAnalysis } from "./types";
+import { EvaluatedPosition } from "./classificationLogic/types/Position";
 //#endregion
 
 //TODO: remove global variables
@@ -45,7 +48,7 @@ async function parsePGN(pgn?: string): Promise<Position[]> {
 async function evaluate() {
     // Remove and reset CAPTCHA, remove report cards, display progress bar
     $(".g-recaptcha").css("display", "none");
-    grecaptcha.reset();
+    // grecaptcha.reset();
 
     $("#report-cards").css("display", "none");
     $("#evaluation-progress-bar").css("display", "inline");
@@ -169,13 +172,11 @@ async function evaluate() {
 
             logAnalysisInfo("Evaluation complete.");
             $("#evaluation-progress-bar").val(100);
-            $(".g-recaptcha").css("display", "inline");
-            $("#secondary-message").html(
-                "Please complete the CAPTCHA to continue."
-            );
 
             evaluatedPositions = positions;
             ongoingEvaluation = false;
+
+            report();
 
             return;
         }
@@ -238,32 +239,15 @@ async function report() {
 
     // Post evaluations and get report results
     try {
-        let reportResponse = await fetch("/api/report", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                positions: evaluatedPositions.map((pos) => {
-                    if (pos.worker != "cloud") {
-                        pos.worker = "local";
-                    }
-                    return pos;
-                }),
-                captchaToken: grecaptcha.getResponse() || "none",
-            }),
+        const positions: Position[] = evaluatedPositions.map((pos) => {
+            if (pos.worker != "cloud") {
+                pos.worker = "local";
+            }
+            return pos;
         });
 
-        let report: ReportResponse = await reportResponse.json();
-
-        if (!reportResponse.ok) {
-            return logAnalysisError(
-                report.message ?? "Failed to generate report."
-            );
-        }
-
         // Set report results to results given by server
-        reportResults = report.results!;
+        reportResults = await generateReport(positions);
 
         loadReportCards();
     } catch {

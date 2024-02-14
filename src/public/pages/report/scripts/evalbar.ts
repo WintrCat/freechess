@@ -1,3 +1,5 @@
+import { Evaluation } from "./types";
+
 const evaluationBarCtx = (
     $("#evaluation-bar").get(0)! as HTMLCanvasElement
 ).getContext("2d")!;

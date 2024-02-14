@@ -1,6 +1,7 @@
 import { classificationColours } from "./board";
 import { whitePlayer, blackPlayer } from "./board";
 import { reportResults } from "./analysis";
+import { Position, EngineLine } from "./types";
 
 const bestClassifications = ["brilliant", "great", "best", "book", "forced"];
 

@@ -2,6 +2,7 @@ import { reportResults, ongoingEvaluation } from "./analysis";
 import { classificationIcons, pieceImages } from "./sprites";
 import { updateClassificationMessage, updateEngineSuggestions } from "./report";
 import { drawEvaluationBar } from "./evalbar";
+import { Profile, Coordinate, Report } from "./types";
 
 const ctx = $<HTMLCanvasElement>("#board").get(0)!.getContext("2d")!;
 
