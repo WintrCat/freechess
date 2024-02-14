@@ -9,8 +9,8 @@
         "pgn-parser": "^2.2.0"
     },
     "scripts": {
-        "start": "npx webpack && nodemon dist/index.js",
-        "build": "npx webpack",
+        "start": "tsc && npx webpack && nodemon dist/backend/src/index.js",
+        "build": "tsc && npx webpack",
         "test": "tsc && node --experimental-specifier-resolution=node dist/test/reports.js"
     },
     "devDependencies": {

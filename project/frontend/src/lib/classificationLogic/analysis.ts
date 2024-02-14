@@ -17,7 +17,7 @@ import {
     promotions,
 } from "./board.js";
 
-import openings from "../../resources/openings.json" assert { type: "json" };
+import openings from "../../../resources/openings.json" assert { type: "json" };
 
 //FIXME: use correct types for analysis
 export default async function analyse(positions: Position[]): Promise<Report> {

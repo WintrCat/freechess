@@ -6,10 +6,14 @@ const app = express();
 
 app.use(express.json());
 
-app.use("/static", express.static("dist/public"), express.static("src/public"));
+app.use(
+    "/static",
+    express.static("dist/frontend/public"),
+    express.static("project/frontend/public")
+);
 
 app.get("/", async (_req, res) => {
-    res.sendFile(path.resolve("src/public/pages/report/index.html"));
+    res.sendFile(path.resolve("project/frontend/public/index.html"));
 });
 
 app.listen(process.env.PORT, () => {

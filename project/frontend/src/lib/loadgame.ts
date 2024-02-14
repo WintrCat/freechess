@@ -219,6 +219,6 @@ $(window).on("keydown", (event) => {
 });
 
 $("#game-select-menu-container").load(
-    "/static/pages/report/gameselect.html",
+    "/static/pages/gameselect.html",
     registerModalEvents
 );

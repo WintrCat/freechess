@@ -1,5 +1,5 @@
 {
     "ext": "ts,env,json",
     "ignore": ["dist"],
-    "exec": "tsc && node dist/index.js"
+    "exec": "tsc && npx webpack && node dist/backend/src/index.js"
 }

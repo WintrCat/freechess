@@ -2,7 +2,7 @@ const path = require("path");
 
 module.exports = {
     mode: "development",
-    entry: "./src/public/pages/report/scripts/index.ts",
+    entry: "./project/frontend/src/lib/index.ts",
     module: {
         rules: [
             {
@@ -20,6 +20,6 @@ module.exports = {
     },
     output: {
         filename: "bundle.js",
-        path: path.resolve(__dirname, "dist/public"),
+        path: path.resolve(__dirname, "dist/frontend/public"),
     },
 };

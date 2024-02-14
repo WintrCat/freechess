@@ -104,6 +104,7 @@ async function evaluate() {
         let queryFen = position.fen.replace(/\s/g, "%20");
         let cloudEvaluationResponse;
         try {
+            //FIXME: api request always fails
             cloudEvaluationResponse = await fetch(
                 `https://lichess.org/api/cloud-eval?fen=${queryFen}&multiPv=2`,
                 {

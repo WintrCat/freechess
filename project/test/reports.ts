@@ -1,7 +1,7 @@
 import { writeFileSync, mkdirSync, existsSync } from "fs";
-import analyse from "../public/pages/report/scripts/classificationLogic/analysis.js";
-import { EvaluatedPosition } from "../public/pages/report/scripts/classificationLogic/types/Position.js";
-import { Report } from "../public/pages/report/scripts/types.js";
+import analyse from "../frontend/src/lib/classificationLogic/analysis.js";
+import { EvaluatedPosition } from "../frontend/src/lib/classificationLogic/types/Position.js";
+import { Report } from "../frontend/src/lib/types.js";
 import evaluations from "./evaluations.json" assert { type: "json" };
 
 const reports: Report[] = [];
@@ -9,8 +9,8 @@ const reports: Report[] = [];
 async function main() {
     let before = Date.now();
 
-    if (!existsSync("src/test/reports")) {
-        mkdirSync("src/test/reports");
+    if (!existsSync("project/test/reports")) {
+        mkdirSync("project/test/reports");
     }
 
     let gameIndex = 0;
@@ -21,7 +21,7 @@ async function main() {
 
             reports.push(report);
             writeFileSync(
-                `src/test/reports/report${gameIndex}.json`,
+                `project/test/reports/report${gameIndex}.json`,
                 JSON.stringify({
                     players: {
                         white: {
