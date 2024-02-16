@@ -108,16 +108,43 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
 
 export function getDefenders(fen: string, square: Square) {
 
-    let defenders: InfluencingPiece[] = [];
-
     let board = new Chess(fen);
-
     let piece = board.get(square);
-    let attackers = getAttackers(fen, square);
+    let testAttacker = getAttackers(fen, square)[0];
 
-    
+    // If there is an attacker we can test capture the piece with
+    if (testAttacker) {
+        // Set player to move to colour of test attacker
+        board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, testAttacker.color));
 
-    return defenders;
+        // Capture the defended piece with the test attacker
+        for (let promotion of promotions) {
+            try {
+                board.move({
+                    from: testAttacker.square,
+                    to: square,
+                    promotion: promotion
+                });
+
+                // Return the attackers that can now capture the test attacker
+                return getAttackers(board.fen(), square);
+            } catch {}
+        }
+    } else {
+        // Set player to move to defended piece colour
+        board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, piece.color));
+
+        // Replace defended piece with an enemy queen
+        board.put({
+            color: piece.color == "w" ? "b" : "w",
+            type: "q"
+        }, square);
+
+        // Return the attackers of that piece
+        return getAttackers(board.fen(), square);
+    }
+
+    return [];
 
 }
 

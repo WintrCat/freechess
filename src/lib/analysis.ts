@@ -165,7 +165,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                 || (topMove.evaluation.type == "mate" && secondTopMove.evaluation.type == "mate")
             );
 
-            if (absoluteEvaluation >= 0 && !winningAnyways) {
+            if (absoluteEvaluation >= 0 && !winningAnyways && !position.move.san.includes("=")) {
                 let lastBoard = new Chess(lastPosition.fen);
                 let currentBoard = new Chess(position.fen);
                 if (lastBoard.isCheck()) continue;
@@ -216,7 +216,8 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                 for (let row of captureTestBoard.board()) {
                                     for (let enemyPiece of row) {
                                         if (!enemyPiece) continue;
-                                        if (enemyPiece.color == captureTestBoard.turn() || enemyPiece.type == "k") continue;
+                                        if (enemyPiece.color == captureTestBoard.turn()) continue;
+                                        if (enemyPiece.type == "k" || enemyPiece.type == "p") continue;
                 
                                         if (
                                             isPieceHanging(position.fen, captureTestBoard.fen(), enemyPiece.square)
@@ -229,7 +230,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                     if (attackerPinned) break;
                                 }
 
-                                // If the capture of the piece leads to mate in 1
+                                // If the attacker is not pinned and it moving does not lead to mate in 1
                                 if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
                                     anyPieceViablyCapturable = true;
                                     break;
