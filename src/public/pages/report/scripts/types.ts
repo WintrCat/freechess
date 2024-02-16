@@ -26,7 +26,7 @@ interface Move {
 }
 
 interface Evaluation {
-    type: "cp" | "mate",
+    type: string,
     value: number
 }
 
