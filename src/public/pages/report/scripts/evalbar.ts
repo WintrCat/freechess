@@ -13,9 +13,9 @@ async function drawEvaluationBar(evaluation: Evaluation, boardFlipped: boolean) 
 
         if (boardFlipped) {
             evaluationTextY = evaluation.value >= 0 ? 20 : 710;
-            evaluationBarCtx.fillRect(0, 720-height, 30, height);
+            evaluationBarCtx.fillRect(0, 720 - height, 30, height);
             evaluationBarCtx.fillStyle = evaluation.value >= 0 ? "#1e1e1e" : "#ffffff"; 
-        }else{
+        } else {
             evaluationTextY = evaluation.value >= 0 ? 710 : 20;
             evaluationBarCtx.fillRect(0, 0, 30, height);
             evaluationBarCtx.fillStyle = evaluation.value >= 0 ? "#1e1e1e" : "#ffffff"; 
@@ -28,11 +28,11 @@ async function drawEvaluationBar(evaluation: Evaluation, boardFlipped: boolean) 
 
         if (evaluation.value > 0) {
             evaluationBarCtx.fillStyle = "#1e1e1e";
-            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped? 20 : 710, 30);
+            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped ? 20 : 710, 30);
         } else if (evaluation.value < 0) {
             evaluationBarCtx.fillRect(0, 0, 30, 720);            
             evaluationBarCtx.fillStyle = "#ffffff";
-            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped? 710 : 20, 30);
+            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped ? 710 : 20, 30);
         } else if (evaluation.value == 0) {
             evaluationBarCtx.fillStyle = "#676767";
             evaluationBarCtx.fillRect(0, 0, 30, 720);

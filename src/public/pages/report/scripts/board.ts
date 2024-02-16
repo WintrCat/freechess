@@ -22,7 +22,7 @@ let boardFlipped = false;
 let lastEvaluation = {
     type: "cp",
     value: 0
-}
+};
 
 let whitePlayer: Profile = {
     username: "White Player",
