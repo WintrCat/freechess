@@ -252,15 +252,17 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
             }
 
             // Test for great move classification
-            if (
-                noMate
-                && position.classification != Classification.BRILLIANT
-                && lastPosition.classification == Classification.BLUNDER
-                && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150
-                && !isPieceHanging(lastPosition.fen, position.fen, position.move.uci.slice(2, 4) as Square)
-            ) {
-                position.classification = Classification.GREAT;
-            }
+            try {
+                if (
+                    noMate
+                    && position.classification != Classification.BRILLIANT
+                    && lastPosition.classification == Classification.BLUNDER
+                    && Math.abs(topMove.evaluation.value - secondTopMove.evaluation.value) >= 150
+                    && !isPieceHanging(lastPosition.fen, position.fen, position.move.uci.slice(2, 4) as Square)
+                ) {
+                    position.classification = Classification.GREAT;
+                }
+            } catch {}
         }
 
         // Do not allow blunder if move still completely winning
