@@ -16,7 +16,13 @@ const classificationColours: {[key: string]: string} = {
 };
 
 let currentMoveIndex = 0;
+
 let boardFlipped = false;
+
+let lastEvaluation = {
+    type: "cp",
+    value: 0
+};
 
 let whitePlayer: Profile = {
     username: "White Player",
@@ -219,7 +225,8 @@ function traverseMoves(moveCount: number) {
     drawBoard(currentPosition?.fen ?? startingPositionFen);
 
     let topLine = currentPosition?.topLines?.find(line => line.id == 1);
-    drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 });
+    lastEvaluation = topLine?.evaluation ?? { type: "cp", value: 0 }
+    drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 }, boardFlipped);
 
     updateClassificationMessage(positions[currentMoveIndex - 1], currentPosition);
     updateEngineSuggestions(currentPosition.topLines ?? []);
@@ -311,9 +318,11 @@ $("#board").on("click", event => {
 
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
-
+    
+    drawEvaluationBar(lastEvaluation, boardFlipped);
     drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
     updateBoardPlayers();
+    traverseMoves(0);
 });
 
 $("#suggestion-arrows-setting").on("input", () => {
@@ -322,5 +331,5 @@ $("#suggestion-arrows-setting").on("input", () => {
 
 Promise.all(pieceLoaders).then(() => {
     drawBoard(startingPositionFen);
-    drawEvaluationBar({ type: "cp", value: 0 });
+    drawEvaluationBar(lastEvaluation, boardFlipped);
 });
