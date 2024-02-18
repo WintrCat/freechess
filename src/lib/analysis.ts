@@ -229,9 +229,19 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
                                     }
                                     if (attackerPinned) break;
                                 }
-
-                                // If the attacker is not pinned and it moving does not lead to mate in 1
-                                if (!attackerPinned && !captureTestBoard.moves().some(move => move.endsWith("#"))) {
+                                
+                                // If the sacked piece is a rook or more in value, given brilliant
+                                // regardless of taking it leading to mate in 1. If it less than a
+                                // rook, only give brilliant if its capture cannot lead to mate in 1
+                                if (pieceValues[piece.type] >= 5) {
+                                    if (!attackerPinned) {
+                                        anyPieceViablyCapturable = true;
+                                        break;
+                                    }
+                                } else if (
+                                    !attackerPinned
+                                    && !captureTestBoard.moves().some(move => move.endsWith("#"))
+                                ) {
                                     anyPieceViablyCapturable = true;
                                     break;
                                 }
@@ -271,7 +281,12 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
         }
 
         // Do not allow blunder if you were already in a completely lost position
-        if (position.classification == Classification.BLUNDER && previousAbsoluteEvaluation <= -600) {
+        if (
+            position.classification == Classification.BLUNDER 
+            && previousAbsoluteEvaluation <= -600
+            && previousEvaluation.type == "cp"
+            && evaluation.type == "cp"
+        ) {
             position.classification = Classification.GOOD;
         }
 

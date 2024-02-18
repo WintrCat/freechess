@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, existsSync } from "fs";
+import { writeFileSync, mkdirSync, existsSync, rmSync } from "fs";
 import analyse from "../lib/analysis";
 import { EvaluatedPosition } from "../lib/types/Position";
 import Report from "../lib/types/Report";
@@ -8,10 +8,16 @@ const reports: Report[] = [];
 
 async function main() {
 
+    console.log("Running report generation test...");
+
     let before = Date.now();
 
     if (!existsSync("src/test/reports")) {
         mkdirSync("src/test/reports");
+    }
+
+    if (existsSync("src/test/reports/failed.json")) {
+        rmSync("src/test/reports/failed.json");
     }
 
     let gameIndex = 0;
@@ -37,8 +43,11 @@ async function main() {
 
             console.log(`Generated report from game ${gameIndex}...`);
         } catch (err) {
-            console.log(`Evaluated positions from game ${gameIndex} threw an error.`);
+            console.log(`Report generation from game ${gameIndex} failed.`);
+            console.log(`Failed evaluations written to failed${gameIndex}.json`);
             console.log(err);
+
+            writeFileSync(`src/test/reports/failed${gameIndex}.json`, JSON.stringify(game));
         }
     }
 
