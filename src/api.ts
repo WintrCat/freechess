@@ -69,7 +69,7 @@ router.post("/report", async (req, res) => {
     }
 
     // Verify CAPTCHA response token
-    if (!process.env.DEV) {
+    if (process.env.RECAPTCHA_SECRET) {
         try {
             let captchaResponse = await fetch("https://www.google.com/recaptcha/api/siteverify", {
                 method: "POST",
