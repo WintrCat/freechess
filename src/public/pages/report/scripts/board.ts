@@ -322,7 +322,6 @@ $("#flip-board-button").on("click", () => {
     drawEvaluationBar(lastEvaluation, boardFlipped);
     drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
     updateBoardPlayers();
-    traverseMoves(0);
 });
 
 $("#suggestion-arrows-setting").on("input", () => {
