@@ -13,8 +13,8 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - Download the source code using `git clone` or download as ZIP.
 - Open the root directory of the project in a terminal.
 - Run `npm i` to install all of the necessary dependencies.
-- Create a file called `.env` in the root directory of the project.
-- Choose a port for the webserver by adding `PORT=<some port>` to the file.
+- Run `cp .env.sample .env`.
+- Edit `.env` to your preferences.
 - If you would like to use Google ReCAPTCHA, add your client secret as `RECAPTCHA_SECRET=<secret>` or disable it with `DEV=true`.
 - Run `npm start` to compile TypeScript and start the webserver.
 
