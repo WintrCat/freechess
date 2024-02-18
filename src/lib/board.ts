@@ -1,4 +1,4 @@
-import { Chess, Piece, Square } from "chess.js";
+import { Chess, Square } from "chess.js";
 
 interface Coordinate {
     x: number,
@@ -42,7 +42,10 @@ export function getAttackers(fen: string, square: Square): InfluencingPiece[] {
     let piece = board.get(square);
 
     // Set colour to move to opposite of attacked piece
-    board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, piece.color == "w" ? "b" : "w"));
+    board.load(fen
+        .replace(/(?<= )(?:w|b)(?= )/g, piece.color == "w" ? "b" : "w")
+        .replace(/ [a-h][1-8] /g, " - ")
+    );
 
     // Find each legal move that captures attacked piece
     let legalMoves = board.moves({ verbose: true });
@@ -115,7 +118,10 @@ export function getDefenders(fen: string, square: Square) {
     // If there is an attacker we can test capture the piece with
     if (testAttacker) {
         // Set player to move to colour of test attacker
-        board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, testAttacker.color));
+        board.load(fen
+            .replace(/(?<= )(?:w|b)(?= )/g, testAttacker.color)
+            .replace(/ [a-h][1-8] /g, " - ")
+        );
 
         // Capture the defended piece with the test attacker
         for (let promotion of promotions) {
@@ -132,7 +138,10 @@ export function getDefenders(fen: string, square: Square) {
         }
     } else {
         // Set player to move to defended piece colour
-        board.load(fen.replace(/(?<= )(?:w|b)(?= )/g, piece.color));
+        board.load(fen
+            .replace(/(?<= )(?:w|b)(?= )/g, piece.color)
+            .replace(/ [a-h][1-8] /g, " - ")
+        );
 
         // Replace defended piece with an enemy queen
         board.put({

@@ -37,8 +37,11 @@ async function main() {
 
             console.log(`Generated report from game ${gameIndex}...`);
         } catch (err) {
-            console.log(`Evaluated positions from game ${gameIndex} threw an error.`);
+            console.log(`Report generation from game ${gameIndex} failed.`);
+            console.log("Failed evaluations written to failed.json");
             console.log(err);
+
+            writeFileSync("src/test/reports/failed.json", JSON.stringify(game));
         }
     }
 
