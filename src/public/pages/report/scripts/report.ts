@@ -11,10 +11,11 @@ function updateClassificationMessage(lastPosition: Position, position: Position)
     if (position.classification) {
         let classificationMessages: { [key: string]: string } = {
             "great": "a great move",
+            "good":"an okay move",
             "inaccuracy": "an inaccuracy",
             "mistake": "a mistake",
             "blunder": "a blunder",
-            "book": "a book move"
+            "book": "theory"
         };
 
         $("#classification-icon").attr("src", `/static/media/${position.classification}.png`);
