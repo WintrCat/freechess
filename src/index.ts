@@ -20,6 +20,10 @@ app.get("/", async (req, res) => {
     res.sendFile(path.resolve("src/public/pages/report/index.html"));
 });
 
+app.get("/privacy", async (req, res) => {
+    res.sendFile(path.resolve("src/public/pages/privacy/index.html"));
+});
+
 app.listen(process.env.PORT, () => {
     console.log("Server running.");
 });

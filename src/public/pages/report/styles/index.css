@@ -41,3 +41,14 @@ body {
         padding: 10px;
     }
 }
+
+.footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+
+.footer a {
+    color: white;
+}

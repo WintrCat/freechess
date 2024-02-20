@@ -53,8 +53,8 @@ function drawArrow(fromX: number, fromY: number, toX: number, toY: number, width
     let arrowCtx = $<HTMLCanvasElement>("<canvas>").get(0)?.getContext("2d");
     if (!arrowCtx) return;
 
-    arrowCtx.canvas.width = 720;
-    arrowCtx.canvas.height = 720;
+    arrowCtx.canvas.width = 1280;
+    arrowCtx.canvas.height = 1280;
 
     let headlen = 15;
     let angle = Math.atan2(toY - fromY, toX - fromX);
@@ -116,7 +116,7 @@ async function drawBoard(fen: string) {
         ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * (BOARD_SIZE / 8) + 24);
     }
 
-    // Draw last move highlight and top move arrows
+    // Draw last move highlight
     let lastMove = reportResults?.positions[currentMoveIndex];
     
     let lastMoveCoordinates = {
@@ -186,11 +186,11 @@ async function drawBoard(fen: string) {
     if ($<HTMLInputElement>("#suggestion-arrows-setting").get(0)?.checked) {
         let arrowAttributes = [
             {
-                width: 20,
+                width: 35,
                 opacity: 0.8
             },
             {
-                width: 12,
+                width: 21,
                 opacity: 0.55
             }
         ];
@@ -278,27 +278,18 @@ function traverseMoves(moveCount: number) {
     let moveSAN = positions[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move?.san ?? "";
 
     if (moveSAN.endsWith("#")) {
-        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
-        let gameEndSound = $<HTMLAudioElement>("#sound-fx-game-end").get(0);
-        if (checkSound && gameEndSound) {
-            checkSound.play();
-            gameEndSound.play();
-        }
+        $<HTMLAudioElement>("#sound-fx-check").get(0)?.play();
+        $<HTMLAudioElement>("#sound-fx-game-end").get(0)?.play();
     } else if (moveSAN.endsWith("+")) {
-        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
-        if (checkSound) checkSound.play();
+        $<HTMLAudioElement>("#sound-fx-check").get(0)?.play();
     } else if (/=[QRBN]/g.test(moveSAN)) {
-        let promoteSound = $<HTMLAudioElement>("#sound-fx-promote").get(0);
-        if (promoteSound) promoteSound.play();
+        $<HTMLAudioElement>("#sound-fx-promote").get(0)?.play();
     } else if (moveSAN.includes("O-O")) {
-        let castleSound = $<HTMLAudioElement>("#sound-fx-castle").get(0);
-        if (castleSound) castleSound.play();
+        $<HTMLAudioElement>("#sound-fx-castle").get(0)?.play();
     } else if (moveSAN.includes("x")) {
-        let captureSound = $<HTMLAudioElement>("#sound-fx-capture").get(0);
-        if (captureSound) captureSound.play();
+        $<HTMLAudioElement>("#sound-fx-capture").get(0)?.play();
     } else {
-        let moveSound = $<HTMLAudioElement>("#sound-fx-move").get(0);
-        if (moveSound) moveSound.play();
+        $<HTMLAudioElement>("#sound-fx-move").get(0)?.play();
     }
 }
 
