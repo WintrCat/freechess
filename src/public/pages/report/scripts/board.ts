@@ -104,16 +104,16 @@ async function drawBoard(fen: string) {
     }
 
     // Draw coordinates
-    ctx.font = "20px Arial";
+    ctx.font = "24px Arial";
     
     let files = "abcdefgh".split("");
     for (let x = 0; x < 8; x++) {
         ctx.fillStyle = colours[x % 2];
-        ctx.fillText(boardFlipped ? files[7 - x] : files[x], x * (BOARD_SIZE / 8) + 5, 715);
+        ctx.fillText(boardFlipped ? files[7 - x] : files[x], x * (BOARD_SIZE / 8) + 5, BOARD_SIZE - 5);
     }
     for (let y = 0; y < 8; y++) {
         ctx.fillStyle = colours[(y + 1) % 2];
-        ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * (BOARD_SIZE / 8) + 22);
+        ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * (BOARD_SIZE / 8) + 24);
     }
 
     // Draw last move highlight and top move arrows
