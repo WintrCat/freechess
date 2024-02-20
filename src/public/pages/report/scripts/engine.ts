@@ -2,7 +2,7 @@ const webAssemblyModifier = typeof WebAssembly == "object" ? ".wasm.js" : ".js";
 
 class Stockfish {
 
-    private worker = new Worker("/static/scripts/stockfish" + webAssemblyModifier);
+    private worker = new Worker("/static/scripts/stockfish-nnue-16.js");
 
     depth = 0;
 
