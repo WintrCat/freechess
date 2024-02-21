@@ -34,7 +34,7 @@
 <body>
 
     <div id="announcement">
-        <b>I pay to keep my app free for everyone. Any donations appreciated ❤️</b>
+        <b data-translate="donations-label">I pay to keep my app free for everyone. Any donations appreciated ❤️</b>
         <a href="https://ko-fi.com/N4N7SORCC" target="_blank" rel="noopener noreferrer">
             <img height="36" style="border:0px;height:36px;" src="https://storage.ko-fi.com/cdn/kofi5.png?v=3" alt="Donate"/>
         </a>
@@ -49,20 +49,20 @@
                 <canvas id="evaluation-bar" width="30" height="720"></canvas>
 
                 <div id="board-inner-container" class="center">
-                    <div id="top-player-profile" class="profile">Black Player (?)</div>
+                    <div id="top-player-profile" class="profile" data-translate="black-player-label">Black Player (?)</div>
 
                     <canvas id="board" width="1280" height="1280"></canvas>
                     
-                    <div id="bottom-player-profile" class="profile">White Player (?)</div>
+                    <div id="bottom-player-profile" class="profile" data-translate="white-player-label">White Player (?)</div>
                 </div>
             </div>
     
             <div id="review-panel">
                 <div id="review-panel-main">
-                    <h1 id="review-panel-title" class="white">📑 Game Report</h1>
+                    <h1 id="review-panel-title" class="white" data-translate="game-report-label">📑 Game Report</h1>
 
                     <div id="load-type-dropdown-container" class="white">
-                        <span>Load game from</span>
+                        <span data-translate="load-game-from-label">Load game from</span>
                         <select id="load-type-dropdown">
                             <option value="pgn">PGN</option>
                             <option value="chesscom">Chess.com</option>
@@ -81,15 +81,15 @@
 
                     <button id="review-button" class="std-btn success-btn white">
                         <img src="/static/media/analysis_icon.png" height="25">
-                        <b>Analyse</b>
+                        <b data-translate="analyse-button">Analyse</b>
                     </button>
 
-                    <b class="white">⚙️ Search depth</b>
+                    <b class="white" data-translate="search-depth-label">⚙️ Search depth</b>
                     <div id="depth-slider-container">
                         <input id="depth-slider" type="range" min="14" max="20" value="16">
                         <span id="depth-counter" class="white">16 🐇</span>
                     </div>
-                    <h6 id="depth-message" class="white">Lower depths recommended for slower devices.</h6>
+                    <h6 id="depth-message" class="white" data-translate="lower-depth-recommandation-label">Lower depths recommended for slower devices.</h6>
 
                     <progress id="evaluation-progress-bar" max="100"></progress>
 
@@ -100,7 +100,7 @@
                     <b id="secondary-message" class="white"></b>
 
                     <div id="report-cards">
-                        <h2 id="accuracies-title" class="white">Accuracies</h2>
+                        <h2 id="accuracies-title" class="white" data-translate="accuracies-label">Accuracies</h2>
                         <div id="accuracies">
                             <b id="white-accuracy">0%</b>
                             <b id="black-accuracy">0%</b>
@@ -114,7 +114,7 @@
                         <b id="top-alternative-message">Qxf2+ was best</b>
 
                         <div id="engine-suggestions">
-                            <h2 id="engine-suggestions-title" class="white">Engine</h2>
+                            <h2 id="engine-suggestions-title" class="white" data-translate="engine-label">Engine</h2>
                         </div>
 
                         <span id="opening-name" class="white"></span>
@@ -133,7 +133,7 @@
 
                     <div class="white" style="margin-bottom:10px">
                         <input id="suggestion-arrows-setting" type="checkbox">
-                        <span>Suggestion Arrows</span>
+                        <span data-translate="suggestion-arrows-label">Suggestion Arrows</span>
                     </div>
                 </div>
             </div>
@@ -141,8 +141,8 @@
     </div>
 
     <div class="footer white">
-        A website by wintrcat
-        <a href="/privacy">Privacy Policy</a>
+        <span data-translate="footer-label">A website by wintrcat</span>
+        <a href="/privacy" data-translate="privacy-policy-button">Privacy Policy</a>
     </div>
 
     <div id="game-select-menu-container"></div>
@@ -159,5 +159,6 @@
     <script src="/static/pages/report/scripts/engine.js"></script>
     <script src="/static/pages/report/scripts/analysis.js"></script>
 
+    <script src="/static/pages/report/scripts/translate.js"></script>
 </body>
 </html>
