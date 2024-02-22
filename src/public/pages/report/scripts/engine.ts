@@ -1,6 +1,10 @@
 class Stockfish {
 
-    private worker = new Worker("/static/scripts/stockfish-nnue-16.js");
+    private worker = new Worker(
+        typeof WebAssembly == "object"
+        ? "/static/scripts/stockfish-nnue-16.js"
+        : "/static/scripts/stockfish.js"
+    );
 
     depth = 0;
 
@@ -69,6 +73,13 @@ class Stockfish {
                     this.worker.terminate();
                     res(lines);
                 }
+            });
+
+            this.worker.addEventListener("error", () => {
+                // Terminate the current Stockfish, switch to Stockfish 11 as fallback engine
+                this.worker.terminate();
+                this.worker = new Worker("/static/scripts/stockfish.js");
+                this.evaluate(fen, targetDepth, verbose).then(res);
             });
         });
     }
