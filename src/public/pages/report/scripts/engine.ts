@@ -79,6 +79,10 @@ class Stockfish {
                 // Terminate the current Stockfish, switch to Stockfish 11 as fallback engine
                 this.worker.terminate();
                 this.worker = new Worker("/static/scripts/stockfish.js");
+
+                this.worker.postMessage("uci");
+                this.worker.postMessage("setoption name MultiPV value 2");
+                
                 this.evaluate(fen, targetDepth, verbose).then(res);
             });
         });
