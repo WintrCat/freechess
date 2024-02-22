@@ -10,18 +10,21 @@ function updateClassificationMessage(lastPosition: Position, position: Position)
 
     if (position.classification) {
         let classificationMessages: { [key: string]: string } = {
-            "great": "a great move",
-            "good":"an okay move",
-            "inaccuracy": "an inaccuracy",
-            "mistake": "a mistake",
-            "blunder": "a blunder",
-            "book": "theory"
+            "great": translateIntoUserLanguage(userLanguage,"a great move"),
+            "good": translateIntoUserLanguage(userLanguage,"an okay move"),
+            "inaccuracy": translateIntoUserLanguage(userLanguage,"an inaccuracy"),
+            "mistake": translateIntoUserLanguage(userLanguage,"a mistake"),
+            "blunder": translateIntoUserLanguage(userLanguage,"a blunder"),
+            "book": translateIntoUserLanguage(userLanguage,"theory"),
+            "best": translateIntoUserLanguage(userLanguage, "best"),
+            "brilliant": translateIntoUserLanguage(userLanguage, "brilliant"),
+            "forced": translateIntoUserLanguage(userLanguage, "forced")
         };
 
         $("#classification-icon").attr("src", `/static/media/${position.classification}.png`);
 
         let message = classificationMessages[position.classification] ?? position.classification;
-        $("#classification-message").html(`${position.move?.san} is ${message}`);
+        $("#classification-message").html(`${position.move?.san} ${translateIntoUserLanguage(userLanguage,"is")} ${message}`);
         $("#classification-message").css("color", classificationColours[position.classification]);
 
         $("#classification-message-container").css("display", "flex");
@@ -32,7 +35,7 @@ function updateClassificationMessage(lastPosition: Position, position: Position)
             let topAlternative = lastPosition.topLines?.[0].moveSAN;
             if (!topAlternative) return;
 
-            $("#top-alternative-message").html(`Best was ${topAlternative}`);
+            $("#top-alternative-message").html(`${translateIntoUserLanguage(userLanguage,"Best was")} ${topAlternative}`);
             $("#top-alternative-message").css("display", "inline");
         }
     } else {
