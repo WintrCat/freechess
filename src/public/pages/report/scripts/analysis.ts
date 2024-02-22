@@ -35,11 +35,11 @@ async function evaluate() {
 
     // Content validate PGN input
     if (pgn.length == 0) {
-        return logAnalysisError("Provide a game to analyse.");
+        return logAnalysisError(translateIntoUserLanguage(userLanguage,"Provide a game to analyse."));
     }
 
     // Post PGN to server to have it parsed
-    logAnalysisInfo("Parsing PGN...");
+    logAnalysisInfo(translateIntoUserLanguage(userLanguage,"Parsing PGN..."));
 
     try {
         let parseResponse = await fetch("/api/parse", {
@@ -54,13 +54,13 @@ async function evaluate() {
 
         if (!parseResponse.ok) {
             return logAnalysisError(
-                parsedPGN.message ?? "Failed to parse PGN.",
+                parsedPGN.message ?? translateIntoUserLanguage(userLanguage,"Failed to parse PGN."),
             );
         }
 
         var positions = parsedPGN.positions!;
     } catch {
-        return logAnalysisError("Failed to parse PGN.");
+        return logAnalysisError(translateIntoUserLanguage(userLanguage,"Failed to parse PGN."));
     }
 
     // Update board player usernames
@@ -75,7 +75,7 @@ async function evaluate() {
     updateBoardPlayers();
 
     $("#secondary-message").html(
-        "It can take around a minute to process a full game.",
+        translateIntoUserLanguage(userLanguage,"It can take around a minute to process a full game."),
     );
 
     // Fetch cloud evaluations where possible
@@ -151,7 +151,7 @@ async function evaluate() {
         let progress =
             ((positions.indexOf(position) + 1) / positions.length) * 100;
         $("#evaluation-progress-bar").attr("value", progress);
-        logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
+        logAnalysisInfo(`${translateIntoUserLanguage(userLanguage, "Evaluating positions...")} (${progress.toFixed(1)}%)`);
     }
 
     // Evaluate remaining positions
@@ -162,11 +162,11 @@ async function evaluate() {
         if (!positions.some((pos) => !pos.topLines)) {
             clearInterval(stockfishManager);
 
-            logAnalysisInfo("Evaluation complete.");
+            logAnalysisInfo(translateIntoUserLanguage(userLanguage,"Evaluation complete."));
             $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
             $("#secondary-message").html(
-                "Please complete the CAPTCHA to continue.",
+                translateIntoUserLanguage(userLanguage,"Please complete the CAPTCHA to continue."),
             );
 
             evaluatedPositions = positions;
@@ -202,7 +202,7 @@ async function evaluate() {
         let progress = (workerDepths / (positions.length * depth)) * 100;
 
         $("#evaluation-progress-bar").attr("value", progress);
-        logAnalysisInfo(`Evaluating positions... (${progress.toFixed(1)}%)`);
+        logAnalysisInfo(`${translateIntoUserLanguage(userLanguage, "Evaluating positions...")} (${progress.toFixed(1)}%)`);
     }, 10);
 }
 
@@ -229,7 +229,7 @@ async function report() {
     $(".g-recaptcha").css("display", "none");
     $("#secondary-message").html("");
     $("#evaluation-progress-bar").attr("value", null);
-    logAnalysisInfo("Generating report...");
+    logAnalysisInfo(translateIntoUserLanguage(userLanguage,"Generating report..."));
 
     // Post evaluations and get report results
     try {

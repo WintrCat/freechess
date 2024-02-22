@@ -49,7 +49,7 @@ async function fetchChessComGames(username: string) {
 
         let games: any[] = (await gamesResponse.json()).games;
 
-        $("#games-list").html(games.length == 0 ? "No games found." : "");
+        $("#games-list").html(games.length == 0 ? translateIntoUserLanguage(userLanguage,"No games found.") : "");
 
         for (let game of games.reverse()) {
             let gameListing = generateGameListing({
@@ -68,7 +68,7 @@ async function fetchChessComGames(username: string) {
             $("#games-list").append(gameListing);
         }
     } catch {
-        $("#games-list").html("No games found.");
+        $("#games-list").html(translateIntoUserLanguage(userLanguage,"No games found."));
     }
 
 }
@@ -100,7 +100,7 @@ async function fetchLichessGames(username: string) {
             .filter(game => game.length > 0)
             .map(game => JSON.parse(game));
 
-        $("#games-list").html(games.length == 0 ? "No games found." : "");
+        $("#games-list").html(games.length == 0 ? translateIntoUserLanguage(userLanguage,"No games found.") : "");
 
         for (let game of games) {
             let gameListing = generateGameListing({
@@ -119,7 +119,7 @@ async function fetchLichessGames(username: string) {
             $("#games-list").append(gameListing);
         }
     } catch {
-        $("#games-list").html("No games found.");
+        $("#games-list").html(translateIntoUserLanguage(userLanguage,"No games found."));
     }
 
 }
@@ -193,15 +193,15 @@ $("#load-type-dropdown").on("input", () => {
     $("#fetch-account-games-button").css("display", isLong ? "none" : "block");
 
     if (selectedLoadType == "json") {
-        $("#pgn").attr("placeholder", "Enter save text here...");
+        $("#pgn").attr("placeholder", translateIntoUserLanguage(userLanguage, "Enter save text here..."));
     } else {
-        $("#pgn").attr("placeholder", "Enter PGN here...");
+        $("#pgn").attr("placeholder", translateIntoUserLanguage(userLanguage, "Enter PGN here..."));
     }
 
 });
 
 function onFetchButtonClick() {
-    $("#games-list").html("Fetching games...");
+    $("#games-list").html(translateIntoUserLanguage(userLanguage, "Fetching games..."));
     $("#game-select-menu-container").css("display", "flex");
 
     updateGamesPeriod();
