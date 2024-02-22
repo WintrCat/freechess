@@ -1,5 +1,5 @@
 {
-    "ext": "ts,env,json",
+    "ext": "js,ts,env,json,css,html",
     "ignore": ["dist"],
     "exec": "tsc && node dist/index.js"
 }
