@@ -70,9 +70,7 @@ async function evaluate() {
 
     updateBoardPlayers();
 
-    $("#secondary-message").html(
-        "It can take around a minute to process a full game.",
-    );
+    $("#secondary-message").html("It can take around a minute to process a full game.");
 
     // Fetch cloud evaluations where possible
     for (let position of positions) {

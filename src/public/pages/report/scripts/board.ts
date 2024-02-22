@@ -1,5 +1,7 @@
 const ctx = $<HTMLCanvasElement>("#board").get(0)!.getContext("2d")!;
 
+const BOARD_SIZE = 1280;
+
 const startingPositionFen = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
 const classificationColours: {[key: string]: string} = {
@@ -51,8 +53,8 @@ function drawArrow(fromX: number, fromY: number, toX: number, toY: number, width
     let arrowCtx = $<HTMLCanvasElement>("<canvas>").get(0)?.getContext("2d");
     if (!arrowCtx) return;
 
-    arrowCtx.canvas.width = 720;
-    arrowCtx.canvas.height = 720;
+    arrowCtx.canvas.width = 1280;
+    arrowCtx.canvas.height = 1280;
 
     let headlen = 15;
     let angle = Math.atan2(toY - fromY, toX - fromX);
@@ -92,24 +94,29 @@ async function drawBoard(fen: string) {
         for (let x = 0; x < 8; x++) {
             ctx.fillStyle = colours[(x + y) % 2];
 
-            ctx.fillRect(x * 90, y * 90, 90, 90);
+            ctx.fillRect(
+                x * (BOARD_SIZE / 8), 
+                y * (BOARD_SIZE / 8), 
+                (BOARD_SIZE / 8), 
+                (BOARD_SIZE / 8)
+            );
         }
     }
 
     // Draw coordinates
-    ctx.font = "20px Arial";
+    ctx.font = "24px Arial";
     
     let files = "abcdefgh".split("");
     for (let x = 0; x < 8; x++) {
         ctx.fillStyle = colours[x % 2];
-        ctx.fillText(boardFlipped ? files[7 - x] : files[x], x * 90 + 5, 715);
+        ctx.fillText(boardFlipped ? files[7 - x] : files[x], x * (BOARD_SIZE / 8) + 5, BOARD_SIZE - 5);
     }
     for (let y = 0; y < 8; y++) {
         ctx.fillStyle = colours[(y + 1) % 2];
-        ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * 90 + 22);
+        ctx.fillText(boardFlipped ? (y + 1).toString() : (8 - y).toString(), 5, y * (BOARD_SIZE / 8) + 24);
     }
 
-    // Draw last move highlight and top move arrows
+    // Draw last move highlight
     let lastMove = reportResults?.positions[currentMoveIndex];
     
     let lastMoveCoordinates = {
@@ -126,8 +133,18 @@ async function drawBoard(fen: string) {
 
         ctx.globalAlpha = 0.7;
         ctx.fillStyle = classificationColours[reportResults?.positions[currentMoveIndex].classification ?? "book"];
-        ctx.fillRect(lastMoveCoordinates.from.x * 90, lastMoveCoordinates.from.y * 90, 90, 90);
-        ctx.fillRect(lastMoveCoordinates.to.x * 90, lastMoveCoordinates.to.y * 90, 90, 90);
+        ctx.fillRect(
+            lastMoveCoordinates.from.x * (BOARD_SIZE / 8), 
+            lastMoveCoordinates.from.y * (BOARD_SIZE / 8), 
+            (BOARD_SIZE / 8),
+            (BOARD_SIZE / 8)
+        );
+        ctx.fillRect(
+            lastMoveCoordinates.to.x * (BOARD_SIZE / 8), 
+            lastMoveCoordinates.to.y * (BOARD_SIZE / 8), 
+            (BOARD_SIZE / 8),
+            (BOARD_SIZE / 8)
+        );
         ctx.globalAlpha = 1;
     }
 
@@ -142,7 +159,12 @@ async function drawBoard(fen: string) {
         } else if (/\d/g.test(character)) {
             x += parseInt(character) * (boardFlipped ? -1 : 1);
         } else {
-            ctx.drawImage(pieceImages[character], x * 90, y * 90, 90, 90);
+            ctx.drawImage(
+                pieceImages[character], x * (BOARD_SIZE / 8),
+                y * (BOARD_SIZE / 8),
+                (BOARD_SIZE / 8),
+                (BOARD_SIZE / 8)
+            );
             x += boardFlipped ? -1 : 1;
         }
     }
@@ -154,9 +176,9 @@ async function drawBoard(fen: string) {
         if (!classification) return;
         ctx.drawImage(
             classificationIcons[classification]!,
-            lastMoveCoordinates.to.x * 90 + 68, 
-            lastMoveCoordinates.to.y * 90 - 10, 
-            32, 32
+            lastMoveCoordinates.to.x * (BOARD_SIZE / 8) + ((68 / 90) * (BOARD_SIZE / 8)), 
+            lastMoveCoordinates.to.y * (BOARD_SIZE / 8) - ((10 / 90) * (BOARD_SIZE / 8)), 
+            56, 56
         );
     }
 
@@ -164,11 +186,11 @@ async function drawBoard(fen: string) {
     if ($<HTMLInputElement>("#suggestion-arrows-setting").get(0)?.checked) {
         let arrowAttributes = [
             {
-                width: 20,
+                width: 35,
                 opacity: 0.8
             },
             {
-                width: 12,
+                width: 21,
                 opacity: 0.55
             }
         ];
@@ -180,7 +202,13 @@ async function drawBoard(fen: string) {
             let from = getBoardCoordinates(topLine.moveUCI.slice(0, 2));
             let to = getBoardCoordinates(topLine.moveUCI.slice(2, 4));
     
-            let arrow = drawArrow(from.x * 90 + 45, from.y * 90 + 45, to.x * 90 + 45, to.y * 90 + 45, arrowAttributes[topLineIndex].width);
+            let arrow = drawArrow(
+                from.x * (BOARD_SIZE / 8) + (BOARD_SIZE / 16), 
+                from.y * (BOARD_SIZE / 8) + (BOARD_SIZE / 16), 
+                to.x * (BOARD_SIZE / 8) + (BOARD_SIZE / 16), 
+                to.y * (BOARD_SIZE / 8) + (BOARD_SIZE / 16), 
+                arrowAttributes[topLineIndex].width
+            );
             if (!arrow) continue;
     
             ctx.globalAlpha = arrowAttributes[topLineIndex].opacity;
@@ -250,27 +278,18 @@ function traverseMoves(moveCount: number) {
     let moveSAN = positions[currentMoveIndex + (moveCount == -1 ? 1 : 0)].move?.san ?? "";
 
     if (moveSAN.endsWith("#")) {
-        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
-        let gameEndSound = $<HTMLAudioElement>("#sound-fx-game-end").get(0);
-        if (checkSound && gameEndSound) {
-            checkSound.play();
-            gameEndSound.play();
-        }
+        $<HTMLAudioElement>("#sound-fx-check").get(0)?.play();
+        $<HTMLAudioElement>("#sound-fx-game-end").get(0)?.play();
     } else if (moveSAN.endsWith("+")) {
-        let checkSound = $<HTMLAudioElement>("#sound-fx-check").get(0);
-        if (checkSound) checkSound.play();
+        $<HTMLAudioElement>("#sound-fx-check").get(0)?.play();
     } else if (/=[QRBN]/g.test(moveSAN)) {
-        let promoteSound = $<HTMLAudioElement>("#sound-fx-promote").get(0);
-        if (promoteSound) promoteSound.play();
+        $<HTMLAudioElement>("#sound-fx-promote").get(0)?.play();
     } else if (moveSAN.includes("O-O")) {
-        let castleSound = $<HTMLAudioElement>("#sound-fx-castle").get(0);
-        if (castleSound) castleSound.play();
+        $<HTMLAudioElement>("#sound-fx-castle").get(0)?.play();
     } else if (moveSAN.includes("x")) {
-        let captureSound = $<HTMLAudioElement>("#sound-fx-capture").get(0);
-        if (captureSound) captureSound.play();
+        $<HTMLAudioElement>("#sound-fx-capture").get(0)?.play();
     } else {
-        let moveSound = $<HTMLAudioElement>("#sound-fx-move").get(0);
-        if (moveSound) moveSound.play();
+        $<HTMLAudioElement>("#sound-fx-move").get(0)?.play();
     }
 }
 

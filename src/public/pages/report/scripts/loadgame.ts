@@ -78,9 +78,14 @@ async function fetchLichessGames(username: string) {
     let monthBeginning = new Date(
         `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-01T00:00:00Z`
     ).getTime();
-
+    
+    let monthLength = monthLengths[gamesPeriod.month - 1];
+    if (gamesPeriod.month - 1 == 2 && gamesPeriod.year % 4 == 0) {
+      monthLength = 29;
+    }
+    
     let monthEnding = new Date(
-        `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-${monthLengths[gamesPeriod.month - 1]}T23:59:59Z`
+      `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-${monthLength}T23:59:59Z`
     ).getTime();
 
     try {

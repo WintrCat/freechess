@@ -20,6 +20,8 @@
     grid-column: 1 / 2;
 
     max-width: 100%;
+    width: 720px;
+    height: auto;
 
     border: 2px solid var(--border-color);
     border-radius: 10px;

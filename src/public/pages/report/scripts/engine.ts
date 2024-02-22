@@ -1,8 +1,10 @@
-const webAssemblyModifier = typeof WebAssembly == "object" ? ".wasm.js" : ".js";
-
 class Stockfish {
 
-    private worker = new Worker("/static/scripts/stockfish" + webAssemblyModifier);
+    private worker = new Worker(
+        typeof WebAssembly == "object"
+        ? "/static/scripts/stockfish-nnue-16.js"
+        : "/static/scripts/stockfish.js"
+    );
 
     depth = 0;
 
@@ -71,6 +73,15 @@ class Stockfish {
                     this.worker.terminate();
                     res(lines);
                 }
+            });
+
+            this.worker.addEventListener("error", event => {
+                // Terminate the current Stockfish, switch to Stockfish 11 as fallback engine
+                this.worker.terminate();
+                this.worker = new Worker("/static/scripts/stockfish.js");
+                this.evaluate(fen, targetDepth, verbose).then(res);
+
+                $("#secondary-message").html("Stockfish crashed; switching to fallback engine...");
             });
         });
     }
