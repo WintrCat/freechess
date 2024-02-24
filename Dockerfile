@@ -1,11 +1,9 @@
-FROM alpine:latest
+FROM node:20
 
 COPY * /app/
 
 WORKDIR /app/
 
-RUN apk update
-RUN apk add nodejs
 RUN npm install typescript
 
 ENV PORT=80
