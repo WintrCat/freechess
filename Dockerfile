@@ -4,8 +4,8 @@ COPY * /app/
 
 WORKDIR /app/
 
-RUN apt-get update
-RUN apt-get install nodejs
+RUN apk update
+RUN apk add nodejs
 RUN npm install typescript
 
 ENV PORT=80
