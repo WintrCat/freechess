@@ -1,4 +1,4 @@
-FROM Alpine:latest
+FROM alpine:latest
 
 COPY * /app/
 
