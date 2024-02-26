@@ -1,14 +1,17 @@
 FROM node:20
 
-COPY * /app/
+LABEL name="wintrcat/freechess"
+LABEL version="1.0.0"
 
-WORKDIR /app/
+WORKDIR /usr/app/
 
-RUN npm install typescript
+COPY . .
 
-ENV PORT=80
-# ENV RECAPTCHA_SECRET=<secret>
+RUN npm install -g typescript
+RUN npm i
+
+ENV PORT 80
 
 EXPOSE 80/tcp
 
-CMD ["npm", "start"]
+ENTRYPOINT ["npm", "start"]
