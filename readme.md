@@ -36,7 +36,7 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - If you want to use a CAPTCHA:
     - add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
     - Open `src/public/pages/report/index.html`, find `data-sitekey` and replace the value with your reCAPTCHA public site key
-- Run `sudo docker build -t freechess ./` to build the image
+- Run `sudo docker build . -t freechess` to build the image
 
 ### Start a Docker container with the freechess image
 - Run `sudo docker run -d -P freechess`
