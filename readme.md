@@ -16,7 +16,7 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - Create a file called `.env` in the root directory of the project.
 - Choose a port for the webserver by adding `PORT=<some port>` to the file.
 - If you want to use a CAPTCHA:
-    - add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
+    - Add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
     - Open `src/public/pages/report/index.html`, find `data-sitekey` and replace the value with your reCAPTCHA public site key
 - Run `npm start` to compile TypeScript and start the webserver.
 
@@ -34,7 +34,7 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - Open the root directory of the project in a terminal.
 - Create a file called `.env` in the root directory of the project.
 - If you want to use a CAPTCHA:
-    - add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
+    - Add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
     - Open `src/public/pages/report/index.html`, find `data-sitekey` and replace the value with your reCAPTCHA public site key
 - Run `sudo docker build . -t freechess` to build the image
 
