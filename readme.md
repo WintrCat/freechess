@@ -15,13 +15,32 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - Run `npm i` to install all of the necessary dependencies.
 - Create a file called `.env` in the root directory of the project.
 - Choose a port for the webserver by adding `PORT=<some port>` to the file.
-- If you want to use a CAPTCHA, add your client secret as `RECAPTCHA_SECRET=<secret>`
+- If you want to use a CAPTCHA:
+    - Add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
+    - Open `src/public/pages/report/index.html`, find `data-sitekey` and replace the value with your reCAPTCHA public site key
 - Run `npm start` to compile TypeScript and start the webserver.
 
 ### NPM Scripts
 - `npm start` - Compiles TypeScript and starts the webserver.
 - `npm run build` - Compiles TypeScript.
 - `npm run test` - Generates reports from some sample evaluations for classification testing at `src/test/reports`.
+
+## Running in Docker
+### Prerequisites
+- Docker installed on the server
+
+### Build a Docker image
+- Download the source code using `git clone` or download as ZIP.
+- Open the root directory of the project in a terminal.
+- Create a file called `.env` in the root directory of the project.
+- If you want to use a CAPTCHA:
+    - Add your client secret as `RECAPTCHA_SECRET=<secret>` to the .env file
+    - Open `src/public/pages/report/index.html`, find `data-sitekey` and replace the value with your reCAPTCHA public site key
+- Run `sudo docker build . -t freechess` to build the image
+
+### Start a Docker container with the freechess image
+- Run `sudo docker run -d -P freechess`
+- If you wish to choose the port instead of Docker choosing one for you, replace `-P` with `-p <port>:80`
 
 ## Donate
 I pay to keep my app running and free-to-use for everyone. Any donations are greatly appreciated ❤️
