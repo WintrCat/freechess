@@ -75,6 +75,7 @@ class Stockfish {
                 }
             });
 
+
             this.worker.addEventListener("error", event => {
                 // Terminate the current Stockfish, switch to Stockfish 11 as fallback engine
                 this.worker.terminate();
@@ -82,6 +83,17 @@ class Stockfish {
                 this.evaluate(fen, targetDepth, verbose).then(res);
 
                 $("#secondary-message").html("Stockfish crashed; switching to fallback engine...");
+
+            this.worker.addEventListener("error", () => {
+                // Terminate the current Stockfish, switch to Stockfish 11 as fallback engine
+                this.worker.terminate();
+                this.worker = new Worker("/static/scripts/stockfish.js");
+
+                this.worker.postMessage("uci");
+                this.worker.postMessage("setoption name MultiPV value 2");
+                
+                this.evaluate(fen, targetDepth, verbose).then(res);
+
             });
         });
     }
