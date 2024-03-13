@@ -60,7 +60,7 @@ function updateEngineSuggestions(lines: EngineLine[]) {
         } else {
             evaluation.html("M" + Math.abs(line.evaluation.value).toString());
         }
-        evaluation.css("background-color", line.evaluation.value >= 0 ? "#ffffff" : "var(--primary-color)");
+        evaluation.css("background-color", line.evaluation.value >= 0 ? "#ffffff" : "var(--secondary-color)");
         evaluation.css("color", line.evaluation.value >= 0 ? "var(--primary-color)" : "#ffffff");
 
         let move = $("<span>");

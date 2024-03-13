@@ -2,8 +2,8 @@ const evaluationBarCtx = ($("#evaluation-bar").get(0)! as HTMLCanvasElement).get
 
 async function drawEvaluationBar(evaluation: Evaluation, boardFlipped: boolean) {
     evaluationBarCtx.clearRect(0, 0, 30, 720);
-    evaluationBarCtx.font = "16px Arial";
-    evaluationBarCtx.fillStyle = "#1e1e1e";
+    evaluationBarCtx.font = "16px Gill Sans";
+    evaluationBarCtx.fillStyle = "#1e1f22";
 
     if (evaluation.type == "cp") {
         let height = Math.max(Math.min(360 - evaluation.value / 3, 680), 40);
