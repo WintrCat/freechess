@@ -24,7 +24,9 @@ body {
 }
 
 @media (max-width: 999px), (max-height: 860px) {
-
+    .privacyPolicyThingy{
+        margin-top: 100px;
+    }
     #board{
         width: 100% !important;
         height: 100% !important;
@@ -83,7 +85,7 @@ body {
         height: 60px !important;
     }
     .wise-words{
-        font-size: 30px;
+        font-size: 20px;
     }
     .profile{
         font-size: 40px !important;
