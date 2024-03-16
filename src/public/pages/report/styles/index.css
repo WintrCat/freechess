@@ -24,13 +24,6 @@ body {
 }
 
 @media (max-width: 999px), (max-height: 860px) {
-<<<<<<< HEAD
-    .privacyPolicyThingy{
-        margin-top: 100px;
-    }
-=======
-
->>>>>>> 309c5f38260f915396be02c4b937a117fb7e7c92
     #board{
         width: 100% !important;
         height: 100% !important;
@@ -89,11 +82,7 @@ body {
         height: 60px !important;
     }
     .wise-words{
-<<<<<<< HEAD
-        font-size: 20px;
-=======
-        font-size: 30px;
->>>>>>> 309c5f38260f915396be02c4b937a117fb7e7c92
+        font-size: 20px !important;
     }
     .profile{
         font-size: 40px !important;
