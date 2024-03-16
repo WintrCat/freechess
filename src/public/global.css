@@ -1,38 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+
+* {
+    font-family: "JetBrains Mono", monospace;
+}
+
 :root {
-    --border-color: rgb(83, 83, 83);
+    --border-color: #3f4248;
 
-    --primary-color: rgb(20, 20, 20);
-    --secondary-color: rgb(26, 26, 26);
+    --primary-color: #303338;
+    --secondary-color: #1e1f22;
 
-    --success-color: rgb(101, 255, 84);
-    --success-color-accent: rgb(91, 229, 75);
+    --announcement-background-color: #5865f2;
 }
 
 .center {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-* {
-    font-family: system-ui;
-}
-
-.std-btn {
-    border: none;
-    border-radius: 5px;
-
-    cursor: pointer;
-
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-}
-
-.success-btn {
-    background-color: var(--success-color);
-    box-shadow: 0px 4px var(--success-color-accent);
-}
-
-.success-btn:active {
-    box-shadow: 0px 2px var(--success-color-accent);
-    transform: translateY(2px);
 }

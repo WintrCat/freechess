@@ -1,19 +1,32 @@
 .profile {
     color: white;
     font-size: 20px;
+    background-color: var(--border-color);
+    border-radius: 10px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    padding: 10px;
 }
-
+.profile:nth-child(1){
+    border-radius: 10px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
 #board-outer-container {
-    gap: 30px;
+    gap: 10px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px; 
 }
 
 #board-inner-container {
-    flex-direction: column;
+    display: grid;
+     
 }
 
 #evaluation-bar {
     background-color: white;
     border: 2px solid var(--border-color);
+    border-radius: 5px;
 }
 
 #board {
@@ -24,5 +37,5 @@
     height: auto;
 
     border: 2px solid var(--border-color);
-    border-radius: 10px;
+    border-radius: 5px;
 }
