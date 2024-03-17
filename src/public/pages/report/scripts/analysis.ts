@@ -4,15 +4,22 @@ let evaluatedPositions: Position[] = [];
 let reportResults: Report | undefined;
 
 function logAnalysisInfo(message: string) {
+    $("#status-message").css("display", "block");
+    
+    $("#status-message").css("background", "rgba(49, 51, 56, 255)");
     $("#status-message").css("color", "white");
     $("#status-message").html(message);
 }
 
 function logAnalysisError(message: string) {
     $("#evaluation-progress-bar").css("display", "none");
-    $("#secondary-message").html("");
-    $("#status-message").css("color", "rgb(255, 53, 53)");
-    $("#status-message").html(message);
+    $("#secondary-message").html('');
+    $("#status-message").css("padding", "10px 3px 10px 3px");
+    $("#status-message").css("display", "block");
+    $("#status-message").css("background", "rgba(239, 65, 70, 0.4");
+    $("#status-message").css("color", "white");
+
+    $("#status-message").html(`<i class="fa-solid fa-circle-info" style="color: #ffffff;"></i>` + message);
 
     ongoingEvaluation = false;
 }
@@ -23,7 +30,10 @@ async function evaluate() {
     grecaptcha.reset();
 
     $("#report-cards").css("display", "none");
-    $("#evaluation-progress-bar").css("display", "inline");
+    $("#evaluation-progress-bar").css("display", "none");
+
+
+    
 
     // Disallow evaluation if another evaluation is ongoing
     if (ongoingEvaluation) return;
@@ -39,6 +49,7 @@ async function evaluate() {
     }
 
     // Post PGN to server to have it parsed
+    $("#status-message").css("padding", "10px 3px 10px 3px");
     logAnalysisInfo("Parsing PGN...");
 
     try {
@@ -157,6 +168,7 @@ async function evaluate() {
 
     const stockfishManager = setInterval(() => {
         // If all evaluations have been generated, move on
+        
         if (!positions.some((pos) => !pos.topLines)) {
             clearInterval(stockfishManager);
 
@@ -206,6 +218,9 @@ async function evaluate() {
 
 function loadReportCards() {
     // Reset chess board, draw evaluation for starting position
+
+    $("#status-message").css("display", "none");
+    $("#status-message").css("padding", "0px");
     traverseMoves(-Infinity);
 
     // Reveal report cards and update accuracies
@@ -219,15 +234,18 @@ function loadReportCards() {
 
     // Remove progress bar and any status message
     $("#evaluation-progress-bar").css("display", "none");
+    $("#status-message").css("display", "none");
     logAnalysisInfo("");
 }
 
 async function report() {
     // Remove CAPTCHA
+    
     $(".g-recaptcha").css("display", "none");
     $("#secondary-message").html("");
     $("#evaluation-progress-bar").attr("value", null);
     logAnalysisInfo("Generating report...");
+    $("#status-message").css("display", "none");
 
     // Post evaluations and get report results
     try {
@@ -257,7 +275,7 @@ async function report() {
 
         // Set report results to results given by server
         reportResults = report.results!;
-
+        $("#status-message").css("display", "none");
         loadReportCards();
     } catch {
         return logAnalysisError("Failed to generate report.");
@@ -287,10 +305,10 @@ $("#depth-slider").on("input", () => {
     let depth = parseInt($("#depth-slider").val()?.toString()!);
 
     if (depth <= 14) {
-        $("#depth-counter").html(depth + " ⚡");
+        $("#depth-counter").html(depth + `|<i class="fa-solid fa-bolt" style="color: #ffffff;"></i>`);
     } else if (depth <= 17) {
-        $("#depth-counter").html(depth + " 🐇");
+        $("#depth-counter").html(depth + `|<i class="fa-solid fa-wind" style="color: #ffffff;"></i>`);
     } else {
-        $("#depth-counter").html(depth + " 🐢");
+        $("#depth-counter").html(depth + `|<i class="fa-solid fa-hourglass-half" style="color: #ffffff;"></i>`);
     }
 });

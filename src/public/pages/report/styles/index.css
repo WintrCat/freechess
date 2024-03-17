@@ -1,7 +1,8 @@
 body {
     margin: 0;
-    background-color: var(--primary-color);
+    background-color: rgba(49,51,56,255);
     overflow-x: hidden;
+    width: 100vw;
 }
 
 .white {
@@ -9,9 +10,10 @@ body {
 }
 
 @media (min-width: 1000px) and (min-height: 860px) {
+
     #review-container {
         display: grid;
-    
+        
         grid-template-columns: 68vw 28vw;
         grid-template-rows: 90vh;
     }
@@ -22,6 +24,39 @@ body {
 }
 
 @media (max-width: 999px), (max-height: 860px) {
+    #board{
+        width: 100% !important;
+        height: 100% !important;
+    }
+    #review-panel{
+        padding: 0px 0px 0px;
+    }
+
+    #review-panel-toolbar{
+        width: 100% !important;
+        border: none !important;
+    }
+    #review-panel-toolbar-buttons{
+        position: fixed !important;
+
+        background-color: var(--secondary-color) !important;
+        gap: 0px !important;
+        
+        bottom: 10px !important;
+        width: 100% !important;
+        border-radius: none;
+        border: 2px solid var(--border-color);
+        z-index: 5;
+        height: 150px !important;
+        gap: 5px !important;
+        padding: 10px !important;
+    }
+    #review-panel-toolbar-buttons i{
+        font-size: 70px !important;
+        background-color: var(--primary-color) !important;
+        padding: 20px 30px 20px 30px !important;
+    }
+
     #review-container {
         display: flex;
         flex-direction: column;
@@ -36,9 +71,144 @@ body {
     #secondary-message {
         width: 60%;
     }
+    #kofi-a, #discord-a{
+        padding: 20px !important;
+    }
+    #discord{
+        font-size: 60px !important;
+    }
+    #kofi{
+        width: 60px !important;
+        height: 60px !important;
+    }
+    .wise-words{
+        font-size: 20px !important;
+    }
+    .profile{
+        font-size: 40px !important;
+    }
+    #review-panel{
+        padding: 0px 0px 200px 0px !important;
+        background-color: var(--primary-color) !important;
+        border: none !important;
+    }
+    #review-panel-main{
+        height: auto !important;
+        background-color: var(--primary-color) !important;
+        border: none !important;
+    }
 
-    #review-panel-toolbar {
-        padding: 10px;
+    #review-panel-title{
+        font-size: 90px !important;
+        padding: 10px !important;
+        height: 120px !important;
+        
+    }
+    #load-type-dropdown-container{
+        top: 120px !important;
+    }
+    #load-type-dropdown{
+        font-size: 30px !important;
+        height: 100px !important;
+    }
+    #chess-site-username{
+        font-size: 35px !important;
+        height: 100px !important;
+        padding: 25px !important;
+    }
+    #pgn{
+        font-size: 25px !important;
+        height: 100px !important;
+        padding: 30px !important;
+    }
+    #pgn, #chess-site-username ::placeholder{
+        margin-top: 20px;
+        font-size: 30px !important;
+    }
+    #review-button{
+        margin-top: 70px !important;
+        font-size: 70px !important;
+        border: 5px solid #4caf50 !important;
+        box-shadow: 0px 10px 0px rgb(76, 175, 80, .6) !important;
+    }
+    #secondary-message{
+        font-size: 20px !important;
+    }
+    #fetch-account-games-button{
+        margin-top: 4px !important;
+
+        font-size: 60px !important;
+        height: 100px !important;
+        box-shadow: none !important;
+        right: 25% !important;
+        border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+    }
+    #game-select-menu-container{
+        z-index: 100;
+    }
+    #game-select-menu{
+        width: 90vw !important;
+        height: 70vh !important;
+    }
+    #game-select-menu h1{
+        font-size: 80px !important;
+    }
+
+    #game-select-period{
+        font-size: 40px !important;
+    }
+
+    #games-list{
+        font-size: 30px !important;
+    }
+    .move-btn i{
+        font-size: 90px !important;
+    }
+    #game-select-cancel-button{
+        font-size: 90px !important;
+
+    }
+    #status-message{
+        font-size: 30px;
+    }
+    .big-depth-container{
+        position: relative !important;
+        font-size: 40px !important;
+        margin-top: 20px !important;
+        
+    }
+    #depth-slider-container{
+        background-color: var(--primary-color) !important;
+    }
+    #review-panel-toolbar{
+        background: none !important;
+    }
+    
+    #depth-counter{
+        font-size: 35px !important;
+        background-color: var(--secondary-color) !important;
+        border-left: 2px solid var(--border-color);
+        border-radius: 10px !important;
+        height: 50px !important;
+    }
+    .toggle{
+        --width: 80px !important;
+        --height: 40px !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    #depth-slider{
+        height: 50px !important;
+    }
+
+    #depth-slider::-webkit-slider-thumb{
+        height: 50px !important;
+        width: 50px !important;
+    }
+    #evaluation-bar{
+        margin-left: 5px !important;
     }
 }
 
@@ -46,7 +216,7 @@ body {
     width: 100%;
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 10px;
 }
 
 .footer a {
