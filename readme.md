@@ -42,6 +42,9 @@ Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account
 - Run `sudo docker run -d -P freechess`
 - If you wish to choose the port instead of Docker choosing one for you, replace `-P` with `-p <port>:80`
 
+## Attributions
+@shirsakm - Classification icons
+
 ## Donate
 I pay to keep my app running and free-to-use for everyone. Any donations are greatly appreciated ❤️
 <br><br>
