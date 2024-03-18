@@ -29,12 +29,12 @@
     border-bottom-right-radius: 0px;
     position: relative;
 }
-
 .accuracyDiv{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 5px;
+    width: 50%;
 }
 .accuracies{
     border: 2px solid #4caf50;
@@ -120,7 +120,25 @@
     font-size: 18px;
     
 }
+@media (max-width: 1300px){
+    #accuracies-title{
+        font-size: 18px !important;
+    }
 
+    .accuracies{
+        font-size: 18px !important;
+    }
+}
+
+@media (max-width: 1100px){
+    #accuracies-title{
+        font-size: 16px !important;
+    }
+
+    .accuracies{
+        font-size: 16px !important;
+    }
+}
 .engine-suggestion b {
     padding: 0 3px;
     text-align: center;
