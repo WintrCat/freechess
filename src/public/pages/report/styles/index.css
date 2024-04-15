@@ -9,13 +9,13 @@ body {
     color: white;
 }
 
-@media (min-width: 1000px) and (min-height: 860px) {
+@media (min-width: 1000px) {
 
     #review-container {
         display: grid;
         
         grid-template-columns: 68vw 28vw;
-        grid-template-rows: 90vh;
+        grid-template-rows: 100vh;
     }
 
     #review-panel {
@@ -23,7 +23,7 @@ body {
     }
 }
 
-@media (max-width: 999px), (max-height: 860px) {
+@media (max-width: 700px) {
     #board{
         width: 100% !important;
         height: 100% !important;
