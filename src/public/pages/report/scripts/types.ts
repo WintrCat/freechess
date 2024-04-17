@@ -5,7 +5,8 @@ declare class grecaptcha {
 
 interface Profile {
     username: string,
-    rating: string
+    rating: string,
+    aiLevel?: string
 }
 
 interface Game {
