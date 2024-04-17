@@ -16,6 +16,16 @@ function updateGamesPeriod() {
     $("#game-select-period").html(`${padMonth(gamesPeriod.month)}/${gamesPeriod.year}`);
 }
 
+function getPlayersString(game: Game) {
+    if (game.white.aiLevel) {
+        return `AI level ${game.white.aiLevel} vs. ${game.black.username} (${game.black.rating})`;
+    } else if (game.black.aiLevel) {
+        return `${game.white.username} (${game.white.rating}) vs. AI level ${game.black.aiLevel}`;
+    } else {
+        return `${game.white.username} (${game.white.rating}) vs. ${game.black.username} (${game.black.rating})`;
+    }
+}
+
 function generateGameListing(game: Game): JQuery<HTMLDivElement> {
 
     let listingContainer = $<HTMLDivElement>("<div>");
@@ -30,7 +40,7 @@ function generateGameListing(game: Game): JQuery<HTMLDivElement> {
     timeClass.html(game.timeClass.replace(/^./, game.timeClass.charAt(0).toUpperCase()));
 
     let players = $("<span>");
-    players.html(`${game.white.username} (${game.white.rating}) vs. ${game.black.username} (${game.black.rating})`);
+    players.html(getPlayersString(game));
 
     listingContainer.append(timeClass);
     listingContainer.append(players);
@@ -112,12 +122,14 @@ async function fetchLichessGames(username: string) {
         for (let game of games) {
             let gameListing = generateGameListing({
                 white: {
-                    username: game.players.white.user.name,
-                    rating: game.players.white.rating
+                    username: game.players.white.user?.name,
+                    rating: game.players.white.rating,
+                    aiLevel: game.players.white.aiLevel
                 },
                 black: {
-                    username: game.players.black.user.name,
-                    rating: game.players.black.rating
+                    username: game.players.black.user?.name,
+                    rating: game.players.black.rating,
+                    aiLevel: game.players.black.aiLevel
                 },
                 timeClass: game.speed,
                 pgn: game.pgn
