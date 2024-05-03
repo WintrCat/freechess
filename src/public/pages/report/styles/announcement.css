@@ -5,8 +5,7 @@
     font-size: 15px;
     margin-bottom: 8px;
     padding: 5px;
-
-    width: 100%;
+    width: 100vw;
     background-color: var(--secondary-color);
     position: relative;
     margin-bottom: 20px;

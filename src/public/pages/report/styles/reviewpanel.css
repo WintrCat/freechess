@@ -5,22 +5,18 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
+}
+
 #review-panel {
     display: grid;
-
     grid-template-columns: 100%;
-
     background-color: var(--secondary-color);
-
     border: 2px solid var(--border-color);
     border-radius: 10px;
-    padding: 5% 0px 0px 0px;
-    height: 100%;
-    min-height: 600px;
-
-    
-
+    padding: 1% 0px 0px 0px;
+    height: 820px;
+    width: 450px;
+    margin-left: 30px;
 }
 
 @media (min-width: 1264px) {
@@ -55,7 +51,6 @@
     flex-direction: column;
     align-items: center;
     position: relative;
-
     height: 100%;
     width: 100%;
     background-color: var(--secondary-color);
@@ -75,33 +70,36 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60px;
     background-color: #4caf50;
-    
+
 }
+
 .usernameVerifyBtn {
     font-size: 20px;
     background-color: var(--secondary-color);
     border: none;
     cursor: pointer;
 }
-.usernameVerifyBtn{
+
+.usernameVerifyBtn {
     background-color: var(--primary-color);
     border-radius: 10px;
 }
+
 #fetch-account-games-button {
     display: none;
     transform: translateY(-2px);
     position: absolute;
     top: 8px;
     right: 27%;
-    margin-top: 10px;
+    margin-top: 4px;
     height: 40px;
     width: 10%;
-    
+
 
 
 }
+
 @media (max-width: 1126px) {
     #review-panel-title {
         font-size: 27px;
@@ -131,26 +129,29 @@
     width: 100%;
     height: 100%;
     text-align: center;
-    margin-top: 10px;
+    margin-top: -3px;
     border-left: 5px solid var(--secondary-color);
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
     cursor: pointer;
     text-overflow: ellipsis;
     font-size: 16px;
-    
+
 }
+
 .gameInputContainer,
-.gameInputContainer2{
+.gameInputContainer2 {
     display: flex;
     align-items: flex-start;
     width: 100%;
-    height: 50px;
+    height: 49.5px;
 }
-#gameInputContainer2{
+
+#gameInputContainer2 {
     display: none;
     width: 100%;
 }
+
 /*
     PGN INPUT TEXTAREA
 */
@@ -163,7 +164,7 @@
     font-size: 16px;
     outline: none;
     padding: 15px;
-    margin-top: 10px;
+    margin-top: 5px;
     resize: none;
     border-radius: 10px;
     background-color: var(--border-color);
@@ -172,35 +173,30 @@
 /*
     CHESS.COM / LICHES USERNAME INPUT TEXTAREA
 */
-#gameInputContainer2{
+#gameInputContainer2 {
     position: relative;
 }
 
 #chess-site-username {
-    display: none;
     font-size: 16px;
     width: 80%;
-    height: 50px;
+    height: 100%;
     padding: 15px;
     outline: none;
     margin-left: 5%;
     border: none;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 5px;
     background-color: var(--border-color);
-
     resize: none;
-    font-size: 16px;
     overflow: hidden;
 }
-@media (max-width: 999px), (max-height: 860px){
-}
 
-
-.knight{
+.knight {
     border-radius: 10px;
     padding: 10px;
 }
+
 /*
     ANALYSE GREEN BUTTON
 */
@@ -209,13 +205,12 @@
     align-items: center;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
+    margin-top: 15px;
     padding: 10px 50px;
     border-radius: 10px;
     font-size: 20px;
     background-color: var(--primary-color);
     color: white;
-
     text-shadow: 0px 1px 2px var(--border-color);
     width: 90%;
     border: 2px solid #4caf50;
@@ -224,27 +219,28 @@
     user-select: none;
     box-shadow: 0px 5px 0px rgb(76, 175, 80, .6);
 
-    
+
 }
-#review-button:active{
+
+#review-button:active {
     box-shadow: 0px 0px 0px;
     transform: translateY(5px);
 }
-.big-depth-container{
+
+.big-depth-container {
     width: 90%;
-    padding: 5px;
+    padding: 10px;
     color: white;
     display: flex;
     position: absolute;
-    bottom: 0;
+    bottom: 0px;
     border-radius: 10px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
     justify-content: center;
     align-items: flex-start;
     flex-direction: column;
     background-color: var(--primary-color);
 }
+
 /*
     SEARCH DEPTH SLIDER
 */
@@ -256,11 +252,12 @@
     display: inline-block;
     cursor: pointer;
 }
-#suggestion-arrows-setting{
+
+#suggestion-arrows-setting {
     display: none;
 }
 
-.toggle__fill{
+.toggle__fill {
     position: relative;
     width: var(--width);
     height: var(--height);
@@ -268,34 +265,48 @@
     background: var(--secondary-color);
     transition: background 0.2s;
 }
-#suggestion-arrows-setting:checked ~ .toggle__fill{
+
+#suggestion-arrows-setting:checked~.toggle__fill {
     background: #4caf50;
 }
-.toggle__fill::after{
+
+.toggle__fill::after {
     content: "";
     position: absolute;
     top: 0;
     left: 0;
     height: var(--height);
-    width: calc(var(--width) /2) ;
+    width: calc(var(--width) /2);
     background: #ffff;
     box-shadow: 0 0 10px rgba(0, 0, 0, .6);
     border-radius: var(--border-radius);
     transition: transform 0.2s;
 }
 
-#suggestion-arrows-setting:checked ~ .toggle__fill::after{
+#suggestion-arrows-setting:checked~.toggle__fill::after {
     transform: translateX(var(--height))
 }
+
 #depth-slider-container {
     display: flex;
     margin-top: 7px;
-    justify-content:flex-start;
+    justify-content: flex-start;
     width: 100%;
     background-color: var(--primary-color);
     position: relative;
 }
-.badboystiff{
+
+.depthTitle{
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+}
+
+.depthTitle p{
+    margin-left: 4px;
+}
+
+.badboystiff {
     display: flex;
     position: absolute;
     right: 5px;
@@ -311,19 +322,20 @@
     height: 20px;
     border-radius: 5px;
     background: linear-gradient(to right, #4caf50 0%, #4caf50 35%, var(--secondary-color) 30%, var(--secondary-color) 100%);
-  }
-  
-  #depth-slider::-webkit-slider-thumb {
+}
+
+#depth-slider::-webkit-slider-thumb {
     -webkit-appearance: none;
-    appearance: none; /* Standardized property for modern browsers */
+    appearance: none;
+    /* Standardized property for modern browsers */
     background: rgb(255, 255, 255);
     width: 20px;
     height: 20px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, .6);
-  }
-  
-  #depth-slider::-webkit-slider-thumb::before {
+}
+
+#depth-slider::-webkit-slider-thumb::before {
     /* Optional: You can add a pseudo-element for extra customization */
     content: '';
     display: block;
@@ -335,18 +347,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-  
-  /* Firefox specific styling */
-  #depth-slider::-moz-range-thumb {
+}
+
+/* Firefox specific styling */
+#depth-slider::-moz-range-thumb {
     background: rgb(255, 255, 255);
     width: 20px;
     height: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-  }
-  
-  #depth-slider::-moz-range-thumb::before {
+}
+
+#depth-slider::-moz-range-thumb::before {
     content: '';
     display: block;
     width: 10px;
@@ -357,18 +369,18 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-  
-  /* IE specific styling */
-  #depth-slider::-ms-thumb {
+}
+
+/* IE specific styling */
+#depth-slider::-ms-thumb {
     background: rgb(255, 255, 255);
     width: 20px;
     height: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 1);
-  }
-  
-  #depth-slider::-ms-thumb::before {
+}
+
+#depth-slider::-ms-thumb::before {
     content: '';
     display: block;
     width: 10px;
@@ -379,12 +391,12 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-  }
-  
-  
-  
-  
-#depth-counter{
+}
+
+
+
+
+#depth-counter {
     width: 20%;
     background-color: var(--primary-color);
     display: flex;
@@ -401,17 +413,20 @@
     margin-top: 10px;
     height: 20px;
     width: 90%;
-    
+
 
 }
-.fa-circle-info{
+
+.fa-circle-info {
     margin-right: 5px;
 }
-#evaluation-progress-bar::-webkit-progress-bar{
+
+#evaluation-progress-bar::-webkit-progress-bar {
     border-radius: 5px;
     background-color: var(--primary-color);
 }
-#evaluation-progress-bar::-webkit-progress-value{
+
+#evaluation-progress-bar::-webkit-progress-value {
     border-radius: 5px;
     background-color: #4caf50;
 }
@@ -438,23 +453,6 @@
     transform: scale(0.9);
     transition-duration: 0.3s;
 }
-@media (max-width: 1300px) {
-    .g-recaptcha {
-        transform: scale(0.85);
-    }
-}
-
-@media (max-width: 1200px) {
-    .g-recaptcha {
-        transform: scale(0.75);
-    }
-}
-
-@media (max-width: 999px) {
-    .g-recaptcha {
-        transform: scale(0.9);
-    }
-}
 
 /*
     ANALYSIS SECONDARY MESSAGE
@@ -480,10 +478,10 @@
     --dot-color: var(--primary-color);
     --dot-size: 2px;
     --dot-space: 10px;
-	background:
-		linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-		linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
-		var(--dot-color);
+    background:
+        linear-gradient(90deg, var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+        linear-gradient(var(--dot-bg) calc(var(--dot-space) - var(--dot-size)), transparent 1%) center / var(--dot-space) var(--dot-space),
+        var(--dot-color);
     border-radius: 10px;
     border-top-left-radius: 0px;
     border-top-right-radius: 0px;
@@ -507,50 +505,25 @@
     background-color: var(--primary-color);
     border-radius: 10px;
 }
-#review-panel-toolbar-buttons i{
+
+#review-panel-toolbar-buttons i {
     border-radius: 5px;
     font-size: 25px;
-    padding: 10px 5%  10px 5%;
+    padding: 10px 5% 10px 5%;
     cursor: pointer;
 
 }
 
-#review-panel-toolbar-buttons i:hover{
+#review-panel-toolbar-buttons i:hover {
     color: #4caf50 !important;
 }
-@media (max-width: 1265px), (max-height: 860px) {
 
-    .logo{
-        font-size: 25px !important;
-    }
-    #review-panel-toolbar-buttons{
-        gap: 2px;
-        margin: 0px;
-        padding: none !important;
-    }
-    #review-panel-toolbar-buttons i {
-        padding: 10px 7px 10px 7px;
-    }
-}
-@media (max-width: 1600px), (max-height: 860px) {
-    #review-panel-toolbar-buttons i {
-        padding: 10px 10px 10px 10px;
-    }
-}
-.privacyPolicyThingy{
+
+.privacyPolicyThingy {
     margin-top: 10px;
     font-size: 12px;
 }
-.privacyPolicyThingy a:hover{
+
+.privacyPolicyThingy a:hover {
     color: #4caf50;
-}
-
-@media (max-width: 1235px), (max-height: 860px) {
-    .privacyPolicyThingy{
-        font-size: 10px;
-    }
-
-    #depth-counter{
-        font-size: 13px;
-    }
 }
