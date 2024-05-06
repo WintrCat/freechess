@@ -85,11 +85,16 @@ body {
     }
 
     #board {
-        width: 700px !important;
+        width: 400.4px !important;
+        height: 400.4px !important;
+    }
+
+    #evaluation-bar {
+        height: 400px !important;
     }
 
     #review-panel {
-        width: 47.1rem !important;
+        width: 46.1rem !important;
         margin-top: 10px;
         margin-left: 0 !important;
     }
@@ -116,7 +121,7 @@ body {
 }
 
 
-@media only screen and (max-width: 430px) {
+@media only screen and (max-width: 750px) {
     #board {
         width: 335px !important;
         height: 335px !important;
@@ -135,7 +140,7 @@ body {
     }
 }
 
-@media only screen and (max-width: 320px) {
+@media only screen and (max-width: 380px) {
     #board {
         width: 272px !important;
         height: 272px !important;
@@ -146,7 +151,7 @@ body {
     }
 
     #review-panel {
-        width: 20.1rem !important;
+        width: 19.6rem !important;
     }
 
     #review-panel-toolbar-buttons i {
