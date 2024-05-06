@@ -4,9 +4,9 @@ body {
     width: 100vw;
 }
 
-@media only screen and (max-width: 1536px){
+@media only screen and (max-width: 1536px) {
 
-    #board{
+    #board {
         width: 511.2px !important;
         height: 511.2px !important;
     }
@@ -19,25 +19,26 @@ body {
         height: 610px !important;
     }
 
-    #classification-message-container{
+    #classification-message-container {
         margin-top: 40px !important;
     }
 
-    #opening-name{
+    #opening-name {
         margin-bottom: 10px !important;
     }
 
-    #engine-suggestions{
+    #engine-suggestions {
         flex-direction: row !important;
         margin-top: 18px !important;
     }
 
-    #engine-suggestions-title{
+    #engine-suggestions-title {
         margin: 0 !important;
         padding: 10px !important;
     }
 
 }
+
 @media only screen and (max-width: 1030px) {
 
     #board {
@@ -53,19 +54,19 @@ body {
         height: 627px !important;
     }
 
-    #pgn{
+    #pgn {
         margin-top: 5px !important;
     }
 
-    #chess-site-username{
+    #chess-site-username {
         margin-top: 5px !important;
     }
 
-    #fetch-account-games-button{
+    #fetch-account-games-button {
         margin-top: 5px !important;
     }
 
-    #load-type-dropdown{
+    #load-type-dropdown {
         margin-top: -8px !important;
     }
 
@@ -73,7 +74,7 @@ body {
 
 @media only screen and (max-width: 960px) {
 
-    body{
+    body {
         overflow-x: hidden;
         overflow-y: auto;
     }
@@ -105,66 +106,66 @@ body {
         z-index: 9999;
     }
 
-    #engine-suggestion{
+    #engine-suggestion {
         margin-top: 5px;
     }
 
-    #classification-message-container{
+    #classification-message-container {
         margin-top: 40px;
     }
 }
 
 
 @media only screen and (max-width: 430px) {
-    #board{
+    #board {
         width: 335px !important;
         height: 335px !important;
     }
 
-    #evaluation-bar{
+    #evaluation-bar {
         height: 335px !important;
     }
 
-    #review-panel{
+    #review-panel {
         width: 24.1rem !important;
     }
 
-    #engine-suggestions{
+    #engine-suggestions {
         margin-top: 40px !important;
     }
 }
 
-@media only screen and (max-width: 320px){
-    #board{
+@media only screen and (max-width: 320px) {
+    #board {
         width: 272px !important;
         height: 272px !important;
     }
 
-    #evaluation-bar{
+    #evaluation-bar {
         height: 272px !important;
     }
 
-    #review-panel{
+    #review-panel {
         width: 20.1rem !important;
     }
 
-    #review-panel-toolbar-buttons i{
+    #review-panel-toolbar-buttons i {
         font-size: 22px !important;
     }
 }
 
-    .white {
-        color: white;
-    }
+.white {
+    color: white;
+}
 
 
-    .footer {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-    }
+.footer {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
 
-    .footer a {
-        color: white;
-    }
+.footer a {
+    color: white;
+}

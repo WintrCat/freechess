@@ -296,13 +296,13 @@
     position: relative;
 }
 
-.depthTitle{
+.depthTitle {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
 }
 
-.depthTitle p{
+.depthTitle p {
     margin-left: 4px;
 }
 
