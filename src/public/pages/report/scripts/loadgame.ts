@@ -171,10 +171,6 @@ function registerModalEvents() {
 
     $("#last-page-button").on("click", () => {
 
-        if (gamesPeriod.month == 1 && (gamesPeriod.year + 1) <= new Date().getFullYear()) {
-            return;
-        }
-
         gamesPeriod.month--;
         if (gamesPeriod.month < 1) {
             gamesPeriod.month = 12;
@@ -190,7 +186,7 @@ function registerModalEvents() {
 
     $("#next-page-button").on("click", () => {
 
-        if (gamesPeriod.month == 12 && (gamesPeriod.year - 1) >= new Date().getFullYear()) {
+        if (gamesPeriod.month == 12 && (gamesPeriod.year) >= new Date().getFullYear()) {
             return;
         }
 
