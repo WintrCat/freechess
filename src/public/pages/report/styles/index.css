@@ -4,15 +4,24 @@ body {
     width: 100vw;
 }
 
+
 @media only screen and (max-width: 1536px) {
+
+    body {
+        overflow-x: hidden;
+    }
 
     #board {
         width: 511.2px !important;
         height: 511.2px !important;
     }
 
+    #board-outer-container {
+        height: 625px !important;
+    }
+
     #evaluation-bar {
-        height: 511px !important;
+        transform: scale(0.7);
     }
 
     #review-panel {
@@ -37,6 +46,10 @@ body {
         padding: 10px !important;
     }
 
+    #board-outer-container {
+        gap: 0 !important;
+    }
+
 }
 
 @media only screen and (max-width: 1030px) {
@@ -47,7 +60,7 @@ body {
     }
 
     #evaluation-bar {
-        height: 530px !important;
+        transform: scale(0.73);
     }
 
     #review-panel {
@@ -79,18 +92,22 @@ body {
         overflow-y: auto;
     }
 
+    #board-outer-container {
+        height: 590px !important;
+    }
+
     #review-container {
         display: flex;
         flex-direction: column;
     }
 
     #board {
-        width: 400.4px !important;
-        height: 400.4px !important;
+        width: 479px !important;
+        height: 479px !important;
     }
 
     #evaluation-bar {
-        height: 400px !important;
+        transform: scale(0.66);
     }
 
     #review-panel {
@@ -118,6 +135,8 @@ body {
     #classification-message-container {
         margin-top: 40px;
     }
+
+
 }
 
 
@@ -127,8 +146,12 @@ body {
         height: 335px !important;
     }
 
+    #board-outer-container {
+        height: 430px !important;
+    }
+
     #evaluation-bar {
-        height: 335px !important;
+        transform: scale(0.46);
     }
 
     #review-panel {
@@ -137,6 +160,7 @@ body {
 
     #engine-suggestions {
         margin-top: 40px !important;
+        font-size: 15px !important;
     }
 }
 
@@ -146,8 +170,12 @@ body {
         height: 272px !important;
     }
 
+    #board-outer-container {
+        height: 380px !important;
+    }
+
     #evaluation-bar {
-        height: 272px !important;
+        transform: scale(0.37);
     }
 
     #review-panel {
@@ -156,6 +184,14 @@ body {
 
     #review-panel-toolbar-buttons i {
         font-size: 22px !important;
+    }
+
+    .accuracies {
+        font-size: 12px !important;
+    }
+
+    #engine-suggestions {
+        font-size: 9px !important;
     }
 }
 

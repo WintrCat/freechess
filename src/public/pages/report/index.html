@@ -65,7 +65,15 @@
 
     <div id="review-container" class="center">
         <div id="board-outer-container" class="center">
-            <canvas id="evaluation-bar" width="30" height="720"></canvas>
+
+            <svg id="evaluation-bar" width="40" height="730" xmlns="http://www.w3.org/2000/svg" fill="#fff">
+                <rect id="black-rect" x="0" y="0" width="40" height="365" fill="#000000" />
+
+
+                <rect id="white-rect" x="0" y="365" width="40" height="365" fill="#ffffff" />
+                <text id="white-eval-text" x="20" y="720" fill="#000000" font-size="16" text-anchor="middle">0.0</text>
+                <text id="black-eval-text" x="20" y="20" fill="#fff" font-size="16" text-anchor="middle">0.0</text>
+            </svg>
 
 
 

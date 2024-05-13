@@ -17,7 +17,6 @@
 #board-outer-container {
     gap: 10px;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
 }
 
 #board-inner-container {
@@ -26,10 +25,16 @@
 }
 
 #evaluation-bar {
-    background-color: white;
     border: none;
-    width: 30px;
-    height: 730px;
+    border-radius: 0.2rem;
+}
+
+#black-rect {
+    transition: all 1s ease 0s;
+}
+
+#white-rect {
+    transition: all 1s ease 0s;
 }
 
 #board {

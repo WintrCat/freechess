@@ -186,7 +186,7 @@ function registerModalEvents() {
 
     $("#next-page-button").on("click", () => {
 
-        if (gamesPeriod.month == 12 && (gamesPeriod.year) >= new Date().getFullYear()) {
+        if (gamesPeriod.month == 12 && gamesPeriod.year >= new Date().getFullYear()) {
             return;
         }
 

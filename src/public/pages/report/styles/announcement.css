@@ -3,12 +3,11 @@
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     padding: 5px;
     width: 100vw;
     background-color: var(--secondary-color);
     position: relative;
-    margin-bottom: 20px;
 }
 
 #kofi {
