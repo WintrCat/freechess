@@ -51,11 +51,11 @@ function generateGameListing(game: Game): JQuery<HTMLDivElement> {
 
 async function fetchChessComGames(username: string) {
 
-    
+
 
     try {
         let gamesResponse = await fetch(
-            `https://api.chess.com/pub/player/${username}/games/${gamesPeriod.year}/${padMonth(gamesPeriod.month)}`, 
+            `https://api.chess.com/pub/player/${username}/games/${gamesPeriod.year}/${padMonth(gamesPeriod.month)}`,
             { method: "GET" }
         );
 
@@ -90,20 +90,20 @@ async function fetchLichessGames(username: string) {
     let monthBeginning = new Date(
         `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-01T00:00:00Z`
     ).getTime();
-    
+
     let monthLength = monthLengths[gamesPeriod.month - 1];
     if (gamesPeriod.month - 1 == 2 && gamesPeriod.year % 4 == 0) {
-      monthLength = 29;
+        monthLength = 29;
     }
-    
+
     let monthEnding = new Date(
-      `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-${monthLength}T23:59:59Z`
+        `${gamesPeriod.year}-${padMonth(gamesPeriod.month)}-${monthLength}T23:59:59Z`
     ).getTime();
 
     try {
         let gamesResponse = await fetch(
-            `https://lichess.org/api/games/user/${username}?since=${monthBeginning}&until=${monthEnding}&pgnInJson=true`, 
-            { 
+            `https://lichess.org/api/games/user/${username}?since=${monthBeginning}&until=${monthEnding}&pgnInJson=true`,
+            {
                 method: "GET",
                 headers: {
                     "Accept": "application/x-ndjson"
@@ -167,11 +167,26 @@ function closeModal() {
 }
 
 function registerModalEvents() {
-
     $("#game-select-cancel-button").on("click", closeModal);
 
     $("#last-page-button").on("click", () => {
-        if (gamesPeriod.month == 12 && (gamesPeriod.year + 1) > new Date().getFullYear()) {
+
+        gamesPeriod.month--;
+        if (gamesPeriod.month < 1) {
+            gamesPeriod.month = 12;
+            gamesPeriod.year--;
+        }
+
+
+        let username = $("#chess-site-username").val()!.toString();
+
+        fetchGames(username);
+        updateGamesPeriod();
+    });
+
+    $("#next-page-button").on("click", () => {
+
+        if (gamesPeriod.month == 12 && gamesPeriod.year >= new Date().getFullYear()) {
             return;
         }
 
@@ -181,26 +196,16 @@ function registerModalEvents() {
             gamesPeriod.year++;
         }
 
-        let username = $("#chess-site-username").val()!.toString();
-
-        fetchGames(username);
-        updateGamesPeriod();
-    });
-
-    $("#next-page-button").on("click", () => {
-        gamesPeriod.month--;
-        if (gamesPeriod.month < 1) {
-            gamesPeriod.month = 12;
-            gamesPeriod.year--;
-        }
 
         let username = $("#chess-site-username").val()!.toString();
 
         fetchGames(username);
         updateGamesPeriod();
     });
-
 }
+
+
+
 
 const loadTypeDropdown = $("#load-type-dropdown");
 const usernameInput = $("#chess-site-username");
@@ -209,9 +214,9 @@ loadTypeDropdown.on("input", () => {
     const selectedLoadType = loadTypeDropdown.val();
     const savedUsernameChessCom = localStorage.getItem('chess-site-username-saved-chessCom');
     const savedUsernameLichess = localStorage.getItem('chess-site-username-saved-lichess');
-    
-    usernameInput.val((selectedLoadType === "chesscom" && savedUsernameChessCom) || 
-                      (selectedLoadType === "lichess" && savedUsernameLichess) || '');
+
+    usernameInput.val((selectedLoadType === "chesscom" && savedUsernameChessCom) ||
+        (selectedLoadType === "lichess" && savedUsernameLichess) || '');
 
     const isLong = selectedLoadType === "pgn" || selectedLoadType === "json";
     $("#pgn").css("display", isLong ? "block" : "none");
@@ -232,7 +237,7 @@ function onFetchButtonClick() {
 
     const username = usernameInput.val()!.toString();
     const selectedLoadType = loadTypeDropdown.val();
-    
+
     if (selectedLoadType === "chesscom") {
         localStorage.setItem('chess-site-username-saved-chessCom', username);
     } else if (selectedLoadType === "lichess") {

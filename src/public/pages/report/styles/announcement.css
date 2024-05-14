@@ -3,23 +3,22 @@
     justify-content: space-between;
     align-items: center;
     font-size: 15px;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     padding: 5px;
-
-    width: 100%;
+    width: 100vw;
     background-color: var(--secondary-color);
     position: relative;
-    margin-bottom: 20px;
 }
 
-#kofi{
+#kofi {
     cursor: pointer;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#kofi-a, #discord-a{
+#kofi-a,
+#discord-a {
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -32,18 +31,22 @@
     gap: 5px;
     text-align: center;
 }
-#discord-a{
+
+#discord-a {
     margin-right: 10px;
     margin-left: 10px;
 }
-.wise-words{
+
+.wise-words {
     margin-left: 10px;
     color: white;
 }
-.wise-buttons{
+
+.wise-buttons {
     display: flex;
 }
-#discord{
+
+#discord {
     font-size: 20px;
 }
 

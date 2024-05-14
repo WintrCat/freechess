@@ -1,41 +1,79 @@
-const evaluationBarCtx = ($("#evaluation-bar").get(0)! as HTMLCanvasElement).getContext("2d")!;
-
 async function drawEvaluationBar(evaluation: Evaluation, boardFlipped: boolean) {
-    evaluationBarCtx.clearRect(0, 0, 30, 720);
-    evaluationBarCtx.font = "16px Gill Sans";
-    evaluationBarCtx.fillStyle = "#1e1f22";
+    const evaluationBar = document.querySelector("#evaluation-bar") as SVGElement;
+    const whiteRect = document.querySelector("#white-rect") as SVGRectElement;
+    const blackRect = document.querySelector("#black-rect") as SVGRectElement;
+    const whiteEvalText = document.querySelector("#white-eval-text") as SVGTextElement;
+    const blackEvalText = document.querySelector("#black-eval-text") as SVGTextElement;
 
-    if (evaluation.type == "cp") {
-        let height = Math.max(Math.min(360 - evaluation.value / 3, 680), 40);
-        let evaluationText = Math.abs(evaluation.value / 100).toFixed(1);
-        let evaluationTextWidth = evaluationBarCtx.measureText(evaluationText).width;
-        let evaluationTextY = 0
+    const totalHeight = evaluationBar.clientHeight;
 
-        if (boardFlipped) {
-            evaluationTextY = evaluation.value >= 0 ? 20 : 710;
-            evaluationBarCtx.fillRect(0, 720 - height, 30, height);
-            evaluationBarCtx.fillStyle = evaluation.value >= 0 ? "#1e1e1e" : "#ffffff"; 
-        } else {
-            evaluationTextY = evaluation.value >= 0 ? 710 : 20;
-            evaluationBarCtx.fillRect(0, 0, 30, height);
-            evaluationBarCtx.fillStyle = evaluation.value >= 0 ? "#1e1e1e" : "#ffffff"; 
-        }
+    const blackHeight = Math.max(Math.min(totalHeight / 2 - evaluation.value / 3, totalHeight), 0);
+    const whiteHeight = Math.max(Math.min(totalHeight / 2 + evaluation.value / 3, totalHeight), 0);
 
-        evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, evaluationTextY, 30);
+    let evaluationText: string;
+    if (evaluation.type === "cp") {
+        evaluationText = (Math.abs(evaluation.value) / 100).toFixed(1);
+        whiteRect.setAttribute("y", boardFlipped ? whiteHeight.toString() : blackHeight.toString());
+        whiteRect.setAttribute("height", boardFlipped ? blackHeight.toString() : whiteHeight.toString());
+        blackRect.setAttribute("height", boardFlipped ? whiteHeight.toString() : blackHeight.toString());
     } else {
-        let evaluationText = "M" + Math.abs(evaluation.value).toString();
-        let evaluationTextWidth = evaluationBarCtx.measureText(evaluationText).width;
-
-        if (evaluation.value > 0) {
-            evaluationBarCtx.fillStyle = "#1e1e1e";
-            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped ? 20 : 710, 30);
-        } else if (evaluation.value < 0) {
-            evaluationBarCtx.fillRect(0, 0, 30, 720);            
-            evaluationBarCtx.fillStyle = "#ffffff";
-            evaluationBarCtx.fillText(evaluationText, 15 - evaluationTextWidth / 2, boardFlipped ? 710 : 20, 30);
-        } else if (evaluation.value == 0) {
-            evaluationBarCtx.fillStyle = "#676767";
-            evaluationBarCtx.fillRect(0, 0, 30, 720);
+        evaluationText = "M" + Math.abs(evaluation.value).toString();
+        if (evaluation.value === 0) {
+            evaluationText = "1-0";
         }
+        if (!boardFlipped) {
+            if (evaluation.value >= 0) {
+
+                whiteRect.setAttribute("y", "0");
+                whiteRect.setAttribute("height", "730");
+                blackRect.setAttribute("height", "0");
+            } else {
+
+                whiteRect.setAttribute("y", "730");
+                whiteRect.setAttribute("height", "0");
+                blackRect.setAttribute("height", "730");
+
+            }
+        } else {
+            if (evaluation.value >= 0) {
+                whiteRect.setAttribute("y", "730");
+                whiteRect.setAttribute("height", "0");
+                blackRect.setAttribute("height", "730");
+
+            } else {
+
+                whiteRect.setAttribute("y", "0");
+                whiteRect.setAttribute("height", "730");
+                blackRect.setAttribute("height", "0");
+            }
+        }
+    }
+    whiteEvalText.textContent = evaluationText;
+    blackEvalText.textContent = evaluationText;
+
+
+
+    if (evaluation.value >= 0) {
+        whiteEvalText.setAttribute("visibility", boardFlipped ? "hidden" : "visible");
+        blackEvalText.setAttribute("visibility", boardFlipped ? "visible" : "hidden");
+        whiteEvalText.setAttribute("fill", boardFlipped ? "#fff" : "#000");
+        blackEvalText.setAttribute("fill", boardFlipped ? "#000" : "#fff");
+    } else {
+        whiteEvalText.setAttribute("visibility", boardFlipped ? "visible" : "hidden");
+        blackEvalText.setAttribute("visibility", boardFlipped ? "hidden" : "visible");
+        whiteEvalText.setAttribute("fill", boardFlipped ? "#000" : "#fff");
+        blackEvalText.setAttribute("fill", boardFlipped ? "#fff" : "#000");
+    }
+
+    if (boardFlipped) {
+        whiteEvalText.setAttribute("fill", "#fff");
+        blackEvalText.setAttribute("fill", "#000");
+        whiteRect.setAttribute("fill", "#000000");
+        blackRect.setAttribute("fill", "#ffffff");
+    } else {
+        whiteEvalText.setAttribute("fill", "#000");
+        blackEvalText.setAttribute("fill", "#fff");
+        whiteRect.setAttribute("fill", "#ffffff");
+        blackRect.setAttribute("fill", "#000000");
     }
 }
