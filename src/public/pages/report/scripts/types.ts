@@ -49,10 +49,29 @@ interface Position {
     opening?: string
 }
 
+type Classifications = 
+    "brilliant" |
+    "great"|
+    "best"|
+    "excellent"|
+    "good"|
+    "inaccuracy"|
+    "mistake"|
+    "blunder"|
+    "book"|
+    "forced";
+
+interface ClassificationCount extends Record<Classifications, number> {}
+
+
 interface Report {
     accuracies: {
         white: number,
         black: number
+    },
+    classifications: {
+        white: ClassificationCount,
+        black: ClassificationCount
     },
     positions: Position[]
 }

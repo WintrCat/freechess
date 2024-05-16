@@ -225,12 +225,61 @@ function loadReportCards() {
 
     // Reveal report cards and update accuracies
     $("#report-cards").css("display", "flex");
-    $("#white-accuracy").html(
-        `${reportResults?.accuracies.white.toFixed(1) ?? "100"}%`,
-    );
-    $("#black-accuracy").html(
-        `${reportResults?.accuracies.black.toFixed(1) ?? "100"}%`,
-    );
+
+    if (!!reportResults) {
+        $("#white-accuracy").html(`${reportResults.accuracies.white.toFixed(1)}%`);
+        $("#black-accuracy").html(`${reportResults.accuracies.black.toFixed(1)}%`);
+
+        // Make classification count section
+        for (const classification of Object.keys(reportResults.classifications.white)) {
+            if (classification === "book" || classification === "forced") continue;
+
+            const classificationRow = $("<div>").prop({
+                class: "classification-count-row"
+            });
+        
+            // Create white's classification count
+            const whiteClassificationCount = $("<div>").prop({
+                class: "classification-count-white"
+            }).css({
+                color: classificationColours[classification]
+            }).html(`${reportResults.classifications.white[classification as Classifications]}`);
+
+            // Create black's classification count
+            const blackClassificationCount = $("<div>").prop({
+                class: "classification-count-black"
+            }).css({
+                color: classificationColours[classification]
+            }).html(`${reportResults.classifications.black[classification as Classifications]}`);
+
+
+            // Create classification icon and message
+            const classificationContent = $("<div>").prop({
+                class: "classification-count-content"
+            });
+            $(classificationIcons[classification]!).appendTo(classificationContent);
+            $("<div>").html(`${classification}`)
+            .css({
+                color: classificationColours[classification]
+            }).appendTo(classificationContent);
+
+
+            // Add white's classification count
+            whiteClassificationCount.appendTo(classificationRow);
+
+            // Add classification icon and message
+            classificationContent.appendTo(classificationRow);
+
+            // Add black's classification count
+            blackClassificationCount.appendTo(classificationRow);
+
+            // Insert classification row
+            classificationRow.appendTo("#classification-count-container");
+        }
+    } else {
+        $("#black-accuracy").html("100%");
+        $("#white-accuracy").html("100%");
+    }
 
     // Remove progress bar and any status message
     $("#evaluation-progress-bar").css("display", "none");

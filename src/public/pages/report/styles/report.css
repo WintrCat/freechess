@@ -55,6 +55,43 @@
 }
 
 /*
+    CLASSIFICATION COUNT
+*/
+#classification-count-container {
+    display: flex;
+    align-items: center;
+    border-radius: 10px;
+    margin-top: 40px;
+    border: 2px solid var(--border-color);
+
+    width: 90%;
+    color: white;
+
+    background-color: var(--primary-color);
+    flex-direction: column;
+    gap: 2px;
+    
+    font-size: 13px;
+}
+
+.classification-count-row {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+}
+
+.classification-count-content {
+    display: flex;
+    gap: 6px;
+    font-weight: bold;
+    align-items: center;
+}
+
+.classification-count-content > img {
+    height: 15px;
+}
+
+/*
     CLASSIFICATION MESSAGE
     e.g "Nd4 is a great move"
 */
@@ -64,7 +101,7 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-    margin-top: 60px;
+    margin-top: 6px;
     width: 90%;
     background-color: var(--primary-color);
     border-radius: 10px;
@@ -92,7 +129,7 @@
     flex-direction: column;
     align-items: center;
     border-radius: 10px;
-    margin-top: 40px;
+    margin-top: 6px;
     border: 2px solid var(--border-color);
 
     width: 90%;
