@@ -230,6 +230,9 @@ function loadReportCards() {
         $("#white-accuracy").html(`${reportResults.accuracies.white.toFixed(1)}%`);
         $("#black-accuracy").html(`${reportResults.accuracies.black.toFixed(1)}%`);
 
+        // Initialize classification container for next analysis
+        $("#classification-count-container").empty();
+
         // Make classification count section
         for (const classification of Object.keys(reportResults.classifications.white)) {
             if (classification === "book" || classification === "forced") continue;
