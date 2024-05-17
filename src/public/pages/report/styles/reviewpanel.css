@@ -27,7 +27,7 @@
 
 @media (max-width: 1264px) and (min-width: 1000px) {
     #review-panel {
-        grid-template-rows: 82% 18%;
+        grid-template-rows: 88% 12%;
     }
 }
 
@@ -100,7 +100,7 @@
 
 }
 
-@media (max-width: 1126px) {
+@media (max-width: 1264px) {
     #review-panel-title {
         font-size: 27px;
     }

@@ -57,21 +57,76 @@
 /*
     CLASSIFICATION COUNT
 */
+#classification-count-tooltip-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 90%;
+
+    color: #4caf50;
+}
+
+#classification-count-tooltip-message {
+    font-size: 15px;
+    font-style: italic;
+    text-decoration: underline;
+    font-weight: bold;
+}
+
 #classification-count-container {
+    visibility: hidden;
+    position: absolute;
+
     display: flex;
     align-items: center;
     border-radius: 10px;
-    margin-top: 40px;
     border: 2px solid var(--border-color);
-
-    width: 90%;
-    color: white;
-
     background-color: var(--primary-color);
+    width: 60%;
+
+    color: white;
     flex-direction: column;
-    gap: 2px;
-    
     font-size: 13px;
+    gap: 2px;
+}
+
+@media (min-width: 1537px) {
+    #classification-count-tooltip-container {
+        margin-top: 40px;
+    }
+    #classification-count-tooltip-message {
+        font-size: 15px;
+    }
+    #classification-count-container {
+        top: 112px;
+    }
+}
+
+@media (max-width: 1536px) {
+    #classification-count-tooltip-container {
+        margin-top: 40px;
+    }
+    #classification-count-tooltip-message {
+        font-size: 15px;
+    }
+    #classification-count-container {
+        top: 112px;
+    }
+}
+
+
+
+@media (max-width: 380px) {
+    #classification-count-tooltip-container {
+        margin-top: 48px;
+    }
+    #classification-count-tooltip-message {
+        font-size: 11px;
+    }
+    #classification-count-container {
+        top: 116px;
+    }
 }
 
 .classification-count-row {
@@ -91,6 +146,10 @@
     height: 15px;
 }
 
+#classification-count-tooltip-message:hover + #classification-count-container {
+    visibility: visible;
+}
+
 /*
     CLASSIFICATION MESSAGE
     e.g "Nd4 is a great move"
@@ -101,7 +160,7 @@
     justify-content: center;
     align-items: center;
     gap: 5px;
-    margin-top: 6px;
+    margin-top: 14px !important;
     width: 90%;
     background-color: var(--primary-color);
     border-radius: 10px;
@@ -129,7 +188,7 @@
     flex-direction: column;
     align-items: center;
     border-radius: 10px;
-    margin-top: 6px;
+    margin-top: 14px !important;
     border: 2px solid var(--border-color);
 
     width: 90%;
@@ -183,4 +242,22 @@
     padding: 5px 10px;
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+}
+
+@media (max-width: 1026px) {
+    #opening-name {
+        font-size: 15px;
+    }
+}
+
+@media (max-width: 999px) {
+    #opening-name {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 380px) {
+    #opening-name {
+        font-size: 12px;
+    }
 }
