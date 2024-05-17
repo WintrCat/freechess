@@ -151,16 +151,19 @@
     align-items: center;
 }
 
-.classification-count-content>img {
+.classification-count-content > img {
     height: 15px;
 }
 
-#classification-count-tooltip-message:hover {
+#classification-count-tooltip-message {
     transition: color 0.25s ease-in-out;
+}
+
+#classification-count-tooltip-message:hover {
     color: #abe7ad;
 }
 
-#classification-count-tooltip-message:hover+#classification-count-container {
+#classification-count-tooltip-message:hover + #classification-count-container {
     visibility: visible;
 }
 
