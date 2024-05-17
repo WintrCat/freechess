@@ -344,12 +344,40 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
             maximum: 0
         }
     };
+    const classifications = {
+        white: {
+            brilliant: 0,
+            great: 0,
+            best: 0,
+            excellent: 0,
+            good: 0,
+            inaccuracy: 0,
+            mistake: 0,
+            blunder: 0,
+            book: 0,
+            forced: 0,
+        },
+        black: {
+            brilliant: 0,
+            great: 0,
+            best: 0,
+            excellent: 0,
+            good: 0,
+            inaccuracy: 0,
+            mistake: 0,
+            blunder: 0,
+            book: 0,
+            forced: 0,
+        }
+    };
 
     for (let position of positions.slice(1)) {
         const moveColour = position.fen.includes(" b ") ? "white" : "black";
 
         accuracies[moveColour].current += classificationValues[position.classification!];
         accuracies[moveColour].maximum++;
+
+        classifications[moveColour][position.classification!] += 1;
     }
 
     // Return complete report
@@ -358,6 +386,7 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
             white: accuracies.white.current / accuracies.white.maximum * 100,
             black: accuracies.black.current / accuracies.black.maximum * 100
         },
+        classifications,
         positions: positions
     };
 
