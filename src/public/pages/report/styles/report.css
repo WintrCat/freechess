@@ -74,13 +74,8 @@
     font-weight: bold;
 
     cursor: pointer;
-    animation: classification-count-tooltip-message-pulse 1s infinite ease-in-out alternate;
 }
 
-@keyframes classification-count-tooltip-message-pulse {
-  from { transform: scale(0.95); }
-  to { transform: scale(1.0); }
-}
 
 #classification-count-container {
     visibility: hidden;
@@ -103,9 +98,11 @@
     #classification-count-tooltip-container {
         margin-top: 40px;
     }
+
     #classification-count-tooltip-message {
         font-size: 15px;
     }
+
     #classification-count-container {
         top: 112px;
     }
@@ -115,9 +112,11 @@
     #classification-count-tooltip-container {
         margin-top: 40px;
     }
+
     #classification-count-tooltip-message {
         font-size: 15px;
     }
+
     #classification-count-container {
         top: 112px;
     }
@@ -129,9 +128,11 @@
     #classification-count-tooltip-container {
         margin-top: 48px;
     }
+
     #classification-count-tooltip-message {
         font-size: 11px;
     }
+
     #classification-count-container {
         top: 116px;
     }
@@ -150,11 +151,16 @@
     align-items: center;
 }
 
-.classification-count-content > img {
+.classification-count-content>img {
     height: 15px;
 }
 
-#classification-count-tooltip-message:hover + #classification-count-container {
+#classification-count-tooltip-message:hover {
+    transition: color 0.25s ease-in-out;
+    color: #abe7ad;
+}
+
+#classification-count-tooltip-message:hover+#classification-count-container {
     visibility: visible;
 }
 
