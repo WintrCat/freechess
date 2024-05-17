@@ -72,6 +72,14 @@
     font-style: italic;
     text-decoration: underline;
     font-weight: bold;
+
+    cursor: pointer;
+    animation: classification-count-tooltip-message-pulse 1s infinite ease-in-out alternate;
+}
+
+@keyframes classification-count-tooltip-message-pulse {
+  from { transform: scale(0.95); }
+  to { transform: scale(1.0); }
 }
 
 #classification-count-container {
