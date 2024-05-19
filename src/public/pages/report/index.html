@@ -1,231 +1,434 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <title>Game Report</title>
 
-<head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no"
+        />
+        <meta name="og:title" content="♟️ WintrCat's Game Report" />
+        <meta name="og:url" content="https://chess.wintrcat.uk/" />
+        <meta name="og:image" content="/static/media/brilliant.png" />
+        <meta
+            name="og:description"
+            content="Analyse your games to find your mistakes and brilliancies."
+        />
+        <meta name="theme-color" content="#47acff" />
 
-    <title>Game Report</title>
+        <link rel="stylesheet" href="/static/global.css" />
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no">
-    <meta name="og:title" content="♟️ WintrCat's Game Report">
-    <meta name="og:url" content="https://chess.wintrcat.uk/">
-    <meta name="og:image" content="/static/media/brilliant.png">
-    <meta name="og:description" content="Analyse your games to find your mistakes and brilliancies.">
-    <meta name="theme-color" content="#47acff">
+        <link rel="stylesheet" href="/static/pages/report/styles/index.css" />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/announcement.css"
+        />
+        <link rel="stylesheet" href="/static/pages/report/styles/board.css" />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/gameselect.css"
+        />
+        <link
+            rel="stylesheet"
+            href="/static/pages/report/styles/reviewpanel.css"
+        />
+        <link rel="stylesheet" href="/static/pages/report/styles/report.css" />
 
-    <link rel="stylesheet" href="/static/global.css">
+        <link
+            rel="shortcut icon"
+            href="/static/media/favicon-freechess.ico"
+            type="image/x-icon"
+        />
 
-    <link rel="stylesheet" href="/static/pages/report/styles/index.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/announcement.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/board.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/gameselect.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/reviewpanel.css">
-    <link rel="stylesheet" href="/static/pages/report/styles/report.css">
+        <audio
+            id="sound-fx-move"
+            class="sound-fx-board"
+            src="/static/media/move.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-capture"
+            class="sound-fx-board"
+            src="/static/media/capture.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-check"
+            class="sound-fx-board"
+            src="/static/media/check.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-castle"
+            class="sound-fx-board"
+            src="/static/media/castle.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-promote"
+            class="sound-fx-board"
+            src="/static/media/promote.mp3"
+        ></audio>
+        <audio
+            id="sound-fx-game-end"
+            class="sound-fx-board"
+            src="/static/media/game_end.mp3"
+        ></audio>
 
-    <link rel="shortcut icon" href="/static/media/favicon-freechess.ico" type="image/x-icon">
+        <script src="https://www.google.com/recaptcha/api.js"></script>
+        <script
+            src="https://kit.fontawesome.com/bb36c502e7.js"
+            crossorigin="anonymous"
+        ></script>
+    </head>
 
-    <audio id="sound-fx-move" class="sound-fx-board" src="/static/media/move.mp3"></audio>
-    <audio id="sound-fx-capture" class="sound-fx-board" src="/static/media/capture.mp3"></audio>
-    <audio id="sound-fx-check" class="sound-fx-board" src="/static/media/check.mp3"></audio>
-    <audio id="sound-fx-castle" class="sound-fx-board" src="/static/media/castle.mp3"></audio>
-    <audio id="sound-fx-promote" class="sound-fx-board" src="/static/media/promote.mp3"></audio>
-    <audio id="sound-fx-game-end" class="sound-fx-board" src="/static/media/game_end.mp3"></audio>
-
-    <script src="https://www.google.com/recaptcha/api.js"></script>
-    <script src="https://kit.fontawesome.com/bb36c502e7.js" crossorigin="anonymous"></script>
-
-</head>
-
-<body>
-
-    <div id="announcement">
-        <div class="wise-words">
-            <b>I pay to keep my app free for everyone. Any donations appreciated <i class="fa-solid fa-heart"
-                    style="color: #ffffff;"></i></b>
+    <body>
+        <div id="announcement">
+            <div class="wise-words">
+                <b
+                    >I pay to keep my app free for everyone. Any donations
+                    appreciated
+                    <i class="fa-solid fa-heart" style="color: #ffffff"></i
+                ></b>
+            </div>
+            <div class="wise-buttons">
+                <a
+                    id="kofi-a"
+                    href="https://ko-fi.com/N4N7SORCC"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <svg
+                        id="kofi"
+                        fill="#ffffff"
+                        width="24px"
+                        height="24px"
+                        viewBox="0 0 24 24"
+                        role="img"
+                        xmlns="http://www.w3.org/2000/svg"
+                        stroke="#ffffff"
+                    >
+                        <g id="SVGRepo_bgCarrier" stroke-width="0" />
+                        <g
+                            id="SVGRepo_tracerCarrier"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        />
+                        <g id="SVGRepo_iconCarrier">
+                            <path
+                                d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z"
+                            />
+                        </g>
+                    </svg>
+                    <p class="ad-text">Buy Me a Coffee</p>
+                </a>
+                <a
+                    id="discord-a"
+                    href="https://discord.com/invite/XxtsAzPyCb"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <i
+                        id="discord"
+                        class="fa-brands fa-discord"
+                        style="color: #ffffff"
+                    ></i>
+                    <p class="ad-text">Join our Discord Server</p>
+                </a>
+            </div>
         </div>
-        <div class="wise-buttons">
-            <a id="kofi-a" href="https://ko-fi.com/N4N7SORCC" target="_blank" rel="noopener noreferrer">
-                <svg id="kofi" fill="#ffffff" width="24px" height="24px" viewBox="0 0 24 24" role="img"
-                    xmlns="http://www.w3.org/2000/svg" stroke="#ffffff">
-                    <g id="SVGRepo_bgCarrier" stroke-width="0" />
-                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
-                    <g id="SVGRepo_iconCarrier">
-                        <path
-                            d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.034-3.954-.709-.965-1.041-2.7-.091-3.71.951-1.01 3.005-1.086 4.363.407 0 0 1.565-1.782 3.468-.963 1.904.82 1.832 3.011.723 4.311zm6.173.478c-.928.116-1.682.028-1.682.028V7.284h1.77s1.971.551 1.971 2.638c0 1.913-.985 2.667-2.059 3.015z" />
-                    </g>
+
+        <div id="review-container" class="center">
+            <div id="board-outer-container" class="center">
+                <svg
+                    id="evaluation-bar"
+                    width="40"
+                    height="730"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#fff"
+                >
+                    <rect
+                        id="black-rect"
+                        x="0"
+                        y="0"
+                        width="40"
+                        height="365"
+                        fill="#000000"
+                    />
+
+                    <rect
+                        id="white-rect"
+                        x="0"
+                        y="365"
+                        width="40"
+                        height="365"
+                        fill="#ffffff"
+                    />
+                    <text
+                        id="white-eval-text"
+                        x="20"
+                        y="720"
+                        fill="#000000"
+                        font-size="16"
+                        text-anchor="middle"
+                    >
+                        0.0
+                    </text>
+                    <text
+                        id="black-eval-text"
+                        x="20"
+                        y="20"
+                        fill="#fff"
+                        font-size="16"
+                        text-anchor="middle"
+                    >
+                        0.0
+                    </text>
                 </svg>
-                <p class="ad-text">Buy Me a Coffee</p>
-            </a>
-            <a id="discord-a" href="https://discord.com/invite/XxtsAzPyCb" target="_blank" rel="noopener noreferrer">
-                <i id="discord" class="fa-brands fa-discord" style="color: #ffffff;"></i>
-                <p class="ad-text">Join our Discord Server</p>
-            </a>
-        </div>
-    </div>
 
-    <div id="review-container" class="center">
-        <div id="board-outer-container" class="center">
+                <div id="board-inner-container" class="center">
+                    <div id="top-player-profile" class="profile">
+                        Black Player (?)
+                    </div>
 
-            <svg id="evaluation-bar" width="40" height="730" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                <rect id="black-rect" x="0" y="0" width="40" height="365" fill="#000000" />
+                    <canvas id="board" width="1280" height="1280"></canvas>
 
-
-                <rect id="white-rect" x="0" y="365" width="40" height="365" fill="#ffffff" />
-                <text id="white-eval-text" x="20" y="720" fill="#000000" font-size="16" text-anchor="middle">0.0</text>
-                <text id="black-eval-text" x="20" y="20" fill="#fff" font-size="16" text-anchor="middle">0.0</text>
-            </svg>
-
-
-
-            <div id="board-inner-container" class="center">
-                <div id="top-player-profile" class="profile">Black Player (?)</div>
-
-                <canvas id="board" width="1280" height="1280"></canvas>
-
-                <div id="bottom-player-profile" class="profile">White Player (?)</div>
+                    <div id="bottom-player-profile" class="profile">
+                        White Player (?)
+                    </div>
+                </div>
             </div>
-        </div>
 
-
-        <div id="review-panel">
-            <div id="review-panel-main">
-                <h1 class="logo" id="review-panel-title" class="white"><i class="knight fa-solid fa-chess-knight"
-                        style="color: #ffffff;"></i>Game Report</h1>
-
-                <div id="load-type-dropdown-container" class="white">
-                    <select id="load-type-dropdown">
-                        <option value="pgn">PGN</option>
-                        <option value="chesscom">Chess.com</option>
-                        <option value="lichess">Lichess.org</option>
-                        <option value="json">JSON</option>
-                    </select>
-                </div>
-                <div id="gameInputContainer" class="gameInputContainer">
-                    <textarea id="pgn" class="white" cols="30" rows="10" spellcheck="false"
-                        placeholder="Enter PGN..."></textarea>
-                </div>
-
-                <div id="gameInputContainer2" class="gameInputContainer">
-                    <textarea id="chess-site-username" class="white" spellcheck="false" maxlength="48"
-                        placeholder="Username..."></textarea>
-                    <button id="fetch-account-games-button" class="usernameVerifyBtn">
-                        <i class="usernameVerifyBtnIcon fa-solid fa-arrow-right contol-icons"
-                            style="color: #ffffff;"></i>
-                    </button>
-                </div>
-
-
-                <button id="review-button" class="analyse">
-                    <i class="mag fa-solid fa-magnifying-glass" style="color: #ffffff;"></i>
-                    <b>Analyse</b>
-                </button>
-
-                <div class="big-depth-container">
-
-                    <span class="depthTitle" class="white">
-                        <i class="gear fa-solid fa-gear" style="color: #ffffff;"></i>
-                        <p>Depth</p>
-                    </span>
-                    <div class="badboystiff">
-                        <span>Arrows|</span>
-                        <label class="toggle" for="suggestion-arrows-setting">
-                            <input id="suggestion-arrows-setting" type="checkbox">
-                            <div class="toggle__fill"></div>
-                        </label>
-                    </div>
-                    <div id="depth-slider-container">
-                        <input id="depth-slider" type="range" min="14" max="20" value="16">
-                        <span id="depth-counter" class="white">16|<i class="fa-solid fa-wind"
-                                style="color: #ffffff;"></i></span>
-                    </div>
-                </div>
-
-                <progress id="evaluation-progress-bar" max="100"></progress>
-
-                <b id="status-message"><i class="fa-solid fa-circle-info" style="color: #ffffff;"></i></b>
-
-                <div class="g-recaptcha" data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA" data-theme="dark"
-                    data-callback="report"></div>
-
-                <b id="secondary-message" class="white"></b>
-
-                <div id="report-cards">
-                    <div class="accuracyHolder">
-                        <h2 id="accuracies-title" class="white">Accuracies<div class="accuracyDiv"><b
-                                    id="white-accuracy" class="accuracies">0%</b>
-                                <b id="black-accuracy" class="accuracies">0%</b>
+            <div id="review-panel">
+                <div id="review-panel-main">
+                    <div id="review-panel-wrapper">
+                        <h1 class="logo" id="review-panel-title" class="white">
+                            <i
+                                class="knight fa-solid fa-chess-knight"
+                                style="color: #ffffff"
+                            ></i
+                            >Game Report
+                        </h1>
+                        <div id="gameInputContainer" class="gameInputContainer">
+                            <textarea
+                                id="pgn"
+                                class="white"
+                                cols="30"
+                                rows="10"
+                                spellcheck="false"
+                                placeholder="Enter PGN..."
+                            ></textarea>
+                            <div
+                                id="load-type-dropdown-container"
+                                class="white"
+                            >
+                                <select id="load-type-dropdown">
+                                    <option value="pgn">PGN</option>
+                                    <option value="chesscom">Chess.com</option>
+                                    <option value="lichess">Lichess.org</option>
+                                    <option value="json">JSON</option>
+                                </select>
                             </div>
-                        </h2>
-                    </div>
+                        </div>
 
-                    <div id="classification-count-tooltip-container">
-                        <div id="classification-count-tooltip-message">* See your classifications</div>
-                        <div id="classification-count-container"></div>
-                    </div>
+                        <div
+                            id="gameInputContainer2"
+                            class="gameInputContainer"
+                        >
+                            <textarea
+                                id="chess-site-username"
+                                class="white"
+                                spellcheck="false"
+                                maxlength="48"
+                                placeholder="Username..."
+                            ></textarea>
+                            <button
+                                id="fetch-account-games-button"
+                                class="usernameVerifyBtn"
+                            >
+                                <i
+                                    class="usernameVerifyBtnIcon fa-solid fa-arrow-right contol-icons"
+                                    style="color: #ffffff"
+                                ></i>
+                            </button>
+                        </div>
 
-                    <div id="classification-message-container">
-                        <img id="classification-icon" src="/static/media/book.png" height="25">
-                        <b id="classification-message"></b>
-                    </div>
+                        <button id="review-button" class="analyse">
+                            <i
+                                class="mag fa-solid fa-magnifying-glass"
+                                style="color: #ffffff"
+                            ></i>
+                            <b>Analyse</b>
+                        </button>
 
-                    <b id="top-alternative-message"></b>
+                        <progress
+                            id="evaluation-progress-bar"
+                            max="100"
+                        ></progress>
 
-                    <div id="engine-suggestions">
-                        <h2 id="engine-suggestions-title" class="white">Engine:</h2>
+                        <b id="status-message"
+                            ><i
+                                class="fa-solid fa-circle-info"
+                                style="color: #ffffff"
+                            ></i
+                        ></b>
+
+                        <div
+                            class="g-recaptcha"
+                            data-sitekey="6LeCaR8pAAAAAGUKVSuZgZ73Kie3j2arG3qE74jA"
+                            data-theme="dark"
+                            data-callback="report"
+                        ></div>
+
+                        <b id="secondary-message" class="white"></b>
+
+                        <div id="report-cards">
+                            <div class="accuracyHolder">
+                                <h2 id="accuracies-title" class="white">
+                                    Accuracies
+                                    <div class="accuracyDiv">
+                                        <b
+                                            id="white-accuracy"
+                                            class="accuracies"
+                                            >0%</b
+                                        >
+                                        <b
+                                            id="black-accuracy"
+                                            class="accuracies"
+                                            >0%</b
+                                        >
+                                    </div>
+                                </h2>
+                            </div>
+
+                            <div id="classification-count-tooltip-container">
+                                <div id="classification-count-tooltip-message">
+                                    * See your classifications
+                                </div>
+                                <div id="classification-count-container"></div>
+                            </div>
+
+                            <div id="classification-message-container">
+                                <img
+                                    id="classification-icon"
+                                    src="/static/media/book.png"
+                                    height="25"
+                                />
+                                <b id="classification-message"></b>
+                            </div>
+
+                            <b id="top-alternative-message"></b>
+
+                            <div id="engine-suggestions">
+                                <h2 id="engine-suggestions-title" class="white">
+                                    Engine:
+                                </h2>
+                            </div>
+                            <span id="opening-name" class="white"></span>
+                        </div>
                     </div>
-                    <span id="opening-name" class="white"></span>
+                    <div class="big-depth-container">
+                        <span class="depthTitle" class="white">
+                            <i
+                                class="gear fa-solid fa-gear"
+                                style="color: #ffffff"
+                            ></i>
+                            <p>Depth</p>
+                        </span>
+                        <div class="badboystiff">
+                            <span>Arrows|</span>
+                            <label
+                                class="toggle"
+                                for="suggestion-arrows-setting"
+                            >
+                                <input
+                                    id="suggestion-arrows-setting"
+                                    type="checkbox"
+                                />
+                                <div class="toggle__fill"></div>
+                            </label>
+                        </div>
+                        <div id="depth-slider-container">
+                            <input
+                                id="depth-slider"
+                                type="range"
+                                min="14"
+                                max="20"
+                                value="16"
+                            />
+                            <span id="depth-counter" class="white"
+                                >16|<i
+                                    class="fa-solid fa-wind"
+                                    style="color: #ffffff"
+                                ></i
+                            ></span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <div id="review-panel-toolbar">
-                <div id="review-panel-toolbar-buttons" class="center">
+                <div id="review-panel-toolbar">
+                    <div id="review-panel-toolbar-buttons" class="center">
+                        <i
+                            id="flip-board-button"
+                            class="fa-solid fa-repeat"
+                            style="color: #ffffff"
+                            data-tooltip="Flip"
+                        ></i>
 
-                    <i id="flip-board-button" class="fa-solid fa-repeat" style="color: #ffffff;"
-                        data-tooltip="Flip"></i>
+                        <i
+                            id="back-start-move-button"
+                            class="fa-solid fa-backward-step"
+                            style="color: #ffffff"
+                            data-tooltip="Back to start"
+                        ></i>
 
-                    <i id="back-start-move-button" class="fa-solid fa-backward-step" style="color: #ffffff;"
-                        data-tooltip="Back to start"></i>
+                        <i
+                            id="back-move-button"
+                            class="fa-solid fa-arrow-left"
+                            style="color: #ffffff"
+                            data-tooltip="Back"
+                        ></i>
 
-                    <i id="back-move-button" class="fa-solid fa-arrow-left" style="color: #ffffff;"
-                        data-tooltip="Back"></i>
+                        <i
+                            id="next-move-button"
+                            class="fa-solid fa-arrow-right"
+                            style="color: #ffffff"
+                            data-tooltip="Next"
+                        ></i>
 
-                    <i id="next-move-button" class="fa-solid fa-arrow-right" style="color: #ffffff;"
-                        data-tooltip="Next"></i>
+                        <i
+                            id="go-end-move-button"
+                            class="fa-solid fa-forward-step"
+                            style="color: #ffffff"
+                            data-tooltip="To the end"
+                        ></i>
 
-                    <i id="go-end-move-button" class="fa-solid fa-forward-step" style="color: #ffffff;"
-                        data-tooltip="To the end"></i>
-
-                    <i id="save-analysis-button" class="fa-solid fa-floppy-disk" style="color: #ffffff;"
-                        data-tooltip="Save"></i>
-
+                        <i
+                            id="save-analysis-button"
+                            class="fa-solid fa-floppy-disk"
+                            style="color: #ffffff"
+                            data-tooltip="Save"
+                        ></i>
+                    </div>
+                    <div class="footer white privacyPolicyThingy">
+                        A website by wintrcat
+                        <a href="/privacy">Privacy Policy</a>
+                    </div>
                 </div>
-                <div class="footer white privacyPolicyThingy">
-                    A website by wintrcat
-                    <a href="/privacy">Privacy Policy</a>
-                </div>
-
             </div>
         </div>
-    </div>
 
+        <div id="game-select-menu-container"></div>
 
-    <div id="game-select-menu-container"></div>
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
+        <script src="/static/pages/report/scripts/sprites.js"></script>
+        <script src="/static/pages/report/scripts/evalbar.js"></script>
+        <script src="/static/pages/report/scripts/board.js"></script>
+        <script src="/static/pages/report/scripts/report.js"></script>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+        <script src="/static/pages/report/scripts/loadgame.js"></script>
 
-    <script src="/static/pages/report/scripts/sprites.js"></script>
-    <script src="/static/pages/report/scripts/evalbar.js"></script>
-    <script src="/static/pages/report/scripts/board.js"></script>
-    <script src="/static/pages/report/scripts/report.js"></script>
+        <script src="/static/pages/report/scripts/engine.js"></script>
+        <script src="/static/pages/report/scripts/analysis.js"></script>
 
-    <script src="/static/pages/report/scripts/loadgame.js"></script>
-
-    <script src="/static/pages/report/scripts/engine.js"></script>
-    <script src="/static/pages/report/scripts/analysis.js"></script>
-
-    <script src="/static/pages/report/scripts/styles.js"></script>
-
-</body>
-
+        <script src="/static/pages/report/scripts/styles.js"></script>
+    </body>
 </html>
