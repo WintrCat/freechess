@@ -206,6 +206,14 @@
                             ></i
                             >Game Report
                         </h1>
+                        <div id="load-type-dropdown-container" class="white">
+                            <select id="load-type-dropdown">
+                                <option value="pgn">PGN</option>
+                                <option value="chesscom">Chess.com</option>
+                                <option value="lichess">Lichess.org</option>
+                                <option value="json">JSON</option>
+                            </select>
+                        </div>
                         <div id="gameInputContainer" class="gameInputContainer">
                             <textarea
                                 id="pgn"
@@ -215,17 +223,6 @@
                                 spellcheck="false"
                                 placeholder="Enter PGN..."
                             ></textarea>
-                            <div
-                                id="load-type-dropdown-container"
-                                class="white"
-                            >
-                                <select id="load-type-dropdown">
-                                    <option value="pgn">PGN</option>
-                                    <option value="chesscom">Chess.com</option>
-                                    <option value="lichess">Lichess.org</option>
-                                    <option value="json">JSON</option>
-                                </select>
-                            </div>
                         </div>
 
                         <div

@@ -123,6 +123,18 @@
     margin-right: 5%;
 }
 
+@media (max-width: 1264px) and (min-width: 1031px) {
+    #load-type-dropdown-container {
+        position: absolute;
+        top: 55px;
+        right: 0px;
+        width: 20%;
+        height: 50px;
+        z-index: 5;
+        margin-right: 5%;
+    }
+}
+
 #load-type-dropdown {
     border-radius: 10px;
     background-color: var(--border-color);
