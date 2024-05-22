@@ -33,7 +33,7 @@ function generateGameListing(game: Game): JQuery<HTMLDivElement> {
     listingContainer.attr("data-pgn", game.pgn);
     listingContainer.on("click", () => {
         $("#pgn").val(listingContainer.attr("data-pgn") || "");
-        $("#review-button").css({ "borderColor": "#4caf50", "box-shadow": "0px 5px 0px rgb(76, 175, 80, 0.6)" });
+        $("#review-button").removeClass("review-button-disabled");
         closeModal();
     });
 
@@ -222,6 +222,7 @@ loadTypeDropdown.on("input", () => {
     const isLong = selectedLoadType === "pgn" || selectedLoadType === "json";
     $("#pgn").css("display", isLong ? "block" : "none");
     $("#chess-site-username, #fetch-account-games-button").css("display", isLong ? "none" : "block");
+    $("#review-button").toggleClass("review-button-disabled", !isLong);
 
     $("#gameInputContainer").css("display", isLong ? "block" : "none");
     $("#gameInputContainer2").css("display", isLong ? "none" : "block");
