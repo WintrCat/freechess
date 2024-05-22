@@ -254,7 +254,10 @@ function traverseMoves(moveCount: number) {
 
     let topLine = currentPosition?.topLines?.find(line => line.id == 1);
     lastEvaluation = topLine?.evaluation ?? { type: "cp", value: 0 }
-    drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 }, boardFlipped);
+
+    const movedPlayer = getMovedPlayer();
+
+    drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 }, boardFlipped, movedPlayer);
 
     updateClassificationMessage(positions[currentMoveIndex - 1], currentPosition);
     updateEngineSuggestions(currentPosition.topLines ?? []);
@@ -292,6 +295,10 @@ function traverseMoves(moveCount: number) {
         $<HTMLAudioElement>("#sound-fx-move").get(0)?.play();
     }
 }
+
+function getMovedPlayer() {
+    return (currentMoveIndex % 2) === 0 ? "black" : "white";
+ }
 
 $("#back-start-move-button").on("click", () => {
     traverseMoves(-Infinity);
@@ -338,7 +345,9 @@ $("#board").on("click", event => {
 $("#flip-board-button").on("click", () => {
     boardFlipped = !boardFlipped;
     
-    drawEvaluationBar(lastEvaluation, boardFlipped);
+    const movedPlayer = getMovedPlayer();
+
+    drawEvaluationBar(lastEvaluation, boardFlipped, movedPlayer);
     drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
     updateBoardPlayers();
 });
@@ -349,5 +358,5 @@ $("#suggestion-arrows-setting").on("input", () => {
 
 Promise.all(pieceLoaders).then(() => {
     drawBoard(startingPositionFen);
-    drawEvaluationBar(lastEvaluation, boardFlipped);
+    drawEvaluationBar(lastEvaluation, boardFlipped, "black");
 });
