@@ -33,6 +33,7 @@ function generateGameListing(game: Game): JQuery<HTMLDivElement> {
     listingContainer.attr("data-pgn", game.pgn);
     listingContainer.on("click", () => {
         $("#pgn").val(listingContainer.attr("data-pgn") || "");
+        $("#review-button").css({ "borderColor": "#4caf50", "box-shadow": "0px 5px 0px rgb(76, 175, 80, 0.6)" });
         closeModal();
     });
 
