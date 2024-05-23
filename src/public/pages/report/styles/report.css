@@ -12,6 +12,19 @@
     height: 100%;
 }
 
+#report-cards::-webkit-scrollbar {
+    width: 8px;
+}
+
+#report-cards::-webkit-scrollbar-thumb {
+    background: white;
+    border-radius: 12px;
+}
+
+#report-cards::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 @media (max-width: 1537px) {
     #report-cards {
         max-height: 272px;
