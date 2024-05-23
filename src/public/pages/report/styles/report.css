@@ -31,15 +31,9 @@
     }
 }
 
-@media (max-width: 1000px) {
-    #report-cards {
-        max-height: 272px;
-    }
-}
-
 @media (max-width: 960px) {
     #report-cards {
-        max-height: 240px;
+        max-height: 245px;
     }
 }
 
