@@ -63,6 +63,7 @@
     align-items: center;
     position: relative;
     width: 100%;
+    height: calc(100% - 69px);
 }
 
 /*
