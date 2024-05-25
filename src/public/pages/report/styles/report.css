@@ -100,9 +100,8 @@
 }
 
 #classification-count-container {
-    visibility: hidden;
     position: absolute;
-    display: flex;
+    display: none;
     align-items: center;
     border-radius: 10px;
     border: 2px solid var(--border-color);
@@ -170,7 +169,7 @@
 }
 
 #classification-count-tooltip-message:hover + #classification-count-container {
-    visibility: visible;
+    display: flex;
 }
 
 /*
