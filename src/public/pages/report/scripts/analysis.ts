@@ -2,6 +2,7 @@ let ongoingEvaluation = false;
 
 let evaluatedPositions: Position[] = [];
 let reportResults: Report | undefined;
+let newGame = false;
 
 function logAnalysisInfo(message: string) {
     $("#status-message").css("display", "block");
@@ -344,6 +345,7 @@ $("#review-button").on("click", () => {
             updateBoardPlayers();
 
             reportResults = savedAnalysis.results;
+            newGame = true;
             loadReportCards();
         } catch {
             logAnalysisError("Invalid savefile.");
