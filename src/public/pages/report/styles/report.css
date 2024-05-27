@@ -206,6 +206,13 @@
     border-top-right-radius: 0;
     margin-bottom: 10px;
 }
+/*
+    EVALUATION GRAPH
+*/
+#evaluation-graph {
+    border: 2px solid var(--border-color);
+    border-radius: 5px;
+}
 
 /*
     REPORT CARD
