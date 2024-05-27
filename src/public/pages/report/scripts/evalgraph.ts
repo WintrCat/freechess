@@ -1,8 +1,10 @@
 const evaluationGraphContainer = $("#evalgraph-container");
 const evaluationGraphCtx = ($("#evaluation-graph").get(0)! as HTMLCanvasElement).getContext("2d")!;
 let hoverIndex: number | null = null;
-let isListenersAdded: boolean = false;
 let topLines: (EngineLine | undefined)[] = [];
+let isNewGame = false;
+let mouseX = 0;
+let mouseY = 0;
 
 async function drawEvaluationGraph() {
     const graphHeight = 80;
@@ -25,15 +27,13 @@ async function drawEvaluationGraph() {
         let topLine = topLines[i];
         let evaluation = topLine?.evaluation;
         let currentBarWidth = baseBarWidth + Math.floor((i + 1) * extraWidthPerBar) - Math.floor(i * extraWidthPerBar);
+        let classification = positions[i]?.classification;
+        let classificationColour = classification ? classificationColours[classification] : "#4caf50";
 
-        if (i === currentMoveIndex && i === hoverIndex) {
-            evaluationGraphCtx.fillStyle = "#4cef50"; // Brighter green when current move is hovered
-        } else if (i === currentMoveIndex) {
-            evaluationGraphCtx.fillStyle = "#4caf50"; // Green for current move
-        } else if (i === hoverIndex) {
-            evaluationGraphCtx.fillStyle = "#555555"; // Grey for hovered bar
+        if (i === hoverIndex) {
+            evaluationGraphCtx.fillStyle = "#555555";
         } else {
-            evaluationGraphCtx.fillStyle = "#000000"; // Default black for other bars
+            evaluationGraphCtx.fillStyle = "#000000";
         }
         evaluationGraphCtx.fillRect(cumulativeWidth, 0, currentBarWidth, graphHeight);
         cumulativeWidth += currentBarWidth;
@@ -57,13 +57,8 @@ async function drawEvaluationGraph() {
             evaluationGraphCtx.fillRect(cumulativeWidth - currentBarWidth, 0, currentBarWidth, graphHeight);
         } else if (evaluation?.type == "cp") {
             let height = graphHeight / 2 + evaluation?.value / cpPerPixel;
-
-            if (i === currentMoveIndex && i === hoverIndex) {
-                evaluationGraphCtx.fillStyle = "#4cef50";
-            } else if (i === currentMoveIndex) {
-                evaluationGraphCtx.fillStyle = "#8cef90";
-            } else if (i === hoverIndex) {
-                evaluationGraphCtx.fillStyle = "#bbbbbb";
+             if (i === hoverIndex) {
+                evaluationGraphCtx.fillStyle = "#dddddd";
             } else {
                 evaluationGraphCtx.fillStyle = "#ffffff";
             }
@@ -74,6 +69,17 @@ async function drawEvaluationGraph() {
                 evaluationGraphCtx.fillRect(cumulativeWidth - currentBarWidth, 0, currentBarWidth, height);
             }
         }
+        
+        if (i === currentMoveIndex && i === hoverIndex) {
+            evaluationGraphCtx.fillStyle = classification ? getSemiTransparentColor(classificationColour, 0.8) : getSemiTransparentColor("#000000", 0.2);
+            evaluationGraphCtx.fillRect(cumulativeWidth - currentBarWidth, 0, currentBarWidth, graphHeight);
+        } else if (i === currentMoveIndex) {
+            evaluationGraphCtx.fillStyle = classification ? getSemiTransparentColor(classificationColour, 0.5) : getSemiTransparentColor("#000000", 0.2);
+            evaluationGraphCtx.fillRect(cumulativeWidth - currentBarWidth, 0, currentBarWidth, graphHeight);
+        } else if (i === hoverIndex) {
+            evaluationGraphCtx.fillStyle = classification ? getSemiTransparentColor(classificationColour, 0.5) : getSemiTransparentColor("#000000", 0.2);
+            evaluationGraphCtx.fillRect(cumulativeWidth - currentBarWidth, 0, currentBarWidth, graphHeight);
+        }
     }
 
     // Fill any remaining pixels at the right edge
@@ -82,9 +88,39 @@ async function drawEvaluationGraph() {
         evaluationGraphCtx.fillStyle = "#000000";
         evaluationGraphCtx.fillRect(cumulativeWidth, 0, remainingWidth, graphHeight);
     }
+    
+    // Draw midline
+    evaluationGraphCtx.beginPath();
+    evaluationGraphCtx.moveTo(0, graphHeight / 2);
+    evaluationGraphCtx.lineTo(desiredGraphWidth, graphHeight / 2);
+    evaluationGraphCtx.lineWidth = 1;
+    evaluationGraphCtx.strokeStyle = '#ff5555';
+    evaluationGraphCtx.stroke();
 
-    // Add listeners only on a new game analysis
-    if (newGame) {
+    // Draw classification icon for hovered move
+    cumulativeWidth = 0;
+    for (let i = 0; i < topLines.length; i++) {
+        let currentBarWidth = baseBarWidth + Math.floor((i + 1) * extraWidthPerBar) - Math.floor(i * extraWidthPerBar);
+    
+        if (i === hoverIndex) {
+            const classification = positions[i]?.classification;
+            if (classification && classificationIcons[classification]) {
+                const icon = classificationIcons[classification];
+                const iconSize = 15;
+                let iconX = mouseX < iconSize ? mouseX : mouseX - iconSize - 2;
+                let iconY = mouseY < iconSize / 2 ? 0 : mouseY - iconSize / 2;
+                iconY = mouseY > graphHeight - iconSize / 2 ? graphHeight - iconSize : iconY;
+    
+                if (icon) {
+                    evaluationGraphCtx.drawImage(icon, iconX, iconY, iconSize, iconSize);
+                }
+            }
+        }
+        cumulativeWidth += currentBarWidth;
+    }
+
+    // Add listeners only on new game load, for performance.
+    if (isNewGame) {
         graphCanvas.addEventListener('click', (event: MouseEvent) => {
             const rect = graphCanvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
@@ -105,23 +141,22 @@ async function drawEvaluationGraph() {
 
         graphCanvas.addEventListener('mousemove', (event: MouseEvent) => {
             const rect = graphCanvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
+            mouseX = event.clientX - rect.left;
+            mouseY = event.clientY - rect.top;
             let cumulativeWidth = 0;
             let newHoverIndex = null;
 
             for (let i = 0; i < positions.length; i++) {
                 let currentBarWidth = baseBarWidth + Math.floor((i + 1) * extraWidthPerBar) - Math.floor(i * extraWidthPerBar);
-                if (x < cumulativeWidth + currentBarWidth) {
+                if (mouseX < cumulativeWidth + currentBarWidth) {
                     newHoverIndex = i;
                     break;
                 }
                 cumulativeWidth += currentBarWidth;
             }
 
-            if (newHoverIndex !== hoverIndex) {
-                hoverIndex = newHoverIndex;
-                drawEvaluationGraph();
-            }
+            hoverIndex = newHoverIndex;
+            drawEvaluationGraph();
         });
 
         graphCanvas.addEventListener('mouseout', () => {
@@ -129,15 +164,8 @@ async function drawEvaluationGraph() {
             drawEvaluationGraph();
         });
 
-        newGame = false;
+        isNewGame = false;
     }
-
-    evaluationGraphCtx.beginPath();
-    evaluationGraphCtx.moveTo(0, graphHeight / 2);
-    evaluationGraphCtx.lineTo(desiredGraphWidth, graphHeight / 2);
-    evaluationGraphCtx.lineWidth = 1;
-    evaluationGraphCtx.strokeStyle = '#ff5555';
-    evaluationGraphCtx.stroke();
 }
 
 function getMovedPlayerByPosition(fen: string) {
@@ -161,4 +189,12 @@ function getMovedPieceByPosition(san: string): string | null {
     }
 
     return pieceColour === 'white' ? prospectivePiece.toUpperCase() : prospectivePiece.toLowerCase();
+}
+
+function getSemiTransparentColor(color: string, opacity: number): string {
+    const hex = color.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }

@@ -2,7 +2,6 @@ let ongoingEvaluation = false;
 
 let evaluatedPositions: Position[] = [];
 let reportResults: Report | undefined;
-let newGame = false;
 
 function logAnalysisInfo(message: string) {
     $("#status-message").css("display", "block");
@@ -336,6 +335,8 @@ async function report() {
 }
 
 $("#review-button").on("click", () => {
+    isNewGame = true;
+
     if ($("#load-type-dropdown").val() == "json") {
         try {
             let savedAnalysis: SavedAnalysis = JSON.parse($("#pgn").val()?.toString()!);
@@ -345,7 +346,6 @@ $("#review-button").on("click", () => {
             updateBoardPlayers();
 
             reportResults = savedAnalysis.results;
-            newGame = true;
             loadReportCards();
         } catch {
             logAnalysisError("Invalid savefile.");
