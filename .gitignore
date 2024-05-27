@@ -3,3 +3,4 @@ dist
 .env
 *.txt
 src/test/reports
+/.vs
