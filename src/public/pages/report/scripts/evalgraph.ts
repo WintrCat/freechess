@@ -5,6 +5,7 @@ let topLines: (EngineLine | undefined)[] = [];
 let isNewGame = false;
 let mouseX = 0;
 let mouseY = 0;
+let cursorImg: HTMLImageElement | null = null;
 
 async function drawEvaluationGraph() {
     const graphHeight = 80;
@@ -112,7 +113,79 @@ async function drawEvaluationGraph() {
                 iconY = mouseY > graphHeight - iconSize / 2 ? graphHeight - iconSize : iconY;
     
                 if (icon) {
-                    evaluationGraphCtx.drawImage(icon, iconX, iconY, iconSize, iconSize);
+
+                    
+                    const canvasWidth = evaluationGraphCtx.canvas.width;
+                    const canvasHeight = evaluationGraphCtx.canvas.height;
+                    let speechBubble: any = new (window as any).SpeechBubble(evaluationGraphCtx);
+                    speechBubble.text = "  "
+                    if (hoverIndex % 2 === 0) {
+                        speechBubble.text += blackPlayer.username;
+                    }
+                    else {
+                        speechBubble.text += whitePlayer.username;
+                    }
+                    speechBubble.setTargetPos(mouseX, mouseY);
+                    const bubbleWidth = Math.max(blackPlayer.username.length, whitePlayer.username.length) * 12;
+                    const bubbleHeight = 10;
+                    let bubbleLeft = mouseX + 5;
+                    let bubbleTop = mouseY + 5;
+                    let bubblePadding = 7;
+                    let bubbleGapX = 3;
+                    let bubbleGapY = 5;
+                    let totalHeight = mouseY + bubbleHeight + bubbleGapY + bubblePadding * 2;
+                    let totalWidth = mouseX + bubbleWidth + bubbleGapX + bubblePadding * 2;
+
+                    if (totalHeight > canvasHeight && totalWidth > canvasWidth) {
+                        bubbleTop = mouseY - bubbleHeight - bubblePadding * 2;
+                        bubbleLeft = mouseX - bubbleWidth - bubblePadding;
+                    }
+                    else {
+                        if (totalHeight > canvasHeight) {
+                            bubbleTop -= totalHeight - canvasHeight;
+                        } else {
+                            bubbleTop = mouseY + bubblePadding;
+                        }
+                        
+                        if (totalWidth > canvasWidth) {
+                            bubbleLeft -= totalWidth - canvasWidth;
+                        } else {
+                            bubbleLeft = mouseX + bubblePadding;
+                        }
+                    }
+
+                    
+                    if (bubbleLeft < 0) {
+                        bubbleLeft = 0;
+                    } else if (bubbleLeft + bubbleWidth > canvasWidth) {
+                        bubbleLeft = canvasWidth - bubbleWidth;
+                    }
+                    
+                    if (bubbleTop < 0) {
+                        bubbleTop = 0;
+                    } else if (bubbleTop + bubbleHeight > canvasHeight) {
+                        bubbleTop = canvasHeight - bubbleHeight;
+                    }
+                    
+                    speechBubble.panelBounds = new (window as any).SpeechBubble.Bounds(bubbleTop, bubbleLeft, bubbleWidth, bubbleHeight);
+                    
+                    speechBubble.fontSize = 12;
+                    speechBubble.padding = 2; 
+                    speechBubble.cornerRadius = 2; 
+                    speechBubble.panelBorderWidth = 1; 
+                    speechBubble.panelBorderColor = "#000"; 
+                    speechBubble.fontColor = "#000"; 
+                    speechBubble.padding = bubblePadding; 
+                    speechBubble.font = "JetBrains Mono"; 
+                    speechBubble.panelFillColor = "rgba(255,255,255,0.7)"; 
+                    speechBubble.tailStyle = (window as any).SpeechBubble.TAIL_STRAIGHT; 
+                    
+                    speechBubble.draw();
+
+                    const imgX = bubbleLeft + bubbleGapX;
+                    const imgY = bubbleTop + bubbleGapY;
+
+                    evaluationGraphCtx.drawImage(icon, imgX, imgY, iconSize, iconSize);
                 }
             }
         }
@@ -157,6 +230,7 @@ async function drawEvaluationGraph() {
 
             hoverIndex = newHoverIndex;
             drawEvaluationGraph();
+            drawCursor();
         });
 
         graphCanvas.addEventListener('mouseout', () => {
@@ -166,6 +240,20 @@ async function drawEvaluationGraph() {
 
         isNewGame = false;
     }
+}
+
+function drawCursor() {
+    loadSprite("crosshair.png").then(image => {
+        cursorImg = image
+    });
+    
+    let cursorSize = 10;
+    
+    if (cursorImg) {
+        evaluationGraphCtx.drawImage(cursorImg, mouseX - cursorSize / 2, mouseY - cursorSize / 2, cursorSize, cursorSize);
+    }
+    
+
 }
 
 function getMovedPlayerByPosition(fen: string) {
