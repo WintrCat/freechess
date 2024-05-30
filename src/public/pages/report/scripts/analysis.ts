@@ -175,6 +175,10 @@ async function evaluate() {
             logAnalysisInfo("Evaluation complete.");
             $("#evaluation-progress-bar").val(100);
             $(".g-recaptcha").css("display", "inline");
+            if(!document.hasFocus()){
+                let snd = new Audio("static/media/ping.mp3");
+                snd.play();
+            }
             $("#secondary-message").html(
                 "Please complete the CAPTCHA to continue.",
             );
