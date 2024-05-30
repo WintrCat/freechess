@@ -335,6 +335,8 @@ async function report() {
 }
 
 $("#review-button").on("click", () => {
+    isNewGame = true;
+
     if ($("#load-type-dropdown").val() == "json") {
         try {
             let savedAnalysis: SavedAnalysis = JSON.parse($("#pgn").val()?.toString()!);

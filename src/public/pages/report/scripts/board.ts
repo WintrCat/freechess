@@ -258,6 +258,7 @@ function traverseMoves(moveCount: number) {
     const movedPlayer = getMovedPlayer();
 
     drawEvaluationBar(topLine?.evaluation ?? { type: "cp", value: 0 }, boardFlipped, movedPlayer);
+    drawEvaluationGraph();
 
     updateClassificationMessage(positions[currentMoveIndex - 1], currentPosition);
     updateEngineSuggestions(currentPosition.topLines ?? []);
@@ -348,6 +349,7 @@ $("#flip-board-button").on("click", () => {
     const movedPlayer = getMovedPlayer();
 
     drawEvaluationBar(lastEvaluation, boardFlipped, movedPlayer);
+    drawEvaluationGraph();
     drawBoard(reportResults?.positions[currentMoveIndex]?.fen ?? startingPositionFen); 
     updateBoardPlayers();
 });
