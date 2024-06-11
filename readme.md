@@ -4,6 +4,9 @@ Generate classifications for your Chess moves, for free. Available @ [chess.wint
 <br><br>
 Enter a game by its PGN or pick a game from your Chess.com / Lichess.org account and have it analysed so that you can see where your mistakes and brilliancies are.
 
+**ANNOUNCEMENT**<br>
+Freechess is currently closed to further contributions - we are working on rebuilding the website from the ground up :)
+
 ## Running locally
 ### Prerequisites
 - Node.js 20.x runtime or later.
