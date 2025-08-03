@@ -43,11 +43,25 @@ function generateGameListing(game: Game): JQuery<HTMLDivElement> {
     let players = $("<span>");
     players.html(getPlayersString(game));
 
+    let winner = $("<span>");
+    winner.html(game.winner);
+
     listingContainer.append(timeClass);
     listingContainer.append(players);
+    listingContainer.append(winner);
 
     return listingContainer;
 
+}
+
+function getMatchWinnerChessCom(game: any): string {
+    if (game?.white?.result == "stalemate") {
+        return "draw"
+    }
+    if (game.white.result == "win") {
+        return game.white.username
+    }
+    return game.black.username
 }
 
 async function fetchChessComGames(username: string) {
@@ -75,7 +89,8 @@ async function fetchChessComGames(username: string) {
                     rating: game.black.rating.toString()
                 },
                 timeClass: game["time_class"],
-                pgn: game.pgn
+                pgn: game.pgn,
+                winner: getMatchWinnerChessCom(game)
             });
 
             $("#games-list").append(gameListing);
@@ -84,6 +99,16 @@ async function fetchChessComGames(username: string) {
         $("#games-list").html("No games found.");
     }
 
+}
+
+function getMatchWinnerLichess(game: any): string {
+    if (game?.status == "draw") {
+        return "draw"
+    }
+    if (game?.winner == "white") {
+        return game.players.white.user.name
+    }
+    return game.players.black.user.name
 }
 
 async function fetchLichessGames(username: string) {
@@ -133,7 +158,8 @@ async function fetchLichessGames(username: string) {
                     aiLevel: game.players.black.aiLevel
                 },
                 timeClass: game.speed,
-                pgn: game.pgn
+                pgn: game.pgn,
+                winner: getMatchWinnerLichess(game),
             });
 
             $("#games-list").append(gameListing);

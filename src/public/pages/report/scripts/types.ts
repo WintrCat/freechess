@@ -14,6 +14,7 @@ interface Game {
     black: Profile,
     timeClass: string,
     pgn: string
+    winner: string
 }
 
 interface Coordinate {
