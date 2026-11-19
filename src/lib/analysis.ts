@@ -187,6 +187,9 @@ async function analyse(positions: EvaluatedPosition[]): Promise<Report> {
 
                         // If the piece is otherwise hanging, brilliant
                         if (isPieceHanging(lastPosition.fen, position.fen, piece.square)) {
+                            // Ignore pieces that were already hanging before the move
+                            if (lastBoard.get(piece.square)?.color == piece.color && isPieceHanging(lastPosition.fen, lastPosition.fen, piece.square)) continue;
+
                             position.classification = Classification.BRILLIANT;
                             sacrificedPieces.push(piece);
                         }
