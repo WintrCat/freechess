@@ -35,6 +35,8 @@ let blackPlayer: Profile = {
     rating: "?"
 };
 
+let reportResults: Report | undefined;
+
 function getBoardCoordinates(square: string): Coordinate {
     if (boardFlipped) {
         return {
