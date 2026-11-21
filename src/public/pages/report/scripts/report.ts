@@ -29,7 +29,7 @@ function updateClassificationMessage(lastPosition: Position, position: Position)
         if (bestClassifications.includes(position.classification)) {
             $("#top-alternative-message").css("display", "none");
         } else {
-            let topAlternative = lastPosition.topLines?.[0].moveSAN;
+            let topAlternative = lastPosition.topLines?.find(line => line.id == 1)?.moveSAN;
             if (!topAlternative) return;
 
             $("#top-alternative-message").html(`Best was ${topAlternative}`);
