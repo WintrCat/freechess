@@ -1,7 +1,6 @@
 let ongoingEvaluation = false;
 
 let evaluatedPositions: Position[] = [];
-let reportResults: Report | undefined;
 
 function logAnalysisInfo(message: string) {
     $("#status-message").css("display", "block");
